@@ -18,7 +18,7 @@ fable5_harness/
   install_harness.md        ← this file
   README.md                 ← human-readable overview (Traditional Chinese)
   optional-hooks.md         ← two once-per-session reminder hooks (optional; asked at Step 0,
-                              merged into ~/.claude/settings.json at Step 3.5)
+                              merged into ~/.claude/settings.json at Step 3.6)
   home-claude/              ← mirrors what goes under ~/.claude/
     CLAUDE.md               ← the global router that DOES get installed to ~/.claude/CLAUDE.md
                               (5 routing triggers + 5 invariants)
@@ -59,7 +59,7 @@ verifier, and every judgment call a small model tends to fumble is written down 
      `optional-hooks.md` — they mechanically re-inject the two highest-value triggers (read
      the dispatch doc before the first subagent spawn; check the done-rubric before ending a
      turn that claims completion). Offer this only if `jq` is installed (`command -v jq`);
-     if accepted, install per Step 3.5.
+     if accepted, install per Step 3.6.
 
 ## Step 1 — Copy files
 
@@ -128,10 +128,16 @@ is how Step 4 verifies completion.
    bullets in `docs/00-harness-diagnosis.md` with locally measured ones (e.g. this user's
    largest frequently-edited file and its token cost); the worked example in
    `docs/30-delegation-templates.md` is self-replacing later (see its INSTALLER comment).
-5. **Optional hooks (only if the user opted in at Step 0):** follow `optional-hooks.md` —
+5. **Permission allowlist (recommended):** heavy delegation multiplies permission prompts,
+   and a background agent stuck on a prompt stalls silently. With the user, add their common
+   safe read-only and test/verification commands to the permissions allowlist in
+   `~/.claude/settings.json` (back up first, Step 0.3 naming), so delegated verification can
+   run unattended. Only allowlist commands the user confirms; never allowlist anything
+   destructive.
+6. **Optional hooks (only if the user opted in at Step 0):** follow `optional-hooks.md` —
    back up `~/.claude/settings.json` first (Step 0.3 naming), merge the `hooks` key, then
    confirm the merged file is valid JSON (`jq . ~/.claude/settings.json`).
-6. Do **not** edit the rules, rubrics, or the prompt bodies of the three `agents/*.md` files —
+7. Do **not** edit the rules, rubrics, or the prompt bodies of the three `agents/*.md` files —
    they are environment-independent by design. The only agent edits allowed are the two
    frontmatter adjustments item 2 explicitly orders (cost-preference `model:`, unsupported
    `effort:` level), both recorded in the Handoff entry.

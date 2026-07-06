@@ -12,6 +12,9 @@ they only stay useful if lessons flow back in and rot gets removed.
 3. If you changed a filename or added/removed a doc, update the routing table in
    `~/.claude/CLAUDE.md` in the same session — a routing table that points at missing files
    is worse than none.
+4. While you're here, run health-check items 1 and 4 (§ 6) — they cost seconds and catch
+   routing rot early. This piggyback is the main way the health check actually happens;
+   the calendar trigger in § 6 fires only if nobody has edited these files in months.
 
 ## 1. What you may change on your own
 
@@ -73,8 +76,9 @@ Triggers (check whichever doc you're editing):
 - Same for tool/agent-type names: this harness renames things; a failed call is evidence,
   your recollection is not.
 
-## 6. Health check (run when the user asks, or when `50-…md` § Handoff shows no health-check
-entry within the last ~3 months — record each completed check as a Handoff entry)
+## 6. Health check (items 1+4 also run piggybacked on any doctrine edit, § 0.4. Run the full
+check when the user asks, or when `50-…md` § Handoff shows no health-check entry within the
+last ~3 months — record each completed full check as a Handoff entry)
 
 1. Routing table ↔ actual files in `~/.claude/docs/`: no dead links, no unrouted docs.
 2. Spawn one `Explore` and one `verifier` agent on a trivial task: both agent types still work.

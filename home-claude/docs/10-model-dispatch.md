@@ -13,6 +13,10 @@ the whole system (see `00-harness-diagnosis.md`, Finding 1). The commander:
   screenshots, or batch-edits many files inline.
 - **Does** decompose tasks, write delegation prompts, read subagent conclusions, decide, and
   talk to the user.
+- **Parallelizes.** Independent subtasks go out as one batch of spawns, not one at a time —
+  serial dispatch of independent work wastes wall-clock for no quality gain. Dependent steps
+  (doer → verifier) wait for the previous result. Check how this harness delivers results:
+  subagents may run in the background and report asynchronously.
 - Rule of thumb: if an action would put more than ~1,000 lines of raw material (code, logs,
   search results, page text) into the main context *cumulatively*, it must be delegated.
   This does not relax the per-`Read` cap of ~300 lines on unfamiliar files (CLAUDE.md
@@ -122,6 +126,11 @@ Subagents return **conclusions, not material**:
   structural — different model, different decomposition, different approach — or go to the user.
 
 ## 6. Verification is never self-verification
+
+This section is the **authoritative statement** of the verification contract. Other files
+(CLAUDE.md invariant 2, `00-harness-diagnosis.md` Finding 3, the agent definitions) deliberately
+restate its core because they must stay self-contained — edits to the contract start here and
+propagate outward, never the reverse.
 
 The agent that did the work never certifies it. A doer's "VERIFY YOURSELF BEFORE REPORTING"
 step (in the `30-delegation-templates.md` templates) is a pre-check that reduces round-trips;

@@ -16,7 +16,7 @@ is two short reminders per session, not a nag on every action.
 (Linux/macOS/WSL). The `"Task|Agent"` matcher covers both the pre-v2.1.63 tool name (`Task`)
 and the current one (`Agent`). Format verified against the official hooks reference 2026-07-06.
 
-## Install (done by the installing session at install_harness.md Step 3.5)
+## Install (done by the installing session at install_harness.md Step 3.6)
 
 1. Back up `~/.claude/settings.json` per Step 0.3 naming (create the file as `{}` if missing).
 2. Merge the `hooks` key below into it — merge, don't overwrite existing hooks the user may have.

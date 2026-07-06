@@ -36,7 +36,11 @@ frontier model does, and they are less likely to notice they've lost state.
    a verdict + the final screenshot path.
 3. Batch edits across many files → one subagent per coherent chunk, main context receives a
    change summary, not diffs.
-4. Details of who to dispatch and how: `10-model-dispatch.md`, templates in `30-delegation-templates.md`.
+4. Long multi-step tasks: keep a small task-state file in the project (goal, hard constraints,
+   decisions made, current step) and re-read it after any compaction — compaction is exactly
+   when earlier constraints get forgotten, and avoidance (rules 1–3) only makes it rarer,
+   not impossible.
+5. Details of who to dispatch and how: `10-model-dispatch.md`, templates in `30-delegation-templates.md`.
 
 ## Finding 2 — No persistent doctrine: every session re-derived the basics
 
@@ -64,14 +68,12 @@ work in the same context inherits all of its own blind spots.
 **Why it matters more for smaller models.** Overclaiming completion is strongly
 model-size-correlated. This is the single highest-risk behavior to guard against.
 
-**Fix (the verification contract — full rubric in `20-judgment-rubrics.md`):**
-1. "Done" requires evidence produced by execution, not by reasoning: a test run, a real
-   browser drive (with whatever driver this machine has — see CLAUDE.md Environment facts),
-   a read-back of a written file, or a screenshot of actual rendered output.
-2. Acceptance checks for delegated work are performed by a **fresh-context** agent that did not
-   do the work, given only the acceptance criteria (never the doer's chat log).
-3. High-risk or taste-based judgments get a second opinion (independent agent) or go to the
-   user — second opinions per `10-model-dispatch.md` § 6; taste per `20-judgment-rubrics.md` § 6.
+**Fix (the verification contract):** authoritative statement in `10-model-dispatch.md` § 6;
+done-rubric in `20-judgment-rubrics.md` § 2. Core, in one line each: "done" requires evidence
+produced by execution, not reasoning; acceptance checks for delegated work run in a
+**fresh-context** agent given only the acceptance criteria (never the doer's chat log);
+high-risk or taste-shaped judgments get a second opinion or go to the user
+(taste: `20-judgment-rubrics.md` § 6).
 
 ---
 
