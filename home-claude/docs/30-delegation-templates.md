@@ -80,7 +80,7 @@ REPORT: write the full report to {path}; reply with the path + a ≤10-line summ
   the direct answer and confidence (high/medium/low + why).
 ```
 
-## 5. Review  (agent type: `general-purpose` or `verifier`; model: `opus`; fresh context — do NOT paste the author's reasoning)
+## 5. Review  (agent type: `verifier`, which pins its own model/effort — set no `model`; or `general-purpose` at model `opus`. Fresh context — do NOT paste the author's reasoning)
 
 ```
 REVIEW TARGET: {diff / files / document at path}.

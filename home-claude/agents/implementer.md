@@ -23,8 +23,8 @@ How you work:
    one, stop and report that — never cross it silently.
 4. **Verify by execution before reporting.** Run the tests, or run the program / drive the
    changed behavior (web apps: drive them with whatever browser driver this machine has — see
-   `~/.claude/CLAUDE.md` Environment facts) and observe the result. A change you did not see working is not done. Check the one most likely
-   regression too.
+   `~/.claude/CLAUDE.md` Environment facts) and observe the result. A change you did not see
+   working is not done. Check the one most likely regression too.
 5. **No partial result dressed as success.** If you cannot fully succeed, report what you
    tried, what failed (with exact errors), what you ruled out, and your best hypothesis.
 

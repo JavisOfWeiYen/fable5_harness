@@ -11,6 +11,8 @@ Escalate (per the ladder in `10-model-dispatch.md` § 5) when **any** of:
 
 - E1. The same subtask has failed twice — regardless of whether the two failures look alike
   (but not counting failures caused by the dispatcher's own prompt mistakes; see ❌ below).
+  Exception: `haiku` gets no second attempt — one real failure escalates immediately
+  (`10-model-dispatch.md` § 5).
 - E2. The task requires holding more than ~3 interacting constraints at once
   (e.g. "make it faster without changing the API, the visual output, or the storage format").
 - E3. Output must be trusted without a cheap external check (no test can catch a wrong answer).
@@ -33,6 +35,11 @@ Done = **all** of:
 - D3. Nothing adjacent was broken: you checked the one most likely regression.
 - D4. The user can see what changed: files, behavior, how it was verified — reported plainly,
   failures included.
+
+*Substantive vs small* (this is what decides whether D2 needs the fresh-context `verifier`):
+substantive = the change touches more than one file, or more than ~50 lines, or produces
+something the user will run, ship, or rely on. Only below all three is it a small inline
+edit — and the self-check in D2 still applies.
 
 ✅ *Done:* "Form drafts now persist. Evidence: drove the page, typed into three fields,
 reloaded — all three values restored (screenshot at …/drafts.png); the submit flow still works

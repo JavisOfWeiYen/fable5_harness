@@ -71,7 +71,7 @@ model-size-correlated. This is the single highest-risk behavior to guard against
 2. Acceptance checks for delegated work are performed by a **fresh-context** agent that did not
    do the work, given only the acceptance criteria (never the doer's chat log).
 3. High-risk or taste-based judgments get a second opinion (independent agent) or go to the
-   user — see the escalation rules in `20-judgment-rubrics.md`.
+   user — second opinions per `10-model-dispatch.md` § 6; taste per `20-judgment-rubrics.md` § 6.
 
 ---
 

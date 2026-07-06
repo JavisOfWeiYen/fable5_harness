@@ -17,6 +17,8 @@ fable5_harness/
                               here, points you at this file). DO NOT install/copy it.
   install_harness.md        ← this file
   README.md                 ← human-readable overview (Traditional Chinese)
+  optional-hooks.md         ← two once-per-session reminder hooks (optional; asked at Step 0,
+                              merged into ~/.claude/settings.json at Step 3.5)
   home-claude/              ← mirrors what goes under ~/.claude/
     CLAUDE.md               ← the global router that DOES get installed to ~/.claude/CLAUDE.md
                               (5 routing triggers + 5 invariants)
@@ -39,17 +41,25 @@ verifier, and every judgment call a small model tends to fumble is written down 
 
 1. Check what already exists: `~/.claude/CLAUDE.md`, `~/.claude/docs/`, `~/.claude/agents/`.
 2. If `~/.claude/CLAUDE.md` already exists, you will **merge, not overwrite** (Step 2).
-   If any `docs/` filename collides, stop and ask the user how to resolve it.
+   If any `docs/` or `agents/` filename collides with an existing file, stop and ask the user
+   how to resolve it — Step 1's copy must never silently overwrite a user's own agent or doc.
 3. Create `~/.claude/backups/` if missing, and back up every file you are about to touch as
    `~/.claude/backups/<name>.bak-<YYYY-MM-DD-HHMM>`.
 4. Ask the user this one batch of questions (then proceed autonomously):
    - Cost preference: quality-first (default model `opus` for substantive delegation — the
-     package default), balanced (`sonnet` default, `opus` for hard/critical), or budget?
+     package default), balanced (`sonnet` default, `opus` for hard/critical), or budget
+     (`sonnet` for both doing and verifying; `opus` held in reserve for the escalation
+     ladder)? Each answer maps to concrete edits in Step 3.2.
    - Main use cases (so examples and rubrics get read in the right spirit)?
    - Response language preference?
    - Fable 5 access: does this machine have it? If yes, `fable` stays as the top dispatch tier
      above `opus`; if no (the common case), the `fable` row is removed and `opus` is the top
      tier. Either way the escalation prose already covers it — see Step 3. Do not assume; ask.
+   - Optional enforcement hooks: offer the two once-per-session reminder hooks in
+     `optional-hooks.md` — they mechanically re-inject the two highest-value triggers (read
+     the dispatch doc before the first subagent spawn; check the done-rubric before ending a
+     turn that claims completion). Offer this only if `jq` is installed (`command -v jq`);
+     if accepted, install per Step 3.5.
 
 ## Step 1 — Copy files
 
@@ -69,8 +79,11 @@ cp home-claude/agents/*.md ~/.claude/agents/   # verifier + implementer + hard-s
 
 ## Step 2 — Merge (only if the user already had a `~/.claude/CLAUDE.md`)
 
-Keep the user's existing content. Append from the package version: the **routing table** and
-the **five invariants**, adjusting paths if needed. If any existing rule contradicts a package
+Keep the user's existing content. Append from the package version: the **routing table**, the
+**five invariants**, and the **§ Environment facts section** (including its
+`<!-- INSTALLER: … -->` comment — Step 3.1 fills that section and Step 4's grep checks the
+comment was removed; several installed files reference "CLAUDE.md Environment facts", which
+must not dangle). Adjust paths if needed. If any existing rule contradicts a package
 invariant, do not silently pick a winner — show the user both and ask. Keep the merged file
 under ~70 lines; if the user's existing content is long, propose moving it into a doc and
 routing to it.
@@ -85,9 +98,18 @@ is how Step 4 verifies completion.
    for WSL2 mounts, network drives, containers), which verification tooling is actually
    installed (try to run it before claiming it), the user's response language (from Step 0).
 2. **`docs/10-model-dispatch.md` § Model table** — verify the model aliases/IDs are still
-   current *in this harness* (your own system prompt lists them; or ask a `claude-code-guide`
-   agent). Apply the user's cost preference from Step 0: the shipped default is
-   quality-first (`opus` for substantive work). Update the "verified YYYY-MM-DD" date.
+   current *in this harness* (ask a `claude-code-guide` agent; your own system prompt
+   typically lists only your own model's ID, so don't rely on it for the full table).
+   **Apply the user's cost preference from Step 0** — and rewrite the "(user preference:
+   quality over cost)" note in the `opus` row to the preference actually chosen:
+   - *quality-first* (the shipped default): no table edit.
+   - *balanced*: make `sonnet` the stated default for substantive work; `opus`'s Use-for
+     becomes hard/critical tasks and `verifier` runs.
+   - *budget*: as balanced, and additionally change `model: opus` to `model: sonnet` in
+     `agents/implementer.md` and `agents/verifier.md`. Keep `hard-solver` on `opus` — the
+     escalation ceiling is the last thing to trade away. Record these edits in the Handoff
+     entry.
+   Update the "verified YYYY-MM-DD" date.
    **Fable 5 toggle (from Step 0):** if the user has NO Fable 5 access, delete the `fable` row
    from the model table — the § 5 escalation prose already reads correctly with `opus` as the
    top tier, so no other edit is needed. If they DO have it, keep the row and confirm its ID.
@@ -95,7 +117,10 @@ is how Step 4 verifies completion.
    substantive delegated agents (pinned via an agent definition file — `verifier` already ships
    at high). The main session's effort is the user's own Claude Code setting, not something
    these files control — recommend running it high for this quality-first setup. Verify the
-   available effort levels for this Opus build (don't assume from memory).
+   available effort levels for this Opus build AND that agent-frontmatter `effort:` is
+   honored at all (ask `claude-code-guide`; don't assume from memory). If a shipped level
+   (e.g. `max`) is unsupported, edit that agent's `effort:` to the highest supported level;
+   record any such edit in the Handoff entry.
 3. **`docs/50-letter-to-future-sessions.md`** — write § "Three things" for this user following
    the embedded INSTALLER comment (verified observations from this install, not guesses), and
    replace the § Handoff template entry with your real install entry.
@@ -103,8 +128,13 @@ is how Step 4 verifies completion.
    bullets in `docs/00-harness-diagnosis.md` with locally measured ones (e.g. this user's
    largest frequently-edited file and its token cost); the worked example in
    `docs/30-delegation-templates.md` is self-replacing later (see its INSTALLER comment).
-5. Do **not** edit the rules, rubrics, or `agents/verifier.md` — they are
-   environment-independent by design.
+5. **Optional hooks (only if the user opted in at Step 0):** follow `optional-hooks.md` —
+   back up `~/.claude/settings.json` first (Step 0.3 naming), merge the `hooks` key, then
+   confirm the merged file is valid JSON (`jq . ~/.claude/settings.json`).
+6. Do **not** edit the rules, rubrics, or the prompt bodies of the three `agents/*.md` files —
+   they are environment-independent by design. The only agent edits allowed are the two
+   frontmatter adjustments item 2 explicitly orders (cost-preference `model:`, unsupported
+   `effort:` level), both recorded in the Handoff entry.
 
 ## Step 4 — Verify (executed evidence, per the doctrine you just installed)
 
@@ -114,7 +144,9 @@ is how Step 4 verifies completion.
    `grep -rn 'INSTALLER:' ~/.claude/CLAUDE.md ~/.claude/docs/10-model-dispatch.md ~/.claude/docs/50-letter-to-future-sessions.md`
    — it must return **zero hits**. (These are the mandatory files; the optional comment in
    `30-delegation-templates.md` may remain, so it is deliberately excluded from this grep.)
-   Also confirm CLAUDE.md's Environment facts section contains no unfilled `{…}` bullets.
+   Also confirm no unfilled `{…}` bullets remain in CLAUDE.md's Environment facts section or
+   anywhere in `50-letter-to-future-sessions.md` (its § "Three things" and § Handoff both
+   ship with `{…}` placeholders).
 3. The `verifier` agent type registers at **session start** — it will not be spawnable in this
    installing session if `~/.claude/agents/` was just created. Tell the user: restart Claude
    Code, then in the new session spawn `verifier` on a trivial check to confirm it works

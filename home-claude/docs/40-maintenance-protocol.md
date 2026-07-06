@@ -1,6 +1,6 @@
 # Maintenance Protocol
 
-How the models running here (assume Sonnet-class) keep `~/.claude/CLAUDE.md`, `~/.claude/docs/`
+How the models running here (Opus- or Sonnet-class) keep `~/.claude/CLAUDE.md`, `~/.claude/docs/`
 and `~/.claude/agents/` alive without degrading them. These files were established 2026-07-06;
 they only stay useful if lessons flow back in and rot gets removed.
 
