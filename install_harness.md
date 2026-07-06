@@ -58,8 +58,12 @@ verifier, and every judgment call a small model tends to fumble is written down 
    - Optional enforcement hooks: offer the two once-per-session reminder hooks in
      `optional-hooks.md` — they mechanically re-inject the two highest-value triggers (read
      the dispatch doc before the first subagent spawn; check the done-rubric before ending a
-     turn that claims completion). Offer this only if `jq` is installed (`command -v jq`);
-     if accepted, install per Step 3.6.
+     turn that claims completion). The hooks need `jq` (`command -v jq`). If jq is missing,
+     don't install them — tell the user the option exists and how to enable it (install jq,
+     e.g. `sudo apt install jq` on Debian/Ubuntu, then re-run this step); never run the
+     package-manager install yourself. If accepted and jq is present, install per Step 3.6.
+     (The hook commands carry their own jq guard, so even installed-without-jq they no-op
+     silently rather than error.)
 
 ## Step 1 — Copy files
 
