@@ -47,8 +47,19 @@ installing session merges from that file instead of hand-transcribing a large es
    ```
 
    This appends the two package hooks to whatever the user already had. If you are **re-running**
-   an install (the two doctrine entries are already present), remove the old ones first so you
-   don't append duplicates.
+   an install (the two doctrine entries may already be present), run this removal FIRST so you
+   don't append duplicates — it drops only entries carrying this package's `claude-doctrine-`
+   marker and leaves the user's own hooks untouched, then re-run the merge above:
+
+   ```bash
+   tmp="$(mktemp)"
+   jq '
+     def mine: [.hooks[]?.command // "" | contains("claude-doctrine-")] | any;
+     .hooks.PreToolUse = ((.hooks.PreToolUse // []) | map(select(mine|not)))
+     | .hooks.Stop     = ((.hooks.Stop // [])       | map(select(mine|not)))
+   ' ~/.claude/settings.json > "$tmp" &&
+   mv "$tmp" ~/.claude/settings.json
+   ```
 3. Verify: the final `jq .` above exits 0. Current Claude Code versions pick up settings-file
    hook edits automatically; no restart needed.
 
