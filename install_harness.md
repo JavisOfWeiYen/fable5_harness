@@ -51,7 +51,7 @@ verifier, and every judgment call a small model tends to fumble is written down 
    - Cost preference: quality-first (default model `opus` for substantive delegation — the
      package default), balanced (`sonnet` default, `opus` for hard/critical), or budget
      (`sonnet` for both doing and verifying; `opus` held in reserve for the escalation
-     ladder)? Each answer maps to concrete edits in Step 3.2.
+     ladder)? Each answer maps to concrete edits in Step 3, item 2.
    - Main use cases (so examples and rubrics get read in the right spirit)?
    - Response language preference?
    - Fable 5 access: does this machine have it? If yes, `fable` stays as the top dispatch tier
@@ -71,15 +71,15 @@ verifier, and every judgment call a small model tends to fumble is written down 
 
 ## Step 1 — Copy files
 
-From this package directory. **Precondition: only run the `cp` lines below after Step 0.2's
+From this package directory. **Precondition: only run the `cp` lines below after Step 0, item 2's
 collision check passed.** If any `docs/` or `agents/` filename collides with a file the user
-already has, do NOT run them — go back to Step 0.2, stop, and ask the user how to resolve it.
+already has, do NOT run them — go back to Step 0, item 2, stop, and ask the user how to resolve it.
 (Do not "fix" a collision with `cp -n`/no-clobber: that silently keeps the user's old file while
 you believe the new one installed — the worst of both.)
 
 ```bash
 mkdir -p ~/.claude/docs ~/.claude/agents ~/.claude/backups
-# Run these two ONLY if Step 0.2 found no collisions (see precondition above):
+# Run these two ONLY if Step 0, item 2 found no collisions (see precondition above):
 cp home-claude/docs/*.md ~/.claude/docs/
 cp home-claude/agents/*.md ~/.claude/agents/   # verifier + implementer + hard-solver
 
@@ -94,7 +94,7 @@ cp home-claude/agents/*.md ~/.claude/agents/   # verifier + implementer + hard-s
 
 Keep the user's existing content. Append from the package version: the **routing table**, the
 **five invariants**, and the **§ Environment facts section** (including its
-`<!-- INSTALLER: … -->` comment — Step 3.1 fills that section and Step 4's grep checks the
+`<!-- INSTALLER: … -->` comment — Step 3, item 1 fills that section and Step 4's grep checks the
 comment was removed; several installed files reference "CLAUDE.md Environment facts", which
 must not dangle). Adjust paths if needed. If any existing rule contradicts a package
 invariant, do not silently pick a winner — show the user both and ask. Keep the merged file
@@ -144,14 +144,14 @@ is how Step 4 verifies completion.
 5. **Permission allowlist (recommended):** heavy delegation multiplies permission prompts,
    and a background agent stuck on a prompt stalls silently. With the user, add their common
    safe read-only and test/verification commands to the permissions allowlist in
-   `~/.claude/settings.json` (back up first, Step 0.3 naming), so delegated verification can
+   `~/.claude/settings.json` (back up first, Step 0, item 3 naming), so delegated verification can
    run unattended. Only allowlist commands the user confirms; never allowlist anything
    destructive.
 6. **Optional hooks (only if the user opted in at Step 0):** skip this item entirely on native
    (non-WSL) Windows — the hooks are POSIX sh + jq (already screened in Step 0's optional-hooks
    question). Otherwise
    follow `optional-hooks.md` —
-   back up `~/.claude/settings.json` first (Step 0.3 naming), then run its **append-safe** merge
+   back up `~/.claude/settings.json` first (Step 0, item 3 naming), then run its **append-safe** merge
    command, which merges the package template `hooks.json` into the user's settings (plain
    `jq '.[0] * .[1]'` would clobber existing `hooks.PreToolUse`/`hooks.Stop`, so don't use it;
    never copy `hooks.json` over `settings.json` either). Finally confirm the result is valid JSON

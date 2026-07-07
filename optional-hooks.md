@@ -28,7 +28,7 @@ installing session merges from that file instead of hand-transcribing a large es
 > wipe the user's existing settings (permissions, env, other hooks). Only ever *merge* it in,
 > using the append-safe command below.
 
-1. Back up `~/.claude/settings.json` per Step 0.3 naming (create the file as `{}` if missing).
+1. Back up `~/.claude/settings.json` per Step 0, item 3 naming (create the file as `{}` if missing).
 2. Merge — **append**, don't overwrite. Plain `jq '.[0] * .[1]'` is unsafe here: `*` replaces
    same-named arrays, so it would clobber any `hooks.PreToolUse` / `hooks.Stop` the user already
    has. Use this append-safe merge (from the package dir, so `hooks.json` resolves):
@@ -88,5 +88,5 @@ mv "$tmp" ~/.claude/settings.json &&
 jq . ~/.claude/settings.json
 ```
 
-Or restore the Step 0.3 backup. Setting `"disableAllHooks": true` disables every hook without
+Or restore the Step 0, item 3 backup. Setting `"disableAllHooks": true` disables every hook without
 editing them.
