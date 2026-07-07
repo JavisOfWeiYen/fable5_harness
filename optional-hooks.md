@@ -58,7 +58,8 @@ installing session merges from that file instead of hand-transcribing a large es
      .hooks.PreToolUse = ((.hooks.PreToolUse // []) | map(select(mine|not)))
      | .hooks.Stop     = ((.hooks.Stop // [])       | map(select(mine|not)))
    ' ~/.claude/settings.json > "$tmp" &&
-   mv "$tmp" ~/.claude/settings.json
+   mv "$tmp" ~/.claude/settings.json &&
+   jq . ~/.claude/settings.json
    ```
 3. Verify: the final `jq .` above exits 0. Current Claude Code versions pick up settings-file
    hook edits automatically; no restart needed.
@@ -73,5 +74,19 @@ installing session merges from that file instead of hand-transcribing a large es
 
 ## Remove
 
-Delete the two entries from the `hooks` key in `~/.claude/settings.json` (or restore the
-Step 0.3 backup). Setting `"disableAllHooks": true` disables every hook without editing them.
+Use the same marker-scoped removal as § Install (it drops only the `claude-doctrine-` entries
+and leaves your own hooks) — but do NOT re-run the merge afterward:
+
+```bash
+tmp="$(mktemp)"
+jq '
+  def mine: [.hooks[]?.command // "" | contains("claude-doctrine-")] | any;
+  .hooks.PreToolUse = ((.hooks.PreToolUse // []) | map(select(mine|not)))
+  | .hooks.Stop     = ((.hooks.Stop // [])       | map(select(mine|not)))
+' ~/.claude/settings.json > "$tmp" &&
+mv "$tmp" ~/.claude/settings.json &&
+jq . ~/.claude/settings.json
+```
+
+Or restore the Step 0.3 backup. Setting `"disableAllHooks": true` disables every hook without
+editing them.
