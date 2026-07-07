@@ -18,7 +18,9 @@ fable5_harness/
   install_harness.md        ← this file
   README.md                 ← human-readable overview (Traditional Chinese)
   optional-hooks.md         ← two once-per-session reminder hooks (optional; asked at Step 0,
-                              merged into ~/.claude/settings.json at Step 3.6)
+                              merged into ~/.claude/settings.json at Step 3, item 6)
+  hooks.json                ← hook template merged by optional-hooks.md; never copy over
+                              ~/.claude/settings.json (merge only, or you wipe the user's settings)
   home-claude/              ← mirrors what goes under ~/.claude/
     CLAUDE.md               ← the global router that DOES get installed to ~/.claude/CLAUDE.md
                               (5 routing triggers + 5 invariants)
@@ -63,7 +65,7 @@ verifier, and every judgment call a small model tends to fumble is written down 
      suggest running the harness from WSL. The hooks need `jq` (`command -v jq`). If jq is missing,
      don't install them — tell the user the option exists and how to enable it (install jq,
      e.g. `sudo apt install jq` on Debian/Ubuntu, then re-run this step); never run the
-     package-manager install yourself. If accepted and jq is present, install per Step 3.6.
+     package-manager install yourself. If accepted and jq is present, install per Step 3, item 6.
      (The hook commands carry their own jq guard, so even installed-without-jq they no-op
      silently rather than error.)
 
@@ -145,7 +147,9 @@ is how Step 4 verifies completion.
    `~/.claude/settings.json` (back up first, Step 0.3 naming), so delegated verification can
    run unattended. Only allowlist commands the user confirms; never allowlist anything
    destructive.
-6. **Optional hooks (only if the user opted in at Step 0):** follow `optional-hooks.md` —
+6. **Optional hooks (only if the user opted in at Step 0):** skip this item entirely on native
+   (non-WSL) Windows — the hooks are POSIX sh + jq (already screened at Step 0.6). Otherwise
+   follow `optional-hooks.md` —
    back up `~/.claude/settings.json` first (Step 0.3 naming), then run its **append-safe** merge
    command, which merges the package template `hooks.json` into the user's settings (plain
    `jq '.[0] * .[1]'` would clobber existing `hooks.PreToolUse`/`hooks.Stop`, so don't use it;

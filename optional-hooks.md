@@ -19,7 +19,7 @@ blocks. The commands are POSIX sh, run by Claude Code under `sh -c` (Linux/macOS
 The `"Task|Agent"` matcher covers both the pre-v2.1.63 tool name (`Task`)
 and the current one (`Agent`). Format verified against the official hooks reference 2026-07-06.
 
-## Install (done by the installing session at install_harness.md Step 3.6)
+## Install (done by the installing session at install_harness.md Step 3, item 6)
 
 The hook definitions live in the package file **`hooks.json`** (next to this file), so the
 installing session merges from that file instead of hand-transcribing a large escaped-JSON blob.
