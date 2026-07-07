@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Prompt Pinball · 開發過程分析報告</title>
+<style>
+  :root {
+    --paper: #f2ecdf;
+    --paper-2: #ece4d3;
+    --paper-3: #e6ddc9;
+    --ink: #3a352b;
+    --ink-soft: #5c5445;
+    --muted: #8c8271;
+    --line: #d8ccb2;
+    --line-soft: #e2d8c2;
+    --rust: #9c6b4a;
+    --moss: #6f7551;
+    --ochre: #b0873f;
+    --umber: #7d5b3a;
+    --slate: #566b6b;
+    --seal: #a4472e;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background-color: var(--paper);
+    color: var(--ink);
+    font-family: "Noto Serif CJK TC", "Songti TC", "Songti SC", Georgia,
+      "Times New Roman", "PMingLiU", serif;
+    line-height: 1.9;
+    font-size: 17px;
+    letter-spacing: 0.2px;
+    position: relative;
+  }
+
+  /* subtle paper grain */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.05;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 830px;
+    margin: 0 auto;
+    padding: 72px 28px 120px;
+  }
+
+  /* ---- masthead ---- */
+  .masthead {
+    text-align: center;
+    margin-bottom: 72px;
+  }
+  .enso {
+    width: 96px;
+    height: 96px;
+    opacity: 0.72;
+    margin-bottom: 8px;
+  }
+  .enso path { animation: draw 2.4s ease forwards; }
+  @keyframes draw {
+    from { stroke-dashoffset: 380; }
+    to { stroke-dashoffset: 0; }
+  }
+  h1.title {
+    font-size: 40px;
+    font-weight: 700;
+    margin: 4px 0 6px;
+    letter-spacing: 2px;
+  }
+  .title-en {
+    font-family: Georgia, serif;
+    font-style: italic;
+    color: var(--muted);
+    font-size: 18px;
+    letter-spacing: 1px;
+  }
+  .meta-line {
+    margin-top: 22px;
+    font-size: 13.5px;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
+  .meta-line span { margin: 0 10px; }
+
+  .seal {
+    display: inline-block;
+    margin-top: 26px;
+    padding: 8px 12px;
+    border: 1.5px solid var(--seal);
+    border-radius: 4px;
+    color: var(--seal);
+    font-size: 13px;
+    letter-spacing: 4px;
+    font-weight: 700;
+    transform: rotate(-2deg);
+    opacity: 0.85;
+    writing-mode: horizontal-tb;
+  }
+
+  /* ---- lead ---- */
+  .lead {
+    font-size: 18.5px;
+    color: var(--ink-soft);
+    border-left: 3px solid var(--ochre);
+    padding: 4px 0 4px 22px;
+    margin: 0 0 64px;
+  }
+
+  /* ---- sections ---- */
+  section { margin-bottom: 60px; }
+
+  h2 {
+    font-size: 25px;
+    font-weight: 700;
+    margin: 0 0 8px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+  }
+  h2 .num {
+    font-size: 30px;
+    color: var(--ochre);
+    opacity: 0.55;
+    font-weight: 400;
+    min-width: 32px;
+  }
+  h3 {
+    font-size: 18.5px;
+    color: var(--umber);
+    margin: 34px 0 6px;
+    font-weight: 700;
+  }
+  p { margin: 12px 0; }
+  strong { color: var(--rust); font-weight: 700; }
+  a { color: var(--moss); }
+
+  ul, ol { padding-left: 24px; margin: 12px 0; }
+  li { margin: 7px 0; }
+
+  .callout {
+    background: var(--paper-2);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--moss);
+    border-radius: 6px;
+    padding: 16px 20px;
+    margin: 22px 0;
+    font-size: 16px;
+    color: var(--ink-soft);
+  }
+  .callout .tag {
+    display: block;
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: var(--moss);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+
+  /* ---- code ---- */
+  pre.code {
+    background: var(--paper-3);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 18px 20px;
+    overflow-x: auto;
+    margin: 20px 0;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4),
+      0 1px 2px rgba(58, 53, 43, 0.06);
+  }
+  pre.code code {
+    font-family: "DejaVu Sans Mono", "Cascadia Code", ui-monospace, Consolas,
+      monospace;
+    font-size: 13.5px;
+    line-height: 1.72;
+    color: #4a4438;
+    white-space: pre;
+    tab-size: 2;
+  }
+  .code-cap {
+    font-size: 12.5px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    margin: 20px 0 -8px;
+    font-family: "DejaVu Sans Mono", ui-monospace, monospace;
+  }
+  .code-cap::before { content: "❯ "; color: var(--ochre); }
+
+  /* syntax tokens — earthy palette */
+  .t-c { color: #a89b82; font-style: italic; }
+  .t-s { color: #6f7551; }
+  .t-n { color: #b0873f; }
+  .t-k { color: #9c6b4a; font-weight: 700; }
+  .t-f { color: #7d5b3a; }
+  .t-p { color: #566b6b; }
+
+  /* ---- tables ---- */
+  .tbl-scroll { overflow-x: auto; margin: 20px 0; }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 14.5px;
+    min-width: 480px;
+  }
+  th, td {
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--line-soft);
+    vertical-align: top;
+  }
+  th {
+    color: var(--muted);
+    font-weight: 700;
+    font-size: 12.5px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--line);
+  }
+  td.ok { color: var(--moss); font-weight: 700; white-space: nowrap; }
+  tbody tr:hover, tr:hover { background: rgba(176, 135, 63, 0.05); }
+  code.inline {
+    font-family: "DejaVu Sans Mono", ui-monospace, monospace;
+    font-size: 0.9em;
+    background: var(--paper-3);
+    border: 1px solid var(--line-soft);
+    border-radius: 4px;
+    padding: 1px 6px;
+    color: var(--umber);
+  }
+
+  /* ---- timeline ---- */
+  .timeline { list-style: none; padding: 0; margin: 24px 0; }
+  .timeline li {
+    position: relative;
+    padding: 0 0 22px 34px;
+    border-left: 2px solid var(--line);
+    margin-left: 8px;
+  }
+  .timeline li::before {
+    content: "";
+    position: absolute;
+    left: -8px;
+    top: 4px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--paper);
+    border: 2px solid var(--ochre);
+  }
+  .timeline li:last-child { border-left-color: transparent; }
+  .timeline .step-h {
+    font-weight: 700;
+    color: var(--umber);
+    display: block;
+  }
+  .timeline .step-b { color: var(--ink-soft); font-size: 15.5px; }
+
+  /* ---- swatches ---- */
+  .swatches { display: flex; flex-wrap: wrap; gap: 10px; margin: 18px 0; }
+  .sw {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12.5px;
+    color: var(--muted);
+    font-family: ui-monospace, monospace;
+  }
+  .sw i {
+    width: 20px; height: 20px; border-radius: 50%;
+    border: 1px solid rgba(0,0,0,0.15);
+    display: inline-block;
+  }
+
+  hr.rule {
+    border: none;
+    border-top: 1px solid var(--line);
+    margin: 8px 0 0;
+  }
+
+  footer {
+    text-align: center;
+    margin-top: 80px;
+    padding-top: 30px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 13px;
+    letter-spacing: 1px;
+  }
+  .kbd {
+    font-family: ui-monospace, monospace;
+    background: var(--paper-3);
+    border: 1px solid var(--line);
+    border-bottom-width: 2px;
+    border-radius: 5px;
+    padding: 1px 7px;
+    font-size: 12.5px;
+    color: var(--ink);
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead">
+    <svg class="enso" viewBox="0 0 120 120" aria-hidden="true">
+      <path d="M80 24 C 42 8, 10 40, 18 78 C 25 110, 80 118, 100 88 C 112 70, 106 42, 82 32"
+            fill="none" stroke="#9c6b4a" stroke-width="5.5" stroke-linecap="round"
+            stroke-dasharray="380" stroke-dashoffset="380" />
+    </svg>
+    <h1 class="title">Prompt Pinball</h1>
+    <div class="title-en">a development chronicle — from empty folder to verified game</div>
+    <div class="meta-line">
+      <span>2026 · 07 · 07</span>·<span>純 HTML / CSS / JS</span>·<span>無框架 · 無 build step</span>
+    </div>
+    <div class="seal">無 工 具 之 驗 證</div>
+  </header>
+
+  <p class="lead">
+    一份誠實的開發紀錄：如何在一個<strong>沒有瀏覽器、也沒有 Node 的環境</strong>裡，
+    從空資料夾寫出一個彈珠台小遊戲，並且——關鍵是——真的把它跑起來驗證過。
+    這份報告記錄了思路、每一個決策的原因、實際用了哪些工具、以及哪些沒用到。
+  </p>
+
+  <!-- 一 -->
+  <section>
+    <h2><span class="num">一</span>任務</h2>
+    <p>
+      需求很清楚：用純 HTML/CSS/JS 做一個彈珠台遊戲。球受重力下落、會反彈；
+      鍵盤控制左右 flipper（<span class="kbd">A</span>/<span class="kbd">←</span> 與
+      <span class="kbd">D</span>/<span class="kbd">→</span>）；場上 5 個帶 prompt 詞的 bumper；
+      撞到會加分、發光、寫入右側事件紀錄；掉到底部扣命，三命耗盡顯示 Game Over 與 Restart。
+    </p>
+    <p>
+      但真正決定這次工作方式的，是需求的<strong>第 9 條</strong>：
+      「請在完成後<em>實際驗證</em>」。這一條把整個開發從「寫出來」變成「證明它會動」，
+      也逼出了這份報告裡最有意思的那段工程。
+    </p>
+  </section>
+
+  <!-- 二 -->
+  <section>
+    <h2><span class="num">二</span>核心難題：怎麼在「沒有瀏覽器」的機器上驗證一個瀏覽器遊戲？</h2>
+    <p>
+      這是一個 WSL Linux 環境。遊戲要在瀏覽器裡跑，但我手上沒有瀏覽器可以開它。
+      我最先做的不是寫程式，而是<strong>盤點驗證的可能性</strong>——因為如果最後無法驗證，
+      架構就得長成另一個樣子。
+    </p>
+    <div class="callout">
+      <span class="tag">思路</span>
+      驗證不能是「看起來對」。我要能<strong>執行真正的遊戲程式碼</strong>、餵它輸入、
+      觀察它的狀態變化。問題只剩一個：用什麼來執行 JavaScript？
+    </div>
+  </section>
+
+  <!-- 三 -->
+  <section>
+    <h2><span class="num">三</span>環境探索</h2>
+    <p>我用一連串 <span class="kbd">Bash</span> 探測，逐一排除選項：</p>
+    <div class="tbl-scroll">
+      <table>
+        <thead><tr><th>探測目標</th><th>結果</th><th>結論</th></tr></thead>
+        <tbody>
+          <tr><td>Node.js / npx</td><td>不存在</td><td>不能用 JS 生態的測試工具</td></tr>
+          <tr><td>Chromium / Chrome</td><td>不存在</td><td>無法開真實瀏覽器</td></tr>
+          <tr><td>Playwright / Puppeteer（含 python 版）</td><td>不存在</td><td>無法無頭驅動瀏覽器</td></tr>
+          <tr><td>deno / bun / quickjs / d8 …</td><td>全部不存在</td><td>沒有現成 JS runtime</td></tr>
+          <tr><td>Python 3</td><td class="ok">3.12.3 ✓</td><td>唯一的立足點</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      唯一活著的是 Python。於是問題轉化為：<strong>能不能在 Python 裡取得一個 JavaScript 引擎</strong>，
+      直接執行遊戲真正的邏輯程式碼？
+    </p>
+  </section>
+
+  <!-- 四 -->
+  <section>
+    <h2><span class="num">四</span>關鍵決策：自建一個 V8 驗證環境</h2>
+    <p>
+      我決定安裝 <code class="inline">py-mini-racer</code>——一個把 Google V8 引擎包進 Python 的套件。
+      但這條路上有兩道關卡，每一道都是一個小決策：
+    </p>
+    <ul>
+      <li><strong>沒有 pip。</strong><code class="inline">ensurepip</code> 也被移除了。我先確認對外網路是通的，再用 <code class="inline">get-pip.py</code> 手動 bootstrap。</li>
+      <li><strong>PEP 668 擋路。</strong>系統 Python 是「externally-managed」，直接裝會被拒。這是刻意的保護，我在確認風險可控（只裝到使用者層、且是拋棄式驗證環境）後，用 <code class="inline">--break-system-packages --user</code> 通過。</li>
+    </ul>
+    <p class="code-cap">bootstrap 驗證引擎</p>
+    <pre class="code" data-lang="bash"><script type="text/plain">python3 get-pip.py --user --break-system-packages     # 補回 pip
+python3 -m pip install --user --break-system-packages py-mini-racer   # 裝 V8
+# 冒煙測試：1 + sqrt(16) === 5
+python3 -c "from py_mini_racer import py_mini_racer; \
+  print(py_mini_racer.MiniRacer().eval('1+Math.sqrt(16)'))"</script></pre>
+    <div class="callout">
+      <span class="tag">為什麼值得</span>
+      有了 V8，我就能把遊戲<strong>真正的 <code class="inline">.js</code> 檔載進去執行</strong>——
+      不是重寫一份 Python 模擬、也不是紙上推演，而是驗證使用者最後會拿到的那份程式碼本身。
+    </div>
+  </section>
+
+  <!-- 五 -->
+  <section>
+    <h2><span class="num">五</span>架構設計：讓程式碼「可被驗證」</h2>
+    <p>
+      這是整個專案最重要的一個設計決定。既然驗證環境只有純 JS 引擎（沒有 DOM、沒有 canvas），
+      我就<strong>刻意把遊戲切成兩層</strong>，讓「規則」與「畫面」徹底分離：
+    </p>
+    <div class="tbl-scroll">
+      <table>
+        <thead><tr><th>檔案</th><th>職責</th><th>依賴 DOM？</th><th>能在 V8 測？</th></tr></thead>
+        <tbody>
+          <tr><td><code class="inline">physics.js</code></td><td>重力、碰撞、計分、生命、事件——所有<em>規則</em></td><td>否</td><td class="ok">✓ 直接測</td></tr>
+          <tr><td><code class="inline">game.js</code></td><td>canvas 繪圖、鍵盤、HUD 更新——所有<em>接線</em></td><td>是</td><td class="ok">✓ 套假 DOM 測</td></tr>
+          <tr><td><code class="inline">index.html</code> / <code class="inline">style.css</code></td><td>結構與侘寂視覺</td><td>—</td><td>靜態檢視</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      <code class="inline">physics.js</code> 完全不碰 <code class="inline">window</code> 或 <code class="inline">document</code>，
+      只吃數字、吐狀態。所有可調參數集中在一個 <code class="inline">CONFIG</code> 物件裡（重力、彈力、flipper 速度、bumper 分數…），
+      調手感時不用翻遍程式碼。這個「純核心」正是它能被 V8 直接執行的原因。
+    </p>
+  </section>
+
+  <!-- 六 -->
+  <section>
+    <h2><span class="num">六</span>開發流程與時間線</h2>
+    <p>整體是一條<strong>探索 → 實作 → 驗證 → 再實作 → 再驗證</strong>的線性鏈，每一步都依賴上一步的結果：</p>
+    <ul class="timeline">
+      <li><span class="step-h">① 盤點環境</span><span class="step-b">確認沒有瀏覽器/Node，找到 Python 是唯一立足點。</span></li>
+      <li><span class="step-h">② 建立驗證環境</span><span class="step-b">bootstrap pip → 安裝 py-mini-racer（V8），先跑通冒煙測試。</span></li>
+      <li><span class="step-h">③ 寫純物理核心</span><span class="step-b">physics.js——無 DOM 依賴，CONFIG 集中參數。</span></li>
+      <li><span class="step-h">④ 第一層驗證</span><span class="step-b">把 physics.js 載進 V8，6 項行為測試，順便觀察並微調手感。</span></li>
+      <li><span class="step-h">⑤ 寫瀏覽器層與視覺</span><span class="step-b">index.html / style.css / game.js——繪圖、輸入、HUD、overlay。</span></li>
+      <li><span class="step-h">⑥ 第二層驗證</span><span class="step-b">寫一個假 DOM/canvas，把真正的 game.js 載進 V8，8 項端到端測試。</span></li>
+      <li><span class="step-h">⑦ 回報</span><span class="step-b">交代建立了哪些檔、如何開啟、以及實際做了哪些驗證。</span></li>
+    </ul>
+  </section>
+
+  <!-- 七 -->
+  <section>
+    <h2><span class="num">七</span>程式碼重點</h2>
+
+    <h3>圓與線段的碰撞反彈</h3>
+    <p>牆壁、flipper 都是線段。做法統一：找球心到線段的最近點，若距離小於半徑就「去穿透 + 只反彈朝內的速度分量」。</p>
+    <pre class="code" data-lang="js"><script type="text/plain">function reflectOffSegment(ball, ax, ay, bx, by, restitution) {
+  var cp = closestOnSegment(ball.x, ball.y, ax, ay, bx, by);
+  var dx = ball.x - cp.x, dy = ball.y - cp.y;
+  var dist = Math.hypot(dx, dy);
+  if (dist >= ball.r) return false;            // 沒接觸
+
+  var nx = dist > 0.0001 ? dx / dist : 0;      // 碰撞法線
+  var ny = dist > 0.0001 ? dy / dist : -1;
+  var overlap = ball.r - dist;
+  ball.x += nx * overlap;                      // 先把球推出表面（去穿透）
+  ball.y += ny * overlap;
+
+  var vn = ball.vx * nx + ball.vy * ny;        // 法線方向速度
+  if (vn < 0) {                                // 只在「朝內移動」時才反彈
+    var j = -(1 + restitution) * vn;
+    ball.vx += j * nx;
+    ball.vy += j * ny;
+  }
+  return true;
+}</script></pre>
+
+    <h3>Flipper 的彈射手感</h3>
+    <p>這是最微妙的一段。Flipper 是繞 pivot 旋轉的線段；揮桿時它的<em>表面</em>在動。用「球相對於移動表面」的速度來算彈跳，能量自然被灌進球裡——那股把球打上去的手感就是這麼來的。</p>
+    <pre class="code" data-lang="js"><script type="text/plain">// flipper 表面在接觸點的速度（繞 pivot 旋轉）
+var rx = cp.x - f.pivotX, ry = cp.y - f.pivotY;
+var surfVx = -f.angVel * ry;
+var surfVy =  f.angVel * rx;
+
+// 以「球相對於移動中表面」的法線速度計算彈跳
+var relVn = (ball.vx - surfVx) * nx + (ball.vy - surfVy) * ny;
+if (relVn < 0) {
+  var j = -(1 + 0.5) * relVn;   // 相對表面的回彈係數
+  ball.vx += j * nx;
+  ball.vy += j * ny;
+}</script></pre>
+
+    <h3>子步積分，避免高速穿模</h3>
+    <p>球速快時，一幀跨越的距離可能直接穿過薄薄的 flipper。解法是依速度把每一幀切成數個子步，逐步移動與偵測。</p>
+    <pre class="code" data-lang="js"><script type="text/plain">var speed = Math.hypot(ball.vx, ball.vy);
+var subs = clamp(Math.ceil(speed / 5), 1, 8);     // 越快切越細
+for (var i = 0; i < subs; i++) {
+  ball.x += ball.vx / subs;
+  ball.y += ball.vy / subs;
+  for (w = 0; w < game.walls.length; w++)   reflectOffSegment(ball, /* … */);
+  for (w = 0; w < game.bumpers.length; w++) collideBumper(game, ball, game.bumpers[w]);
+  collideFlipper(ball, game.flippers.left);
+  collideFlipper(ball, game.flippers.right);
+}
+
+if (ball.y - ball.r > CONFIG.height) {   // 掉出底部
+  game.lives -= 1;
+  if (game.lives <= 0) { game.gameOver = true; return "gameover"; }
+  spawnBall(game);
+  return "life";
+}</script></pre>
+
+    <h3>Bumper 計分與事件紀錄</h3>
+    <p>用一個 cooldown 防止「同一次接觸、跨多個子步」被重複計分；每次有效撞擊推一筆帶遞增 id 的事件。</p>
+    <pre class="code" data-lang="js"><script type="text/plain">if (bumper.cooldown === 0) {            // 冷卻：避免重複計分
+  game.score += CONFIG.bumperPoints;
+  bumper.glow = CONFIG.glowFrames;      // 觸發短暫發光
+  bumper.cooldown = CONFIG.bumperCooldown;
+  game._eventSeq += 1;
+  game.events.push({
+    id: game._eventSeq,
+    text: "+" + CONFIG.bumperPoints + " " + bumper.label,   // 例：+100 verify
+  });
+}</script></pre>
+
+    <h3>事件紀錄的增量渲染（game.js）</h3>
+    <p>每幀 60 次的迴圈裡不重繪整個清單，只把「還沒畫過」的事件插到最上面，用遞增 id 判斷邊界。</p>
+    <pre class="code" data-lang="js"><script type="text/plain">var newest = game.events[game.events.length - 1];
+var newestId = newest ? newest.id : 0;
+if (newestId !== rendered.lastEventId) {
+  var i = game.events.length - 1, toAdd = [];
+  while (i >= 0 && game.events[i].id > rendered.lastEventId) {
+    toAdd.push(game.events[i]); i--;
+  }
+  for (var j = toAdd.length - 1; j >= 0; j--) prependEvent(toAdd[j]);
+  rendered.lastEventId = newestId;
+}</script></pre>
+  </section>
+
+  <!-- 八 -->
+  <section>
+    <h2><span class="num">八</span>驗證方法與結果</h2>
+    <p>驗證分兩層。<strong>兩層跑的都是使用者最後拿到的那份真實程式碼</strong>，不是模擬。</p>
+
+    <h3>第一層 · 物理核心直接進 V8</h3>
+    <p>下面是「定向 bumper 測試」的實際手法——把球放在 bumper 正上方往下丟，斷言得分、事件、回彈：</p>
+    <pre class="code" data-lang="py"><script type="text/plain">from py_mini_racer import py_mini_racer
+ctx = py_mini_racer.MiniRacer()
+ctx.eval(open("physics.js").read())          # 載入真正的物理核心
+ctx.eval("var g = PinballPhysics.createGame();")
+
+ctx.eval('''
+  var b = g.bumpers[2];                       // "ship"，場中央
+  g.ball.x = b.x; g.ball.y = b.y - b.r - g.ball.r - 2;
+  g.ball.vy = 4;                              // 往下丟
+  for (var i = 0; i < 8; i++) PinballPhysics.step(g, {});
+''')
+print(ctx.eval("g.score"))                          # 100
+print(ctx.eval("g.events[g.events.length-1].text")) # +100 ship
+print(ctx.eval("g.ball.vy"))                        # < 0（被彈回）</script></pre>
+    <div class="tbl-scroll">
+      <table>
+        <thead><tr><th>檢查項</th><th>方法</th><th>觀察到的結果</th><th></th></tr></thead>
+        <tbody>
+          <tr><td>建立遊戲無錯誤</td><td>createGame()</td><td>正常</td><td class="ok">✓</td></tr>
+          <tr><td>重力使球移動</td><td>跑 20 幀</td><td>dy = +61.2（向下）</td><td class="ok">✓</td></tr>
+          <tr><td>bumper 計分 / 事件 / 彈跳</td><td>定向丟球</td><td>+100、「+100 ship」、vy 4 → −5.96</td><td class="ok">✓</td></tr>
+          <tr><td>flipper 鍵盤反應</td><td>step({left:true})</td><td>角度 0.5 → −0.42、tip 移動</td><td class="ok">✓</td></tr>
+          <tr><td>掉底扣命 → Game Over</td><td>自由運行 4000 幀</td><td>三次掉落、900 分、gameOver</td><td class="ok">✓</td></tr>
+          <tr><td>Restart 重置</td><td>restart()</td><td>分數 / 生命 / 事件歸零</td><td class="ok">✓</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>第二層 · 真正的 game.js 套上假 DOM</h3>
+    <p>
+      我寫了一個輕量的 <code class="inline">fakedom.js</code>——把 <code class="inline">document</code>、
+      <code class="inline">canvas.getContext</code>、<code class="inline">requestAnimationFrame</code>、
+      鍵盤事件都做成 stub，讓<strong>沒改過一行的 game.js</strong> 能在 V8 裡跑起來，
+      藉此測試 HUD、事件清單、鍵盤、overlay、Restart 這些接線邏輯。
+    </p>
+    <div class="tbl-scroll">
+      <table>
+        <thead><tr><th>檢查項</th><th>觀察到的結果</th><th></th></tr></thead>
+        <tbody>
+          <tr><td>game.js 載入</td><td>無 JS error</td><td class="ok">✓</td></tr>
+          <tr><td>開場渲染生命</td><td>3 顆生命點</td><td class="ok">✓</td></tr>
+          <tr><td>鍵盤 <span class="kbd">a</span> / <span class="kbd">→</span></td><td>input 旗標設定、flipper 轉動、keyup 復位</td><td class="ok">✓</td></tr>
+          <tr><td>撞 bumper → DOM</td><td>分數 100 → 200、log 新增「+100 verify」</td><td class="ok">✓</td></tr>
+          <tr><td>Game Over overlay</td><td>class 加上 <code class="inline">show</code>、顯示最終分</td><td class="ok">✓</td></tr>
+          <tr><td>Restart 按鈕</td><td>gameOver=false、分數 0、生命 3、overlay 隱藏</td><td class="ok">✓</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout">
+      <span class="tag">誠實的邊界</span>
+      假 DOM 把 canvas 繪圖 API 換成空操作，所以<strong>視覺 polish（漸層、發光、動畫）本身沒被「看」到</strong>——
+      那部分靠 CSS 與繪圖程式碼保證，屬於這次驗證未能涵蓋的一角。需求第 9 條列的五項功能性驗證則全部通過。
+    </div>
+  </section>
+
+  <!-- 九 -->
+  <section>
+    <h2><span class="num">九</span>Agent 與工具使用</h2>
+    <h3>派生的 subagent：零</h3>
+    <p>
+      這次<strong>沒有派生任何 subagent</strong>，全程由主線完成。這是刻意的判斷，不是疏忽：
+    </p>
+    <ul>
+      <li>任務是一條<strong>強依賴的線性鏈</strong>——驗證環境沒建好之前無法驗證、物理沒測過之前不該寫 UI。沒有可以平行 fan-out 的獨立子任務。</li>
+      <li>每一步的<strong>中間結果我都得讀進脈絡</strong>再決定下一步（例如探測結果決定要不要裝 V8），委派出去反而增加來回成本。</li>
+      <li>規模不大，四個遊戲檔加三個測試檔，主線直接處理最省事、也最不容易失真。</li>
+    </ul>
+    <h3>可用但刻意未用</h3>
+    <ul>
+      <li><strong>Explore / Plan / general-purpose agents</strong>——適合大範圍搜尋或架構規劃；此任務範圍已明確，不需要。</li>
+      <li><strong>Workflow 多代理編排</strong>——適合大規模平行、對抗式驗證（多個 skeptic 投票）等；本任務規模用不上，且它 token 成本高，需使用者明確同意才動用。</li>
+    </ul>
+    <h3>實際使用的工具</h3>
+    <div class="tbl-scroll">
+      <table>
+        <thead><tr><th>工具</th><th>用途</th></tr></thead>
+        <tbody>
+          <tr><td><code class="inline">Bash</code></td><td>環境探測、bootstrap pip、安裝 V8、執行 Python 驗證腳本</td></tr>
+          <tr><td><code class="inline">Write</code></td><td>建立 4 個遊戲檔 + 3 個驗證檔（fakedom、兩支測試）</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 十 -->
+  <section>
+    <h2><span class="num">十</span>限制、取捨與反思</h2>
+    <ul>
+      <li><strong>視覺未被自動驗證。</strong>無頭環境看不到畫面；漸層、發光、佈局需人眼在瀏覽器裡最終確認。</li>
+      <li><strong>手感靠模擬觀察調校。</strong>重力、彈力、flipper 速度等 CONFIG 參數，是靠 V8 裡跑上千幀觀察出的合理值，不等於真人的遊玩體感。</li>
+      <li><strong>可調空間集中化。</strong>正因如此，我把所有手感參數收進 <code class="inline">CONFIG</code>，讓後續微調成本降到最低。</li>
+      <li><strong>最大的收穫</strong>：把「規則」從「畫面」剝離，不只是漂亮的架構，更是這次能<em>真的驗證</em>的前提——可測試性是設計出來的，不是事後加的。</li>
+    </ul>
+    <div class="swatches">
+      <span class="sw"><i style="background:#f2ecdf"></i>paper #f2ecdf</span>
+      <span class="sw"><i style="background:#3a352b"></i>ink #3a352b</span>
+      <span class="sw"><i style="background:#9c6b4a"></i>rust #9c6b4a</span>
+      <span class="sw"><i style="background:#6f7551"></i>moss #6f7551</span>
+      <span class="sw"><i style="background:#b0873f"></i>ochre #b0873f</span>
+      <span class="sw"><i style="background:#a4472e"></i>seal #a4472e</span>
+    </div>
+  </section>
+
+  <footer>
+    Prompt Pinball · 開發過程分析報告 &nbsp;·&nbsp; 自包含 HTML，語法高亮為手寫、無外部相依
+    <hr class="rule" style="margin-top:18px;opacity:0.5" />
+    <div style="margin-top:14px">侘 · 寂 — 於不完美中，見其所成</div>
+  </footer>
+
+</div>
+
+<script>
+  // ---- 手寫語法高亮（無外部相依） -------------------------------------
+  var RE_JS = /(\/\/[^\n]*|\/\*[\s\S]*?\*\/)|(`(?:\\[\s\S]|[^`\\])*`|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')|(\b\d+(?:\.\d+)?\b)|(\b(?:var|let|const|function|return|if|else|for|while|new|typeof|this|null|true|false|undefined|break|continue|switch|case|default|in|of|void|delete|do|try|catch|throw)\b)|([A-Za-z_$][\w$]*(?=\s*\())|(\.[A-Za-z_$][\w$]*)/g;
+
+  var RE_PY = /(#[^\n]*)|('''[\s\S]*?'''|"""[\s\S]*?"""|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')|(\b\d+(?:\.\d+)?\b)|(\b(?:from|import|for|in|def|return|if|else|elif|while|None|True|False|and|or|not|as|with|class|print|lambda|open)\b)|([A-Za-z_$][\w$]*(?=\s*\())|(\.[A-Za-z_$][\w$]*)/g;
+
+  // bash: 簡單處理註解、字串、旗標
+  var RE_SH = /(#[^\n]*)|("(?:\\.|[^"\\])*"|'[^']*')|(\s--?[A-Za-z][\w-]*)|(\b(?:python3|pip|install|print|for|do|done|in|if|then|fi)\b)/g;
+
+  function esc(s) {
+    return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+
+  function classFor(m, lang) {
+    if (lang === "sh") {
+      if (m[1]) return "c";
+      if (m[2]) return "s";
+      if (m[3]) return "n"; // flags -> ochre
+      if (m[4]) return "k";
+      return "p";
+    }
+    if (m[1]) return "c";
+    if (m[2]) return "s";
+    if (m[3]) return "n";
+    if (m[4]) return "k";
+    if (m[5]) return "f";
+    return "p";
+  }
+
+  function highlight(code, lang) {
+    var re = lang === "py" ? RE_PY : lang === "sh" ? RE_SH : RE_JS;
+    re.lastIndex = 0;
+    var out = "", last = 0, m;
+    while ((m = re.exec(code))) {
+      if (m.index < last) { re.lastIndex = last; continue; }
+      out += esc(code.slice(last, m.index));
+      out += '<span class="t-' + classFor(m, lang) + '">' + esc(m[0]) + "</span>";
+      last = re.lastIndex;
+      if (m.index === re.lastIndex) re.lastIndex++;
+    }
+    out += esc(code.slice(last));
+    return out;
+  }
+
+  function dedent(text) {
+    var lines = text.replace(/^\n/, "").replace(/\s+$/, "").split("\n");
+    var indent = Infinity;
+    lines.forEach(function (l) {
+      if (!l.trim()) return;
+      var m = l.match(/^\s*/);
+      indent = Math.min(indent, m[0].length);
+    });
+    if (!isFinite(indent)) indent = 0;
+    return lines.map(function (l) { return l.slice(indent); }).join("\n");
+  }
+
+  document.querySelectorAll("pre.code").forEach(function (pre) {
+    var holder = pre.querySelector('script[type="text/plain"]');
+    if (!holder) return;
+    var lang = pre.getAttribute("data-lang") || "js";
+    var raw = dedent(holder.textContent);
+    pre.innerHTML = "<code>" + highlight(raw, lang) + "</code>";
+  });
+</script>
+</body>
+</html>

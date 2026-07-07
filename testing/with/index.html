@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prompt Pinball</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="app">
+    <section class="stage">
+      <header class="stage__head">
+        <h1 class="logo">Prompt<span>Pinball</span></h1>
+        <p class="hint">A / ← 左擋板 &nbsp;·&nbsp; D / → 右擋板</p>
+      </header>
+
+      <div class="board-wrap">
+        <canvas id="board" width="460" height="720" aria-label="彈珠台遊戲區"></canvas>
+
+        <div id="overlay" class="overlay" hidden>
+          <div class="overlay__card">
+            <h2 id="overlay-title">Game Over</h2>
+            <p class="overlay__score">最終分數 <strong id="final-score">0</strong></p>
+            <button id="restart" class="btn btn--primary" type="button">Restart</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="panel">
+      <div class="stat">
+        <span class="stat__label">SCORE</span>
+        <span class="stat__value" id="score">0</span>
+      </div>
+
+      <div class="stat">
+        <span class="stat__label">LIVES</span>
+        <div class="lives" id="lives" aria-label="剩餘生命"></div>
+      </div>
+
+      <div class="log">
+        <div class="log__head">
+          <span class="stat__label">事件紀錄</span>
+          <button id="restart-side" class="btn btn--ghost" type="button">Restart</button>
+        </div>
+        <ul class="log__list" id="log" aria-live="polite"></ul>
+      </div>
+    </aside>
+  </main>
+
+  <script src="game.js"></script>
+</body>
+</html>
