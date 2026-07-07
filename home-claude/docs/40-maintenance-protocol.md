@@ -76,7 +76,7 @@ Triggers (check whichever doc you're editing):
 - Same for tool/agent-type names: this harness renames things; a failed call is evidence,
   your recollection is not.
 
-## 6. Health check (items 1+4 also run piggybacked on any doctrine edit, § 0.4. Run the full
+## 6. Health check (items 1+4 also run piggybacked on any doctrine edit, § 0, item 4. Run the full
 check when the user asks, or when `50-…md` § Handoff shows no health-check entry within the
 last ~3 months — record each completed full check as a Handoff entry)
 
