@@ -1,0 +1,608 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<title>制度之前・之後 — Fable 5 Harness 差異分析</title>
+<style>
+  :root{
+    --ground:#EAE5DA; --panel:#E2DCCE; --panel-2:#E6E0D3;
+    --ink:#35302A; --ink-soft:#5C554B; --faint:#8B8375;
+    --line:#CBC3B1; --line-soft:#D8D1C1;
+    --moss:#66754F; --moss-ink:#4E5C3B; --moss-wash:#DCDCC8;
+    --rust:#9C5B3F; --rust-ink:#84492F; --rust-wash:#E3D6C6;
+    --tea:#7A6A45;
+    --code-bg:#E4DECF; --code-line:#CFC7B4;
+    --serif:"Noto Serif TC","Source Han Serif TC","Source Han Serif TW","Songti TC","PMingLiU",Georgia,serif;
+    --mono:ui-monospace,"Cascadia Code","Consolas","Courier New",monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --ground:#262421; --panel:#2C2926; --panel-2:#2A2724;
+      --ink:#D8D1C2; --ink-soft:#B3AB9A; --faint:#8E8677;
+      --line:#413D36; --line-soft:#38342E;
+      --moss:#95A578; --moss-ink:#A9B98C; --moss-wash:#31342A;
+      --rust:#C08059; --rust-ink:#CE9270; --rust-wash:#38302A;
+      --tea:#B3A075;
+      --code-bg:#211F1C; --code-line:#3A362F;
+    }
+  }
+  :root[data-theme="light"]{
+    --ground:#EAE5DA; --panel:#E2DCCE; --panel-2:#E6E0D3;
+    --ink:#35302A; --ink-soft:#5C554B; --faint:#8B8375;
+    --line:#CBC3B1; --line-soft:#D8D1C1;
+    --moss:#66754F; --moss-ink:#4E5C3B; --moss-wash:#DCDCC8;
+    --rust:#9C5B3F; --rust-ink:#84492F; --rust-wash:#E3D6C6;
+    --tea:#7A6A45;
+    --code-bg:#E4DECF; --code-line:#CFC7B4;
+  }
+  :root[data-theme="dark"]{
+    --ground:#262421; --panel:#2C2926; --panel-2:#2A2724;
+    --ink:#D8D1C2; --ink-soft:#B3AB9A; --faint:#8E8677;
+    --line:#413D36; --line-soft:#38342E;
+    --moss:#95A578; --moss-ink:#A9B98C; --moss-wash:#31342A;
+    --rust:#C08059; --rust-ink:#CE9270; --rust-wash:#38302A;
+    --tea:#B3A075;
+    --code-bg:#211F1C; --code-line:#3A362F;
+  }
+
+  html{background:var(--ground);}
+  body{
+    font-family:var(--serif); color:var(--ink); background:var(--ground);
+    line-height:1.95; font-size:17px;
+    margin:0; padding:0 1.25rem;
+  }
+  .page{max-width:44rem; margin:0 auto; padding:5rem 0 7rem;}
+
+  ::selection{background:var(--moss-wash); color:var(--ink);}
+  a{color:var(--moss-ink); text-decoration-color:var(--line);}
+
+  /* ---------- hero ---------- */
+  header.hero{position:relative; margin-bottom:7rem;}
+  .hero .eyebrow{
+    font-size:.72rem; letter-spacing:.42em; color:var(--faint);
+    text-transform:uppercase; margin:0 0 2.2rem;
+  }
+  .hero h1{
+    font-size:clamp(2rem,6vw,3.1rem); font-weight:600; line-height:1.5;
+    letter-spacing:.06em; margin:0 0 2.4rem; text-wrap:balance; max-width:26ch;
+  }
+  .hero h1 .turn{color:var(--faint); font-weight:400;}
+  .hero .enso{
+    position:absolute; right:-1rem; top:-2.5rem; width:180px; height:180px;
+    opacity:.85; pointer-events:none;
+  }
+  .thesis{
+    border-left:2px solid var(--moss); padding:.35rem 0 .35rem 1.4rem;
+    max-width:34rem; color:var(--ink-soft); font-size:1.02rem;
+  }
+  .thesis strong{color:var(--ink); font-weight:600;}
+  .hero .meta{margin-top:2.6rem; font-size:.78rem; color:var(--faint); letter-spacing:.14em;}
+
+  /* ---------- sections ---------- */
+  section{position:relative; margin:0 0 6.5rem;}
+  .chapter{
+    display:flex; align-items:baseline; gap:1.1rem; margin-bottom:2.6rem;
+  }
+  .chapter .kanji{
+    font-size:1.5rem; color:var(--faint); flex:none;
+    border-bottom:2px solid var(--moss); padding-bottom:.15rem;
+  }
+  .chapter h2{
+    font-size:1.5rem; font-weight:600; letter-spacing:.1em; margin:0; text-wrap:balance;
+  }
+  @media (min-width:64rem){
+    .chapter .kanji{
+      position:absolute; left:-4.2rem; top:.1rem;
+      writing-mode:vertical-rl; text-orientation:upright;
+      border-bottom:none; border-right:2px solid var(--moss);
+      padding:0 .5rem 0 0; font-size:1.35rem; letter-spacing:.2em;
+    }
+  }
+  p{margin:0 0 1.4rem; max-width:40rem;}
+  .quiet{color:var(--ink-soft);}
+  .note{
+    font-size:.88rem; color:var(--faint); border-top:1px solid var(--line-soft);
+    padding-top:.9rem; margin-top:2.2rem; max-width:38rem;
+  }
+  .stroke{display:block; width:11rem; height:14px; margin:0 0 2.4rem; opacity:.75;}
+
+  /* ---------- root causes ---------- */
+  .causes{display:flex; flex-direction:column; gap:1.6rem; margin:2.4rem 0 0; counter-reset:cause;}
+  .cause{
+    border-top:1px solid var(--line); padding-top:1.1rem;
+    display:grid; grid-template-columns:3.2rem 1fr; gap:1rem;
+  }
+  .cause::before{
+    counter-increment:cause; content:"其" counter(cause,cjk-ideographic);
+    color:var(--faint); font-size:.92rem; letter-spacing:.1em; padding-top:.15rem;
+  }
+  .cause h3{font-size:1.05rem; font-weight:600; margin:0 0 .5rem; letter-spacing:.04em;}
+  .cause p{font-size:.95rem; color:var(--ink-soft); margin:0;}
+
+  /* ---------- before / after pairs ---------- */
+  .pair{display:flex; flex-direction:column; gap:0; margin:2.6rem 0 3.4rem;}
+  .panel{padding:1.6rem 1.7rem 1.7rem; position:relative;}
+  .panel .tag{
+    position:absolute; top:1.35rem; right:1.5rem;
+    font-size:.95rem; line-height:1; letter-spacing:.08em;
+  }
+  .panel h4{margin:0 0 .8rem; font-size:.8rem; letter-spacing:.3em; font-weight:600;}
+  .panel p{font-size:.95rem; margin:0 0 1rem; max-width:36rem;}
+  .panel p:last-child{margin-bottom:0;}
+  .panel.mu{
+    background:var(--panel); color:var(--ink-soft);
+    margin-right:2.6rem; border-left:2px solid var(--rust);
+  }
+  .panel.mu .tag{color:var(--rust);}
+  .panel.mu h4{color:var(--rust-ink);}
+  .panel.yu{
+    background:var(--panel-2); margin-left:2.6rem; margin-top:1.1rem;
+    border-left:2px solid var(--moss);
+  }
+  .panel.yu .tag{color:var(--moss);}
+  .panel.yu h4{color:var(--moss-ink);}
+  @media (max-width:40rem){
+    .panel.mu{margin-right:0;} .panel.yu{margin-left:0;}
+  }
+
+  /* ---------- code ---------- */
+  .codewrap{
+    background:var(--code-bg); border:1px solid var(--code-line);
+    margin:1.2rem 0 .4rem; overflow-x:auto;
+  }
+  .codewrap .lang{
+    display:block; font-family:var(--mono); font-size:.68rem; letter-spacing:.22em;
+    color:var(--faint); padding:.6rem .95rem 0;
+  }
+  pre{
+    margin:0; padding:.55rem .95rem .95rem; font-family:var(--mono);
+    font-size:.8rem; line-height:1.75; tab-size:2;
+  }
+  code{font-family:var(--mono);}
+  p code, li code{
+    background:var(--code-bg); border:1px solid var(--code-line);
+    padding:.05em .35em; font-size:.82em;
+  }
+  .tk-com{color:var(--faint); font-style:italic;}
+  .tk-str{color:var(--rust);}
+  .tk-key{color:var(--moss-ink); font-weight:600;}
+  .tk-var{color:var(--tea);}
+  .tk-num{color:var(--tea);}
+  .tk-pun{color:var(--faint);}
+  .tk-hed{color:var(--ink); font-weight:700;}
+  .tk-emp{font-weight:700;}
+  .tk-pass{color:var(--moss-ink); font-weight:700;}
+  .tk-fail{color:var(--rust-ink); font-weight:700;}
+  .tk-ann{color:var(--moss-ink); font-style:italic;}
+
+  /* ---------- ladder ---------- */
+  .ladder{margin:2rem 0 0; padding:0; list-style:none; max-width:37rem;}
+  .ladder li{
+    border-top:1px solid var(--line-soft); padding:.85rem .2rem .85rem 0;
+    display:grid; grid-template-columns:7.4rem 1fr; gap:1rem; font-size:.95rem;
+  }
+  .ladder li:last-child{border-bottom:1px solid var(--line-soft);}
+  .ladder .lv{font-family:var(--mono); font-size:.78rem; color:var(--moss-ink); padding-top:.2rem;}
+  .ladder .why{color:var(--ink-soft);}
+
+  /* ---------- evidence table ---------- */
+  .tablewrap{overflow-x:auto; margin:2.2rem 0 .6rem;}
+  table{
+    border-collapse:collapse; width:100%; min-width:34rem;
+    font-size:.9rem; font-variant-numeric:tabular-nums;
+  }
+  th{
+    text-align:left; font-weight:600; font-size:.78rem; letter-spacing:.14em;
+    color:var(--faint); border-bottom:1px solid var(--ink-soft);
+    padding:.5rem .9rem .5rem 0;
+  }
+  td{border-bottom:1px solid var(--line-soft); padding:.62rem .9rem .62rem 0; vertical-align:top;}
+  td.mu-c{color:var(--rust-ink);}
+  td.yu-c{color:var(--moss-ink);}
+  .win{font-weight:700;}
+
+  /* ---------- limits ---------- */
+  .limits{margin:2.2rem 0 0; padding:0; list-style:none;}
+  .limits li{
+    padding:0 0 1.3rem 1.5rem; position:relative; max-width:38rem; color:var(--ink-soft);
+    font-size:.97rem;
+  }
+  .limits li::before{content:"×"; position:absolute; left:0; top:0; color:var(--rust); font-weight:600;}
+  .limits li strong{color:var(--ink);}
+
+  /* ---------- file map ---------- */
+  .filemap{margin:2.2rem 0 0; padding:0; list-style:none; font-size:.92rem;}
+  .filemap li{
+    display:grid; grid-template-columns:minmax(13rem,17rem) 1fr; gap:1.2rem;
+    border-top:1px solid var(--line-soft); padding:.7rem 0;
+  }
+  .filemap li:last-child{border-bottom:1px solid var(--line-soft);}
+  .filemap code{background:none; border:none; padding:0; font-size:.78rem; color:var(--moss-ink);}
+  .filemap span{color:var(--ink-soft); font-size:.9rem;}
+  @media (max-width:40rem){ .filemap li{grid-template-columns:1fr;} }
+
+  /* ---------- footer ---------- */
+  footer{
+    margin-top:6rem; padding-top:2rem; border-top:1px solid var(--line);
+    font-size:.82rem; color:var(--faint); display:flex; justify-content:space-between;
+    gap:2rem; flex-wrap:wrap;
+  }
+
+  /* ---------- reveal ---------- */
+  .rv{opacity:0; transform:translateY(14px); transition:opacity .9s ease, transform .9s ease;}
+  .rv.in{opacity:1; transform:none;}
+  @media (prefers-reduced-motion: reduce){
+    .rv{opacity:1; transform:none; transition:none;}
+  }
+</style>
+
+<div class="page">
+
+<header class="hero">
+  <canvas class="enso" width="360" height="360" aria-hidden="true"></canvas>
+  <p class="eyebrow">Fable 5 Harness · 安裝前後差異分析</p>
+  <h1>制度之前<span class="turn">，</span><br>制度之後</h1>
+  <div class="thesis">
+    <p style="margin:0">這套 harness 不改模型權重，不會讓模型變聰明。它改的是模型<strong>工作的方式</strong>：
+    墊高的是下限與穩定度，不是能力的天花板。一句話——<strong>有紀律的模型，穩定贏過沒紀律的同一個模型。</strong></p>
+  </div>
+  <p class="meta">2026-07-07 · 依據已安裝的 ~/.claude/ 文件、本機 testing/ 對照實驗，與本 session 的實際觀察</p>
+</header>
+
+<section class="rv">
+  <div class="chapter"><span class="kanji">序</span><h2>裝了什麼</h2></div>
+  <canvas class="stroke" width="440" height="28" aria-hidden="true"></canvas>
+  <p>安裝的東西很少：一份約五十行的 <code>~/.claude/CLAUDE.md</code>（路由器：五條觸發規則＋五條鐵律）、
+  六份制度文件、三個自訂 agent（<code>verifier</code>／<code>implementer</code>／<code>hard-solver</code>）、
+  兩個每 session 只提醒一次的 hooks。沒有任何要手動呼叫的指令——路由器每個 session 自動載入，
+  其餘文件只在對應時機被讀。</p>
+  <p class="quiet">差異因此不在「多了什麼功能」，而在同一個模型於幾個關鍵時刻，行為被明文改寫了。
+  以下逐一對照。</p>
+</section>
+
+<section class="rv">
+  <div class="chapter"><span class="kanji">因</span><h2>安裝之前的日常——三個根因</h2></div>
+  <canvas class="stroke" width="440" height="28" aria-hidden="true"></canvas>
+  <p>沒裝之前，幾乎每個 Claude Code 用戶都反覆撞上同三件事（完整診斷見
+  <code>docs/00-harness-diagnosis.md</code>）：</p>
+  <div class="causes">
+    <div class="cause">
+      <div><h3>主對話自己下場做粗活</h3>
+      <p>整檔讀大檔案、反覆看截圖、批次改檔全發生在主對話裡。幾次就把 context 撐爆、觸發壓縮；
+      壓縮之後，模型開始忘記先前講好的約束、重做做過的事。</p></div>
+    </div>
+    <div class="cause">
+      <div><h3>沒有常駐制度</h3>
+      <p>每個新 session 都從零開始摸索：專案怎麼跑、怎麼驗證、使用者有什麼偏好。
+      上個 session 學到的教訓，下個 session 就蒸發。</p></div>
+    </div>
+    <div class="cause">
+      <div><h3>「完成」由模型自己說了算</h3>
+      <p>「程式看起來沒問題」不是證據。模型高報完成度時，發現問題的成本落在使用者身上——
+      通常是在下一次打開頁面的時候。</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="rv">
+  <div class="chapter"><span class="kanji">變</span><h2>安裝之後——六個時刻的改寫</h2></div>
+  <canvas class="stroke" width="440" height="28" aria-hidden="true"></canvas>
+
+  <h3 style="font-size:1.08rem;letter-spacing:.06em;margin:0 0 .4rem">一、session 的開場</h3>
+  <div class="pair">
+    <div class="panel mu"><span class="tag">無</span><h4>之前</h4>
+      <p>開場是一張白紙。模型對這台機器、這位使用者、該去哪裡查規矩，一無所知；
+      遇事憑訓練時的直覺。</p></div>
+    <div class="panel yu"><span class="tag">有</span><h4>之後</h4>
+      <p>路由器自動載入。它刻意短到每個 session 都會完整讀完，核心是一張「觸發時機 → 先讀哪份文件」的表：</p>
+      <div class="codewrap"><span class="lang">markdown · ~/.claude/CLAUDE.md（節錄）</span>
+<pre><code data-lang="md">## Routing table — when a trigger fires, Read the file before acting
+
+| Trigger                              | Read                       |
+|--------------------------------------|----------------------------|
+| About to spawn a subagent            | docs/10-model-dispatch.md  |
+| About to say a task is done          | docs/20-judgment-rubrics.md|
+| Writing a delegation prompt          | docs/30-delegation-templates.md |
+| The user corrected you               | docs/40-maintenance-protocol.md |</code></pre></div>
+      <p>環境事實（WSL2 跨檔案系統 I/O 慢、Playwright 已裝、回應用繁體中文）也寫死在裡面——
+      不必每次重新發現，也不會誤判「慢」是「當掉」。</p></div>
+  </div>
+
+  <h3 style="font-size:1.08rem;letter-spacing:.06em;margin:0 0 .4rem">二、主對話的角色</h3>
+  <div class="pair">
+    <div class="panel mu"><span class="tag">無</span><h4>之前</h4>
+      <p>主對話是工人：親自讀完 2000 行的檔案、親自掃 repo、親自逐檔修改。
+      context 是消耗品，用完觸發壓縮，然後開始失憶。</p></div>
+    <div class="panel yu"><span class="tag">有</span><h4>之後</h4>
+      <p>主對話是指揮官（鐵律一）：粗活派給 subagent，只取回結論與 <code>file:line</code> 參照。
+      派工必帶三件套，寫進 prompt 而不是留在腦中：</p>
+      <div class="codewrap"><span class="lang">markdown · docs/30-delegation-templates.md（骨架）</span>
+<pre><code data-lang="md">## Goal &amp; why
+{一句話目標，加上為什麼——讓 agent 能自行取捨}
+
+## Acceptance criteria          ← 驗收條件跟著任務走
+- [ ] {可執行、可判定的檢查，不是「做好」}
+
+## Report format
+PASS/FAIL per criterion, evidence attached</code></pre></div>
+      <p>獨立的子任務一批同時派出（parallel-dispatch 規則），不逐一排隊。</p></div>
+  </div>
+
+  <h3 style="font-size:1.08rem;letter-spacing:.06em;margin:0 0 .4rem">三、「完成」的定義</h3>
+  <div class="pair">
+    <div class="panel mu"><span class="tag">無</span><h4>之前</h4>
+      <p>「我已經實作了草稿保存——程式碼會在每次變更時寫入 localStorage，所以重新整理後草稿會保留。」
+      沒有任何東西被跑過。這是宣稱，不是結果。</p></div>
+    <div class="panel yu"><span class="tag">有</span><h4>之後</h4>
+      <p>「完成」必須是執行產生的證據（鐵律二）：測試真的跑過、頁面真的用瀏覽器開過、寫出的檔案真的讀回來過。
+      而且實質性工作的驗收由一個<em>沒看過過程</em>的 fresh-context <code>verifier</code> 執行——做的人不自驗。
+      本報告誕生的這個 session 就是實例：</p>
+      <div class="codewrap"><span class="lang">verifier 回報 · 本 session 實錄（節錄）</span>
+<pre><code data-lang="rep">VERDICT: PASS
+1. PASS — diff exited 0; cmp confirms byte-identical, 4935 bytes
+2. PASS — grep -c '§ 0, item 4' → 1 ; grep -c '§ 0.4' → 0
+3. PASS — backups present: …bak-2026-07-07-1452
+4. PASS — zero 'INSTALLER:' placeholders remain
+5. PASS — all 6 routing-table targets exist on disk</code></pre></div></div>
+  </div>
+
+  <h3 style="font-size:1.08rem;letter-spacing:.06em;margin:0 0 .4rem">四、判斷題</h3>
+  <div class="pair">
+    <div class="panel mu"><span class="tag">無</span><h4>之前</h4>
+      <p>什麼時候該換個做法、什麼時候該停下來問人、什麼時候算方向錯了——全憑當下的感覺。
+      卡關時最常見的行為是原地硬撞：同一招重試第五次。</p></div>
+    <div class="panel yu"><span class="tag">有</span><h4>之後</h4>
+      <p>每個容易搞砸的判斷都有 rubric（<code>docs/20</code>），各附一個正例一個反例；
+      模型的升降級走明文的階梯（<code>docs/10</code>）：</p>
+      <ul class="ladder">
+        <li><span class="lv">sonnet</span><span class="why">日常的做與查——先便宜地試</span></li>
+        <li><span class="lv">opus</span><span class="why">同一子任務錯兩次即升級，附上兩次失敗軌跡</span></li>
+        <li><span class="lv">opus · max effort</span><span class="why">hard-solver：常規嘗試都卡死後的最後手段，刻意昂貴，少用</span></li>
+        <li><span class="lv">問使用者</span><span class="why">每個做法最多重試兩輪；品味題、風險題不硬決</span></li>
+      </ul></div>
+  </div>
+
+  <h3 style="font-size:1.08rem;letter-spacing:.06em;margin:0 0 .4rem">五、紀律的執行方式</h3>
+  <div class="pair">
+    <div class="panel mu"><span class="tag">無</span><h4>之前</h4>
+      <p>就算把規則寫進文件，遵守與否仍靠模型自律。而制度文件自己預言了最可能的退化：
+      session 會略讀規則、然後照舊行事。</p></div>
+    <div class="panel yu"><span class="tag">有</span><h4>之後</h4>
+      <p>兩個最關鍵的觸發從自律變成機制。hooks 在「第一次派工前」與「第一次要宣告收工前」
+      機械式注入提醒，每 session 各只打擾一次：</p>
+      <div class="codewrap"><span class="lang">sh · Stop hook（節錄）</span>
+<pre><code data-lang="sh">in=$(cat)
+[ "$(printf '%s' "$in" | jq -r .stop_hook_active)" = "true" ] &amp;&amp; exit 0
+sid=$(printf '%s' "$in" | jq -r .session_id)
+m="${TMPDIR:-/tmp}/claude-doctrine-stop-$sid"
+[ -e "$m" ] &amp;&amp; exit 0; touch "$m"   # 標記檔：每 session 只擋一次，不會無限迴圈
+printf '%s' '{"decision":"block",
+  "reason":"…完成宣告需有執行證據（20-judgment-rubrics § 2）…"}'</code></pre></div>
+      <p>寫這份報告的 session 裡，兩個 hook 都真的觸發過——一次在第一次派 subagent 前，
+      一次在第一次宣告完工前。</p></div>
+  </div>
+
+  <h3 style="font-size:1.08rem;letter-spacing:.06em;margin:0 0 .4rem">六、教訓的去向</h3>
+  <div class="pair">
+    <div class="panel mu"><span class="tag">無</span><h4>之前</h4>
+      <p>你糾正過的事，這個 session 記得，下個 session 忘光。同一個坑，每週重踩一次。</p></div>
+    <div class="panel yu"><span class="tag">有</span><h4>之後</h4>
+      <p>維護協議（<code>docs/40</code>）規定教訓寫回哪裡、用什麼格式；跨 session 的交接記在
+      logbook（<code>docs/50</code> § Handoff）。改「事實」可以自主（需附驗證），改「規則」一定先問你：</p>
+      <div class="codewrap"><span class="lang">markdown · Lessons learned 的固定格式</span>
+<pre><code data-lang="md">- 2026-07-07 · trigger: {發生了什麼，一行}
+  · rule: {下次該怎麼做，一行祈使句}
+  · evidence: {怎麼知道的，一行}</code></pre></div>
+      <p>文件膨脹也有明文門檻（router 超過約 70 行、單篇文件超過約 250 行就要提案精簡），
+      制度本身不會無限長胖。</p></div>
+  </div>
+</section>
+
+<section class="rv">
+  <div class="chapter"><span class="kanji">證</span><h2>一次實測對照——同一顆彈珠台，做兩次</h2></div>
+  <canvas class="stroke" width="440" height="28" aria-hidden="true"></canvas>
+  <p>本機 <code>testing/</code> 裡有一組對照實驗：同一份需求（純 HTML/CSS/JS 彈珠台，
+  含同一條「完成後要真的驗證」條款），由沒裝 harness 與裝了 harness 的 session 各做一次，
+  各自留下開發報告。可比的數字如下：</p>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th></th><th>無制度</th><th>有制度</th></tr></thead>
+      <tbody>
+        <tr><td>驗證環境</td>
+            <td class="mu-c">py-mini-racer——V8 引擎＋假 DOM，沒有瀏覽器</td>
+            <td class="yu-c win">Playwright＋無頭 Chromium，真實瀏覽器</td></tr>
+        <tr><td>視覺層驗證</td>
+            <td class="mu-c">0 張截圖；canvas 繪圖被 stub 成 no-op，自承「未實際觀察」</td>
+            <td class="yu-c win">2 張真實渲染截圖，讀回確認（發光 bumper、計分、生命數）</td></tr>
+        <tr><td>驗證項目</td><td class="mu-c">6＋8＝14 項（引擎內）</td><td class="yu-c">11 項（瀏覽器內）</td></tr>
+        <tr><td>首輪通過率</td><td class="mu-c">未載明（報告稱全過）</td>
+            <td class="yu-c">9/11 → 修一行 → 11/11；失敗證明測試真的在測東西</td></tr>
+        <tr><td>Console 錯誤</td><td class="mu-c">無從得知（無瀏覽器）</td><td class="yu-c win">實測為零</td></tr>
+        <tr><td>可重用資產</td><td class="mu-c">—</td>
+            <td class="yu-c">瀏覽器驗證管線寫入記憶，之後的 session 直接沿用</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>最鋒利的差異只有一句話：<strong>兩邊都「跑了測試」，但只有一邊真的看見了自己做出來的東西。</strong>
+  無制度那次的「已驗證」，止步於一個沒有畫面的模擬 DOM；有制度那次被「完成＝執行證據」逼著多走三步
+  （繞過 PEP 668、手動解出四個系統函式庫、建 debug handle），換到的是真瀏覽器裡的行為與像素。</p>
+  <p class="note">誠實但書：兩份報告都是各自 session 的自述，通過數是自報而非第三方稽核；
+  且此任務規模小，harness 的派工優勢在這個實驗裡沒有機會展現——展現的是驗證紀律。
+  另外這是 n=1 的對照，是機制差異的例證，不是統計結論。</p>
+</section>
+
+<section class="rv">
+  <div class="chapter"><span class="kanji">界</span><h2>做不到的事——界線</h2></div>
+  <canvas class="stroke" width="440" height="28" aria-hidden="true"></canvas>
+  <p>制度的價值有一半在於它誠實標明自己的邊界：</p>
+  <ul class="limits">
+    <li><strong>不會提高能力天花板。</strong>遇到超出模型推理上限的題目，再多鷹架也不會把它變成更大的模型。
+    可以期待的是：在可拆解、可驗證的工作上，被好好編排的模型，<em>結果</em>逼近一個更強模型一發到底的產出——
+    因為流程把它會犯、而強模型本來就不犯的錯攔掉了。「結果逼近」不是「能力逼近」。</li>
+    <li><strong>補不了品味。</strong>視覺方向、文風、兩個都不錯選哪個——制度的解法不是替你決定，
+    而是規定模型必須做出二到三個真正不同的候選、附上可直接判斷的證據（截圖、樣張），交給你選（鐵律四）。</li>
+    <li><strong>有代價。</strong>派工與 fresh-context 驗收都消耗 token 與時間；對一望即知的小修小改，
+    制度也明文允許自檢（inline edit 的例外條款），不是每件事都套全流程。</li>
+  </ul>
+</section>
+
+<section class="rv">
+  <div class="chapter"><span class="kanji">圖</span><h2>檔案地圖</h2></div>
+  <canvas class="stroke" width="440" height="28" aria-hidden="true"></canvas>
+  <ul class="filemap">
+    <li><code>~/.claude/CLAUDE.md</code><span>路由器：5 觸發＋5 鐵律＋環境事實，每 session 自動載入</span></li>
+    <li><code>docs/00-harness-diagnosis.md</code><span>三大根因診斷——整套規則的「為什麼」</span></li>
+    <li><code>docs/10-model-dispatch.md</code><span>派工守則：模型表、升降級階梯、驗證契約的權威版本</span></li>
+    <li><code>docs/20-judgment-rubrics.md</code><span>判斷 rubric：升級／完成／停下問人／方向錯了，各附正反例</span></li>
+    <li><code>docs/30-delegation-templates.md</code><span>五種派工模板（搜尋／實作／重構／研究／審查）</span></li>
+    <li><code>docs/40-maintenance-protocol.md</code><span>維護協議：什麼可自改、什麼先問人、膨脹門檻</span></li>
+    <li><code>docs/50-letter-to-future-sessions.md</code><span>給未來 session 的信＋Handoff logbook</span></li>
+    <li><code>agents/verifier.md</code><span>fresh-context 驗收者——只認執行證據（opus，high）</span></li>
+    <li><code>agents/implementer.md</code><span>規格明確任務的實作者，先自跑再回報（opus，high）</span></li>
+    <li><code>agents/hard-solver.md</code><span>難題最後手段（opus，max）——刻意昂貴，少用</span></li>
+    <li><code>settings.json → hooks</code><span>兩個 once-per-session 提醒：派工前、收工前</span></li>
+  </ul>
+</section>
+
+<section class="rv">
+  <div class="chapter"><span class="kanji">跋</span><h2>收尾</h2></div>
+  <canvas class="stroke" width="440" height="28" aria-hidden="true"></canvas>
+  <p>裝與不裝之間，模型沒有變聰明一分。變的是：context 不再被粗活撐爆、
+  「完成」兩個字重新有了重量、判斷題有了成文的答案、你糾正過的事會留下來。</p>
+  <p class="quiet">不完美的模型，配上承認不完美的制度——這大概就是這套東西最侘寂的地方。</p>
+</section>
+
+<footer>
+  <span>制度之前・之後 — Fable 5 Harness 差異分析</span>
+  <span>2026-07-07 · 據 ~/.claude/ 實裝內容與 testing/ 對照實驗</span>
+</footer>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- tiny syntax highlighter ---------- */
+  function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+  function tokenize(src, rules){
+    var out="", i=0;
+    while(i<src.length){
+      var hit=null;
+      for(var r=0;r<rules.length;r++){
+        rules[r].re.lastIndex=i;
+        var m=rules[r].re.exec(src);
+        if(m && m.index===i && m[0].length){hit={cls:rules[r].cls,text:m[0]};break;}
+      }
+      if(hit){out+='<span class="tk-'+hit.cls+'">'+esc(hit.text)+'</span>';i+=hit.text.length;}
+      else{out+=esc(src[i]);i++;}
+    }
+    return out;
+  }
+  var RULES={
+    sh:[
+      {cls:"com",re:/#[^\n]*/gy},
+      {cls:"str",re:/'[^']*'|"[^"]*"/gy},
+      {cls:"var",re:/\$\{[^}]*\}|\$\([^)]*\)|\$\w+/gy},
+      {cls:"key",re:/\b(exit|touch|printf|cat|jq|grep|diff|cp|mv|test)\b/gy},
+      {cls:"pun",re:/&&|\|\||[|;\[\]=]/gy},
+      {cls:"num",re:/\b\d+\b/gy}
+    ],
+    md:[
+      {cls:"hed",re:/^#{1,6}[^\n]*/gmy},
+      {cls:"ann",re:/←[^\n]*/gy},
+      {cls:"com",re:/\{[^}]*\}/gy},
+      {cls:"str",re:/`[^`\n]*`/gy},
+      {cls:"emp",re:/\*\*[^*\n]+\*\*/gy},
+      {cls:"pun",re:/^[-|]|[|]/gmy},
+      {cls:"key",re:/\b(PASS|FAIL)\b/gy},
+      {cls:"num",re:/\b\d{4}-\d\d-\d\d\b|\b\d+\b/gy}
+    ],
+    rep:[
+      {cls:"pass",re:/\bPASS\b/gy},
+      {cls:"fail",re:/\bFAIL\b/gy},
+      {cls:"hed",re:/^VERDICT[^\n]*/gmy},
+      {cls:"str",re:/'[^']*'/gy},
+      {cls:"num",re:/\b[\d.]+\b/gy},
+      {cls:"pun",re:/[—→;:]/gy}
+    ]
+  };
+  document.querySelectorAll("pre > code[data-lang]").forEach(function(el){
+    var rules=RULES[el.getAttribute("data-lang")];
+    if(rules){el.innerHTML=tokenize(el.textContent,rules);}
+  });
+
+  /* ---------- theme watcher ---------- */
+  function isDark(){
+    var t=document.documentElement.getAttribute("data-theme");
+    if(t==="dark")return true;
+    if(t==="light")return false;
+    return window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function inkColor(){return isDark()?"#D8D1C2":"#4A443C";}
+
+  /* ---------- enso (圓相) ---------- */
+  function drawEnso(){
+    var c=document.querySelector(".enso"); if(!c)return;
+    var x=c.getContext("2d"); x.clearRect(0,0,c.width,c.height);
+    var cx=180, cy=180, R=128;
+    var start=-Math.PI/2+0.28, sweep=Math.PI*2-0.62;
+    x.strokeStyle=inkColor(); x.lineCap="round"; x.globalAlpha=0.9;
+    var wob=[], N=90, k;
+    for(k=0;k<=N;k++){wob.push((Math.random()-0.5)*3.4);}
+    for(k=1;k<=N;k++){
+      var t0=start+sweep*(k-1)/N, t1=start+sweep*k/N;
+      var r0=R+wob[k-1], r1=R+wob[k];
+      var p=k/N;
+      x.lineWidth=13*(1-p*0.82)+1.4;
+      x.globalAlpha=0.88-p*0.45;
+      x.beginPath();
+      x.moveTo(cx+Math.cos(t0)*r0, cy+Math.sin(t0)*r0);
+      x.lineTo(cx+Math.cos(t1)*r1, cy+Math.sin(t1)*r1);
+      x.stroke();
+    }
+  }
+
+  /* ---------- brush dividers ---------- */
+  function drawStrokes(){
+    document.querySelectorAll("canvas.stroke").forEach(function(c){
+      var x=c.getContext("2d"); x.clearRect(0,0,c.width,c.height);
+      x.strokeStyle=inkColor(); x.lineCap="round";
+      var y=14, N=46, k;
+      for(k=1;k<=N;k++){
+        var p=k/N;
+        x.lineWidth=6.5*(1-p*0.9)+0.8;
+        x.globalAlpha=0.62-p*0.34;
+        x.beginPath();
+        x.moveTo(10+(c.width-30)*(k-1)/N, y+Math.sin(k*0.9)*1.7);
+        x.lineTo(10+(c.width-30)*k/N,     y+Math.sin((k+1)*0.9)*1.7);
+        x.stroke();
+      }
+    });
+  }
+  function redraw(){drawEnso();drawStrokes();}
+  redraw();
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change",redraw);
+  new MutationObserver(redraw).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+
+  /* ---------- reveal on scroll ---------- */
+  var reduced=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var els=document.querySelectorAll(".rv");
+  if(reduced || !("IntersectionObserver" in window)){
+    els.forEach(function(e){e.classList.add("in");});
+  }else{
+    var io=new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if(en.isIntersecting){en.target.classList.add("in");io.unobserve(en.target);}
+      });
+    },{rootMargin:"0px 0px -8% 0px"});
+    els.forEach(function(e){io.observe(e);});
+  }
+})();
+</script>
+
+</body>
+</html>
