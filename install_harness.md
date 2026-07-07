@@ -148,7 +148,8 @@ is how Step 4 verifies completion.
    run unattended. Only allowlist commands the user confirms; never allowlist anything
    destructive.
 6. **Optional hooks (only if the user opted in at Step 0):** skip this item entirely on native
-   (non-WSL) Windows — the hooks are POSIX sh + jq (already screened at Step 0.6). Otherwise
+   (non-WSL) Windows — the hooks are POSIX sh + jq (already screened in Step 0's optional-hooks
+   question). Otherwise
    follow `optional-hooks.md` —
    back up `~/.claude/settings.json` first (Step 0.3 naming), then run its **append-safe** merge
    command, which merges the package template `hooks.json` into the user's settings (plain
