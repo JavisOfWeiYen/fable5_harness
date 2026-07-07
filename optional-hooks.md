@@ -14,43 +14,43 @@ is two short reminders per session, not a nag on every action.
 
 **Requirements:** `jq` on PATH — but both commands open with a `command -v jq` guard, so on a
 machine without jq they exit 0 silently and the reminders simply don't fire; nothing errors or
-blocks. The commands are POSIX sh, run by Claude Code under `sh -c` (Linux/macOS/WSL). The `"Task|Agent"` matcher covers both the pre-v2.1.63 tool name (`Task`)
+blocks. The commands are POSIX sh, run by Claude Code under `sh -c` (Linux/macOS/WSL) — native
+(non-WSL) Windows is out of scope; do not install these there, run the harness from WSL instead.
+The `"Task|Agent"` matcher covers both the pre-v2.1.63 tool name (`Task`)
 and the current one (`Agent`). Format verified against the official hooks reference 2026-07-06.
 
 ## Install (done by the installing session at install_harness.md Step 3.6)
 
-1. Back up `~/.claude/settings.json` per Step 0.3 naming (create the file as `{}` if missing).
-2. Merge the `hooks` key below into it — merge, don't overwrite existing hooks the user may have.
-3. Verify: `jq . ~/.claude/settings.json` exits 0. Current Claude Code versions pick up
-   settings-file hook edits automatically; no restart needed.
+The hook definitions live in the package file **`hooks.json`** (next to this file), so the
+installing session merges from that file instead of hand-transcribing a large escaped-JSON blob.
 
-```json
-{
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Task|Agent",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "command -v jq >/dev/null 2>&1 || exit 0; sid=$(jq -r .session_id); m=\"${TMPDIR:-/tmp}/claude-doctrine-dispatch-$sid\"; [ -e \"$m\" ] && exit 0; touch \"$m\"; printf '%s' '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"additionalContext\":\"Doctrine reminder (once per session, first subagent spawn): if you have not read ~/.claude/docs/10-model-dispatch.md this session, Read it before dispatching. Model choice is explicit; the delegation prompt carries goal, acceptance criteria, and report format; substantive work gets a fresh-context verifier afterward.\"}}'"
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "command -v jq >/dev/null 2>&1 || exit 0; in=$(cat); [ \"$(printf '%s' \"$in\" | jq -r .stop_hook_active)\" = \"true\" ] && exit 0; sid=$(printf '%s' \"$in\" | jq -r .session_id); m=\"${TMPDIR:-/tmp}/claude-doctrine-stop-$sid\"; [ -e \"$m\" ] && exit 0; touch \"$m\"; printf '%s' '{\"decision\":\"block\",\"reason\":\"Doctrine check (once per session): if this turn claimed work is done, confirm it meets ~/.claude/docs/20-judgment-rubrics.md section 2 — executed evidence, fresh-context check for substantive work, likeliest regression checked, reported plainly. If the turn made no completion claim, or the evidence is already stated, end the turn now.\"}'"
-          }
-        ]
-      }
-    ]
-  }
-}
-```
+> **`hooks.json` is a template — never copy it over `~/.claude/settings.json`.** Doing so would
+> wipe the user's existing settings (permissions, env, other hooks). Only ever *merge* it in,
+> using the append-safe command below.
+
+1. Back up `~/.claude/settings.json` per Step 0.3 naming (create the file as `{}` if missing).
+2. Merge — **append**, don't overwrite. Plain `jq '.[0] * .[1]'` is unsafe here: `*` replaces
+   same-named arrays, so it would clobber any `hooks.PreToolUse` / `hooks.Stop` the user already
+   has. Use this append-safe merge (from the package dir, so `hooks.json` resolves):
+
+   ```bash
+   tmp="$(mktemp)"
+   jq -s '
+     .[0] as $base
+     | .[1] as $add
+     | $base
+     | .hooks.PreToolUse = ((.hooks.PreToolUse // []) + ($add.hooks.PreToolUse // []))
+     | .hooks.Stop       = ((.hooks.Stop // [])       + ($add.hooks.Stop // []))
+   ' ~/.claude/settings.json hooks.json > "$tmp" &&
+   mv "$tmp" ~/.claude/settings.json &&
+   jq . ~/.claude/settings.json
+   ```
+
+   This appends the two package hooks to whatever the user already had. If you are **re-running**
+   an install (the two doctrine entries are already present), remove the old ones first so you
+   don't append duplicates.
+3. Verify: the final `jq .` above exits 0. Current Claude Code versions pick up settings-file
+   hook edits automatically; no restart needed.
 
 ## Behavior notes
 

@@ -58,7 +58,9 @@ verifier, and every judgment call a small model tends to fumble is written down 
    - Optional enforcement hooks: offer the two once-per-session reminder hooks in
      `optional-hooks.md` — they mechanically re-inject the two highest-value triggers (read
      the dispatch doc before the first subagent spawn; check the done-rubric before ending a
-     turn that claims completion). The hooks need `jq` (`command -v jq`). If jq is missing,
+     turn that claims completion). The hooks are POSIX sh + `jq`, supported only on
+     WSL/macOS/Linux — on native (non-WSL) Windows, do not offer or install them; say so and
+     suggest running the harness from WSL. The hooks need `jq` (`command -v jq`). If jq is missing,
      don't install them — tell the user the option exists and how to enable it (install jq,
      e.g. `sudo apt install jq` on Debian/Ubuntu, then re-run this step); never run the
      package-manager install yourself. If accepted and jq is present, install per Step 3.6.
@@ -67,10 +69,15 @@ verifier, and every judgment call a small model tends to fumble is written down 
 
 ## Step 1 — Copy files
 
-From this package directory:
+From this package directory. **Precondition: only run the `cp` lines below after Step 0.2's
+collision check passed.** If any `docs/` or `agents/` filename collides with a file the user
+already has, do NOT run them — go back to Step 0.2, stop, and ask the user how to resolve it.
+(Do not "fix" a collision with `cp -n`/no-clobber: that silently keeps the user's old file while
+you believe the new one installed — the worst of both.)
 
 ```bash
 mkdir -p ~/.claude/docs ~/.claude/agents ~/.claude/backups
+# Run these two ONLY if Step 0.2 found no collisions (see precondition above):
 cp home-claude/docs/*.md ~/.claude/docs/
 cp home-claude/agents/*.md ~/.claude/agents/   # verifier + implementer + hard-solver
 
@@ -139,8 +146,11 @@ is how Step 4 verifies completion.
    run unattended. Only allowlist commands the user confirms; never allowlist anything
    destructive.
 6. **Optional hooks (only if the user opted in at Step 0):** follow `optional-hooks.md` —
-   back up `~/.claude/settings.json` first (Step 0.3 naming), merge the `hooks` key, then
-   confirm the merged file is valid JSON (`jq . ~/.claude/settings.json`).
+   back up `~/.claude/settings.json` first (Step 0.3 naming), then run its **append-safe** merge
+   command, which merges the package template `hooks.json` into the user's settings (plain
+   `jq '.[0] * .[1]'` would clobber existing `hooks.PreToolUse`/`hooks.Stop`, so don't use it;
+   never copy `hooks.json` over `settings.json` either). Finally confirm the result is valid JSON
+   (`jq . ~/.claude/settings.json`).
 7. Do **not** edit the rules, rubrics, or the prompt bodies of the three `agents/*.md` files —
    they are environment-independent by design. The only agent edits allowed are the two
    frontmatter adjustments item 2 explicitly orders (cost-preference `model:`, unsupported

@@ -23,6 +23,10 @@ Claude Code session 都以「指揮官」模式運作：主對話不下場做粗
 
 ## 安裝
 
+> **支援範圍：** 本套件針對 WSL、macOS、Linux 上的 Claude Code。Windows 原生／PowerShell
+> 環境目前不支援；Windows 使用者建議在 WSL 內安裝與使用。選配 hooks 為 POSIX sh + jq，同樣
+> 只適用 WSL/macOS/Linux。
+
 需求：已安裝 Claude Code（建議主力模型用 Opus）。
 
 ```bash
@@ -37,7 +41,7 @@ cd fable5_harness
 
 安裝時 Claude 會：備份既有設定 → 複製檔案到 `~/.claude/` → 問幾個問題（成本傾向、主要用途、
 語言偏好、有沒有 Fable 5 權限、要不要裝選配 hooks）→ 用你這台機器的實況填好佔位 → 驗證結果。檔案已預先通用化：
-規則與範例不綁定任何作業系統或專案類型，就算佔位沒填，也不會裝出錯誤的環境指令。
+規則與範例不綁定任何作業系統或專案類型，不會裝出錯誤的環境指令；未填的佔位會被驗證步驟（Step 4）擋下，安裝時不要猜測填值。
 
 **裝完重啟一次 Claude Code**（自訂 agent 要重啟才會註冊）。之後 `~/.claude/CLAUDE.md` 每個
 session 自動載入，不需再做任何事。
@@ -64,7 +68,7 @@ session 自動載入，不需再做任何事。
 | `home-claude/agents/hard-solver.md` | 為 Opus 調校的難題求解器：常規嘗試卡關後才派、會權衡多種解法、誠實回報信心與殘餘風險（opus，max effort）。刻意昂貴，少用 |
 | `CLAUDE.md`（根目錄） | bootstrap 引導檔：在此 repo 資料夾打開 Claude Code 會自動載入，把 Claude 導向 `install_harness.md`。不會被安裝進 `~/.claude/` |
 | `install_harness.md` | 安裝與在地化步驟（寫給安裝方的 Claude Code session 讀） |
-| `optional-hooks.md` | 選配的兩個 hooks（安裝時詢問、合併進 `~/.claude/settings.json`）：每個 session 第一次派 subagent 前、與第一次結束回合前，機械式注入「先讀派工守則」「完成要有執行證據」的提醒——把兩個最關鍵的觸發從自律變成機制 |
+| `optional-hooks.md` | 選配的兩個 hooks（安裝時詢問、合併進 `~/.claude/settings.json`；**POSIX sh + jq，僅適用 WSL/macOS/Linux**）：每個 session 第一次派 subagent 前、與第一次結束回合前，機械式注入「先讀派工守則」「完成要有執行證據」的提醒——把兩個最關鍵的觸發從自律變成機制 |
 
 ## 裝完之後長什麼樣
 
