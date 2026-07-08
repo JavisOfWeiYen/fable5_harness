@@ -30,8 +30,9 @@ Done = **all** of:
 
 - D1. Every stated acceptance criterion has executed evidence (test output, browser drive,
   read-back, reproduced result) — not plausible reasoning.
-- D2. A fresh-context check passed (the `verifier` agent for delegated work; for small inline
-  edits, at minimum re-running the relevant test or reloading the page yourself).
+- D2. A fresh-context check passed (the `verifier` agent for substantive work — whether it was
+  delegated or done directly in the main conversation; for small inline edits, at minimum
+  re-running the relevant test or reloading the page yourself).
 - D3. Nothing adjacent was broken: you checked the one most likely regression.
 - D4. The user can see what changed: files, behavior, how it was verified — reported plainly,
   failures included.

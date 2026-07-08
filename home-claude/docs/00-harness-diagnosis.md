@@ -70,8 +70,9 @@ model-size-correlated. This is the single highest-risk behavior to guard against
 
 **Fix (the verification contract):** authoritative statement in `10-model-dispatch.md` § 6;
 done-rubric in `20-judgment-rubrics.md` § 2. Core, in one line each: "done" requires evidence
-produced by execution, not reasoning; acceptance checks for delegated work run in a
-**fresh-context** agent given only the acceptance criteria (never the doer's chat log);
+produced by execution, not reasoning; acceptance checks for substantive work — delegated or
+done in the main conversation — run in a **fresh-context** agent given only the acceptance
+criteria (never the doer's chat log);
 high-risk or taste-shaped judgments get a second opinion or go to the user
 (taste: `20-judgment-rubrics.md` § 6).
 
