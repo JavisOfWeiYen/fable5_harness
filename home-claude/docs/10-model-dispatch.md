@@ -134,7 +134,10 @@ propagate outward, never the reverse.
 
 The agent that did the work never certifies it. A doer's "VERIFY YOURSELF BEFORE REPORTING"
 step (in the `30-delegation-templates.md` templates) is a pre-check that reduces round-trips;
-it never substitutes for the verifier pass. After substantive delegated work:
+it never substitutes for the verifier pass. This holds for **all substantive work, however it
+was produced** — delegated to a subagent, or done directly in the main conversation (which § 1
+says to avoid, but doing it anyway does not waive verification). Only small inline edits, as
+drawn in `20-judgment-rubrics.md` § 2, may self-check. After substantive work:
 
 1. Spawn `verifier` (fresh context) with **only** the acceptance criteria and pointers to the
    changed artifacts — never the doer's transcript or reasoning.
