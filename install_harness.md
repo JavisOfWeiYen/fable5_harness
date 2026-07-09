@@ -156,7 +156,22 @@ is how Step 4 verifies completion.
    `jq '.[0] * .[1]'` would clobber existing `hooks.PreToolUse`/`hooks.Stop`, so don't use it;
    never copy `hooks.json` over `settings.json` either). Finally confirm the result is valid JSON
    (`jq . ~/.claude/settings.json`).
-7. Do **not** edit the rules, rubrics, or the prompt bodies of the three `agents/*.md` files —
+7. **API-retry cap (recommended):** Claude Code retries transient API errors (overloaded/529,
+   timeouts) up to 10 times with exponential backoff — during a provider outage a single spawn
+   can look stuck for ~30 minutes. Explain the trade-off to the user (fail fast during outages
+   vs. more resilience on a genuinely flaky network) and, if they accept, cap it at 3: back up
+   `~/.claude/settings.json` (Step 0, item 3 naming), then
+
+   ```bash
+   tmp="$(mktemp)"
+   jq '.env.CLAUDE_CODE_MAX_RETRIES = "3"' ~/.claude/settings.json > "$tmp" &&
+   mv "$tmp" ~/.claude/settings.json && jq . ~/.claude/settings.json
+   ```
+
+   This sets one key inside `env` — never replace the whole `env` object. Verify the key
+   landed and the JSON is valid (the trailing `jq .`). Record the chosen value in the
+   Handoff entry.
+8. Do **not** edit the rules, rubrics, or the prompt bodies of the three `agents/*.md` files —
    they are environment-independent by design. The only agent edits allowed are the two
    frontmatter adjustments item 2 explicitly orders (cost-preference `model:`, unsupported
    `effort:` level), both recorded in the Handoff entry.
