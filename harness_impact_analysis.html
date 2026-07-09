@@ -616,11 +616,13 @@ REPORT:
       <div class="entry none"><span class="glyph">無</span><p>規則寫在文件裡，但模型略讀後照舊。制度靠自律，最容易退化。</p></div>
       <hr class="dot-rule">
       <div class="entry have"><span class="glyph">有</span><div>
-        <p>兩個 once-per-session hooks 在第一次派工前、第一次收工前注入提醒，把最高價值觸發變成機制。</p>
+        <p>once-per-session hooks 在第一次派工前注入提醒；做過事（派過工或改過檔）的 session 第一次收工前注入 done-check——把最高價值觸發變成機制，純問答 session 零成本。</p>
         <figure class="code"><figcaption>Stop hook excerpt</figcaption>
 <pre><code data-lang="sh">in=$(cat)
 [ "$(printf '%s' "$in" | jq -r .stop_hook_active)" = "true" ] &amp;&amp; exit 0
-m="${TMPDIR:-/tmp}/claude-doctrine-stop-$sid"
+d="${XDG_CACHE_HOME:-$HOME/.cache}/claude-doctrine"
+[ -e "$d/claude-doctrine-dispatch-$sid" ] || [ -e "$d/claude-doctrine-work-$sid" ] || exit 0
+m="$d/claude-doctrine-stop-$sid"
 [ -e "$m" ] &amp;&amp; exit 0
 touch "$m"
 printf '%s' '{"decision":"block","reason":"done needs evidence"}'</code></pre></figure>
