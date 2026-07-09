@@ -7,8 +7,9 @@ to be installed into the user's `~/.claude/`.
 **If the user asks you to install, set up, or apply this harness — do this now:** read
 `./install_harness.md` and follow its steps in order. It is written for you (a Claude Code
 session); it will have you back up existing settings, copy files into `~/.claude/`, ask the user
-a short batch of questions (cost preference, main use, language, and whether they have Fable 5
-access), fill the placeholders from *verified* facts about this machine, and verify the result.
+a short batch of questions (cost preference, main use, language, whether they have Fable 5
+access, and whether to install the optional hooks), fill the placeholders from *verified* facts
+about this machine, and verify the result.
 Do not skip the questions and do not guess machine facts.
 
 **If the user only asks what this is** (e.g. "what is this", "這是什麼", "這包在幹嘛") — do NOT
