@@ -43,6 +43,11 @@ cd fable5_harness
 語言偏好、有沒有 Fable 5 權限、要不要裝選配 hooks）→ 用你這台機器的實況填好佔位 → 驗證結果。檔案已預先通用化：
 規則與範例不綁定任何作業系統或專案類型，不會裝出錯誤的環境指令；未填的佔位會被驗證步驟（Step 4）擋下，安裝時不要猜測填值。
 
+> **permission allowlist 一步請保守**：只放確定唯讀／冪等的指令。這套會自主執行可逆步驟、
+> 平行派出背景 agent——allowlist 放什麼，整個 agent 艦隊就能無人值守做什麼。寧可多幾個
+> permission prompt，也不要放任何會寫檔、刪檔、對外送出或改設定的指令；清單就在
+> `~/.claude/settings.json`，之後隨時可以檢視與收窄。
+
 **裝完重啟一次 Claude Code**（自訂 agent 要重啟才會註冊）。之後 `~/.claude/CLAUDE.md` 每個
 session 自動載入，不需再做任何事。
 

@@ -146,7 +146,14 @@ is how Step 4 verifies completion.
    safe read-only and test/verification commands to the permissions allowlist in
    `~/.claude/settings.json` (back up first, Step 0, item 3 naming), so delegated verification can
    run unattended. Only allowlist commands the user confirms; never allowlist anything
-   destructive.
+   destructive. **Before adding anything, state the blast radius to the user in plain terms**,
+   roughly: "keep this list conservative — only commands that are certainly read-only or
+   idempotent; prefer a few extra permission prompts over allowlisting anything that writes,
+   deletes, sends data out, or changes settings. And note the multiplier: this harness runs
+   reversible steps without asking and fans out parallel background agents, so whatever is
+   allowlisted here is what that whole fleet can do unattended." Prefer narrow patterns (a
+   specific test command) over broad ones (a bare shell wildcard); the list lives in
+   `~/.claude/settings.json`, easy to audit and trim later.
 6. **Optional hooks (only if the user opted in at Step 0):** skip this item entirely on native
    (non-WSL) Windows — the hooks are POSIX sh + jq (already screened in Step 0's optional-hooks
    question). Otherwise
