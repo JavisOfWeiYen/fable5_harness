@@ -100,6 +100,18 @@ Subagents return **conclusions, not material**:
 
 ## 5. Escalation and downgrade ladder
 
+- **Environment failure is not capability failure — classify before touching the ladder.**
+  A spawn that dies at the API layer (overloaded/529, request timeout, rate limit) or hangs
+  producing no output at all says nothing about the model's ability; it consumes no rungs on
+  this ladder and none of the retry budget. Claude Code itself already retries transient API
+  errors with exponential backoff (up to 10 attempts by default — under a real outage one
+  spawn can look stuck for ~30 minutes; capped at install via `CLAUDE_CODE_MAX_RETRIES` in
+  `~/.claude/settings.json` `env`), so by the time you see the failure it has been retried
+  plenty. Re-dispatch the same spawn at most once; if it dies the same way, stop and report
+  to the user — plainly and specifically: what was being attempted, the exact error text,
+  that this is an infrastructure event (suggest checking the provider status page), and what
+  remains undone. Never silently switch models, downgrade effort, or skip the verifier pass
+  because infrastructure was flaky — resume the plan unchanged once the environment recovers.
 - **haiku errs once** on a task → redo at `sonnet` or `opus`. Don't retry haiku with a better
   prompt. Exception: if the failure was the *dispatcher's own mistake* (typo'd path, missing
   input in the prompt), fix your mistake and rerun at the same tier — escalation is for
