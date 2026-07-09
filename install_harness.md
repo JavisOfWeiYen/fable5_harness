@@ -17,7 +17,7 @@ fable5_harness/
                               here, points you at this file). DO NOT install/copy it.
   install_harness.md        ← this file
   README.md                 ← human-readable overview (Traditional Chinese)
-  optional-hooks.md         ← two once-per-session reminder hooks (optional; asked at Step 0,
+  optional-hooks.md         ← once-per-session doctrine reminder hooks (optional; asked at Step 0,
                               merged into ~/.claude/settings.json at Step 3, item 6)
   hooks.json                ← hook template merged by optional-hooks.md; never copy over
                               ~/.claude/settings.json (merge only, or you wipe the user's settings)
@@ -57,10 +57,10 @@ verifier, and every judgment call a small model tends to fumble is written down 
    - Fable 5 access: does this machine have it? If yes, `fable` stays as the top dispatch tier
      above `opus`; if no (the common case), the `fable` row is removed and `opus` is the top
      tier. Either way the escalation prose already covers it — see Step 3. Do not assume; ask.
-   - Optional enforcement hooks: offer the two once-per-session reminder hooks in
+   - Optional enforcement hooks: offer the once-per-session reminder hooks in
      `optional-hooks.md` — they mechanically re-inject the two highest-value triggers (read
-     the dispatch doc before the first subagent spawn; check the done-rubric before ending a
-     turn that claims completion). The hooks are POSIX sh + `jq`, supported only on
+     the dispatch doc before the first subagent spawn; check the done-rubric before the first
+     turn-end of a session that actually did work — read-only Q&A sessions pay nothing). The hooks are POSIX sh + `jq`, supported only on
      WSL/macOS/Linux — on native (non-WSL) Windows, do not offer or install them; say so and
      suggest running the harness from WSL. The hooks need `jq` (`command -v jq`). If jq is missing,
      don't install them — tell the user the option exists and how to enable it (install jq,

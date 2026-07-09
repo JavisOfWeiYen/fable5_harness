@@ -9,6 +9,15 @@
             "command": "command -v jq >/dev/null 2>&1 || exit 0; sid=$(jq -r .session_id); m=\"${TMPDIR:-/tmp}/claude-doctrine-dispatch-$sid\"; [ -e \"$m\" ] && exit 0; touch \"$m\"; printf '%s' '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"additionalContext\":\"Doctrine reminder (once per session, first subagent spawn): if you have not read ~/.claude/docs/10-model-dispatch.md this session, Read it before dispatching. Model choice is explicit; the delegation prompt carries goal, acceptance criteria, and report format; substantive work gets a fresh-context verifier afterward.\"}}'"
           }
         ]
+      },
+      {
+        "matcher": "Edit|Write|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "command -v jq >/dev/null 2>&1 || exit 0; sid=$(jq -r .session_id); touch \"${TMPDIR:-/tmp}/claude-doctrine-work-$sid\""
+          }
+        ]
       }
     ],
     "Stop": [
@@ -16,7 +25,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "command -v jq >/dev/null 2>&1 || exit 0; in=$(cat); [ \"$(printf '%s' \"$in\" | jq -r .stop_hook_active)\" = \"true\" ] && exit 0; sid=$(printf '%s' \"$in\" | jq -r .session_id); m=\"${TMPDIR:-/tmp}/claude-doctrine-stop-$sid\"; [ -e \"$m\" ] && exit 0; touch \"$m\"; printf '%s' '{\"decision\":\"block\",\"reason\":\"Doctrine check (once per session): if this turn claimed work is done, confirm it meets ~/.claude/docs/20-judgment-rubrics.md section 2 — executed evidence, fresh-context check for substantive work, likeliest regression checked, reported plainly. If the turn made no completion claim, or the evidence is already stated, end the turn now.\"}'"
+            "command": "command -v jq >/dev/null 2>&1 || exit 0; in=$(cat); [ \"$(printf '%s' \"$in\" | jq -r .stop_hook_active)\" = \"true\" ] && exit 0; sid=$(printf '%s' \"$in\" | jq -r .session_id); t=\"${TMPDIR:-/tmp}\"; [ -e \"$t/claude-doctrine-dispatch-$sid\" ] || [ -e \"$t/claude-doctrine-work-$sid\" ] || exit 0; m=\"$t/claude-doctrine-stop-$sid\"; [ -e \"$m\" ] && exit 0; touch \"$m\"; printf '%s' '{\"decision\":\"block\",\"reason\":\"Doctrine check (once per session, work sessions only): if this turn claimed work is done, confirm it meets ~/.claude/docs/20-judgment-rubrics.md section 2 — executed evidence, fresh-context check for substantive work, likeliest regression checked, reported plainly. If the turn made no completion claim, or the evidence is already stated, end the turn now.\"}'"
           }
         ]
       }
