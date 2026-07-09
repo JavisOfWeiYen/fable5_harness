@@ -68,7 +68,7 @@ session 自動載入，不需再做任何事。
 | `home-claude/agents/hard-solver.md` | 為 Opus 調校的難題求解器：常規嘗試卡關後才派、會權衡多種解法、誠實回報信心與殘餘風險（opus，max effort）。刻意昂貴，少用 |
 | `CLAUDE.md`（根目錄） | bootstrap 引導檔：在此 repo 資料夾打開 Claude Code 會自動載入，把 Claude 導向 `install_harness.md`。不會被安裝進 `~/.claude/` |
 | `install_harness.md` | 安裝與在地化步驟（寫給安裝方的 Claude Code session 讀） |
-| `optional-hooks.md` | 選配的兩個 hooks（安裝時詢問、合併進 `~/.claude/settings.json`；**POSIX sh + jq，僅適用 WSL/macOS/Linux**）：每個 session 第一次派 subagent 前、與第一次結束回合前，機械式注入「先讀派工守則」「完成要有執行證據」的提醒——把兩個最關鍵的觸發從自律變成機制 |
+| `optional-hooks.md` | 選配 hooks（安裝時詢問、合併進 `~/.claude/settings.json`；**POSIX sh + jq，僅適用 WSL/macOS/Linux**）：每個 session 第一次派 subagent 前注入「先讀派工守則」提醒；**真的做過事**（派過工或改過檔）的 session 第一次收尾前注入「完成要有執行證據」檢查——把兩個最關鍵的觸發從自律變成機制，純唯讀問答 session 零成本 |
 | `hooks.json` | 上述 hooks 的 JSON 範本；由 `optional-hooks.md` 的 append-safe 指令 **merge** 進 `~/.claude/settings.json`。**只能 merge、不可直接覆蓋**（覆蓋會清掉使用者既有的 settings） |
 | `harness_impact_analysis.html` | 安裝前後差異分析報告：裝了什麼、哪些行為時刻被改寫、含一次實測對照。自包含 HTML，瀏覽器直接開。純佐證材料，不會被安裝進 `~/.claude/` |
 
