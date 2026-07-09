@@ -88,8 +88,14 @@ installing session merges from that file instead of hand-transcribing a large es
   shell tool, never an Edit/Write or a subagent) does not arm the Stop check. Matching the
   shell tool would fire the marker on every read-only `ls`/`grep` too, effectively re-blocking
   every session — not worth it.
-- Marker files live in `${TMPDIR:-/tmp}` and are keyed to the session id — they clean up with
-  the OS temp dir and never collide across sessions.
+- Marker files live in the user-private `${XDG_CACHE_HOME:-$HOME/.cache}/claude-doctrine/`,
+  keyed to the session id, so they never collide across sessions and are not exposed in a
+  shared `/tmp` (on multi-user machines a world-writable temp dir would make the
+  predictable-name markers pre-creatable/symlinkable by others — near-zero practical risk,
+  hardened anyway). Filenames keep the full `claude-doctrine-` prefix on purpose: the
+  marker-scoped removal above matches hook entries by that string. Markers older than 7 days
+  are pruned by the hooks themselves (at most once per session, in the once-per-session code
+  paths), so the cache directory cannot accumulate.
 
 ## Remove
 
