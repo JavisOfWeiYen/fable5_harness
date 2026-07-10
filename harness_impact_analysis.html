@@ -620,12 +620,14 @@ REPORT:
         <figure class="code"><figcaption>Stop hook excerpt</figcaption>
 <pre><code data-lang="sh">in=$(cat)
 [ "$(printf '%s' "$in" | jq -r .stop_hook_active)" = "true" ] &amp;&amp; exit 0
+sid=$(printf '%s' "$in" | jq -r .session_id)
+{ [ -n "$sid" ] &amp;&amp; [ "$sid" != null ]; } || sid=$$
 d="${XDG_CACHE_HOME:-$HOME/.cache}/claude-doctrine"
 [ -e "$d/claude-doctrine-dispatch-$sid" ] || [ -e "$d/claude-doctrine-work-$sid" ] || exit 0
 m="$d/claude-doctrine-stop-$sid"
 [ -e "$m" ] &amp;&amp; exit 0
 touch "$m"
-printf '%s' '{"decision":"block","reason":"done needs evidence"}'</code></pre></figure>
+printf '%s' '{"decision":"block","reason":"Doctrine check (once per session, work sessions only): if this turn claimed work is done, confirm it meets ~/.claude/docs/20-judgment-rubrics.md section 2 — executed evidence, fresh-context check for substantive work, likeliest regression checked, reported plainly. If the turn made no completion claim, or the evidence is already stated, end the turn now."}'</code></pre></figure>
       </div></div>
     </article>
 
