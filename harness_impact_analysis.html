@@ -338,27 +338,26 @@ pre {
   margin-bottom: 1.8rem;
 }
 
-.entry {
+.compare {
   display: grid;
-  grid-template-columns: 1.9rem minmax(0, 1fr);
-  gap: 1rem;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.8rem;
 }
-.entry .glyph {
-  font-family: var(--serif);
-  font-size: 1.3rem;
-  line-height: 1.5;
+.side-label {
+  margin: 0 0 .9rem;
+  padding-bottom: .55rem;
+  font-family: var(--sans);
+  font-size: .62rem;
   font-weight: 500;
+  letter-spacing: .26em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--line-strong);
 }
-.entry.none .glyph { color: var(--ink); opacity: .45; }
-.entry.have .glyph { color: var(--moss); }
-.entry p { margin: 0; color: var(--ink-soft); font-size: .98rem; }
-.entry.have p { color: var(--ink); }
-
-.dot-rule {
-  border: 0;
-  border-top: 1px dotted var(--line-strong);
-  margin: 1.6rem 0 1.6rem 2.9rem;
-}
+.side.none .side-label { color: var(--muted); }
+.side.have .side-label { color: var(--moss); border-bottom-color: var(--moss); }
+.side p { margin: 0; font-size: .98rem; }
+.side.none p { color: var(--ink-soft); }
+.side.have p { color: var(--ink); }
 
 /* ---- ladder (moment 04) ---- */
 .ladder { list-style: none; margin: 1.4rem 0 0; padding: 0; }
@@ -462,9 +461,9 @@ footer {
 .rv.in { opacity: 1; transform: none; }
 
 @media (min-width: 760px) {
-  .moment { margin-left: -2.9rem; }
-  .moment-title { margin-left: 2.9rem; }
-  .entry { grid-template-columns: 2.9rem minmax(0, 1fr); }
+  .compare { grid-template-columns: 1fr 1fr; gap: 0; }
+  .side.none { padding-right: 2.2rem; }
+  .side.have { padding-left: 2.2rem; border-left: 1px dotted var(--line-strong); }
 }
 
 @media (max-width: 560px) {
@@ -553,71 +552,97 @@ footer {
 
     <article class="moment">
       <p class="moment-title">01 · 開場</p>
-      <div class="entry none"><span class="glyph">無</span><p>session 是白紙。模型靠直覺猜這台機器、這個使用者、這個 repo 的工作方式。</p></div>
-      <hr class="dot-rule">
-      <div class="entry have"><span class="glyph">有</span><div>
-        <p>根 router 自動載入：觸發派工、驗收、維護、複雜任務時，先讀對應制度文件。</p>
-        <figure class="code"><figcaption>CLAUDE.md excerpt</figcaption>
+      <div class="compare">
+        <div class="side none">
+          <p class="side-label">無 harness</p>
+          <p>session 是白紙。模型靠直覺猜這台機器、這個使用者、這個 repo 的工作方式。</p>
+        </div>
+        <div class="side have">
+          <p class="side-label">有 harness</p>
+          <p>根 router 自動載入：觸發派工、驗收、維護、複雜任務時，先讀對應制度文件。</p>
+        </div>
+      </div>
+      <figure class="code"><figcaption>CLAUDE.md excerpt</figcaption>
 <pre><code data-lang="md">| Trigger                       | Read                         |
 |-------------------------------|------------------------------|
 | About to spawn a subagent     | docs/10-model-dispatch.md    |
 | About to say a task is done   | docs/20-judgment-rubrics.md  |
 | Writing a delegation prompt   | docs/30-delegation-templates.md |</code></pre></figure>
-      </div></div>
     </article>
 
     <article class="moment">
       <p class="moment-title">02 · 主對話</p>
-      <div class="entry none"><span class="glyph">無</span><p>主對話是工人：親自掃 repo、親自讀長檔、親自跑迭代。context 被拿去當工作台。</p></div>
-      <hr class="dot-rule">
-      <div class="entry have"><span class="glyph">有</span><div>
-        <p>主對話是指揮官：粗活派給 subagent，回來只收結論、證據與 file:line。</p>
-        <figure class="code"><figcaption>delegation skeleton</figcaption>
+      <div class="compare">
+        <div class="side none">
+          <p class="side-label">無 harness</p>
+          <p>主對話是工人：親自掃 repo、親自讀長檔、親自跑迭代。context 被拿去當工作台。</p>
+        </div>
+        <div class="side have">
+          <p class="side-label">有 harness</p>
+          <p>主對話是指揮官：粗活派給 subagent，回來只收結論、證據與 file:line。</p>
+        </div>
+      </div>
+      <figure class="code"><figcaption>delegation skeleton</figcaption>
 <pre><code data-lang="md">GOAL: {要完成什麼}
 WHY: {這件事服務哪個使用者目標}
 ACCEPTANCE:
   - {可執行、可判定的條件}
 REPORT:
   - PASS/FAIL per criterion, evidence attached</code></pre></figure>
-      </div></div>
     </article>
 
     <article class="moment">
       <p class="moment-title">03 · 完成</p>
-      <div class="entry none"><span class="glyph">無</span><p>「我實作了，所以應該會動。」沒有瀏覽器、沒有測試、沒有 read-back。</p></div>
-      <hr class="dot-rule">
-      <div class="entry have"><span class="glyph">有</span><div>
-        <p>完成必須有執行證據；實質工作由 fresh-context verifier 驗收，做的人不自驗。</p>
-        <figure class="code"><figcaption>verifier report</figcaption>
+      <div class="compare">
+        <div class="side none">
+          <p class="side-label">無 harness</p>
+          <p>「我實作了，所以應該會動。」沒有瀏覽器、沒有測試、沒有 read-back。</p>
+        </div>
+        <div class="side have">
+          <p class="side-label">有 harness</p>
+          <p>完成必須有執行證據；實質工作由 fresh-context verifier 驗收，做的人不自驗。</p>
+        </div>
+      </div>
+      <figure class="code"><figcaption>verifier report</figcaption>
 <pre><code data-lang="rep">VERDICT: PASS
 1. PASS — diff exited 0; cmp confirms byte-identical
 2. PASS — zero INSTALLER placeholders remain
 3. PASS — all routing targets exist on disk</code></pre></figure>
-      </div></div>
     </article>
 
     <article class="moment">
       <p class="moment-title">04 · 卡關</p>
-      <div class="entry none"><span class="glyph">無</span><p>同一招重試第五次，越修越大，卻說不清楚為什麼這一步還服務目標。</p></div>
-      <hr class="dot-rule">
-      <div class="entry have"><span class="glyph">有</span><div>
-        <p>升級與換路都有條件：同一子任務錯兩次升級；第三輪必須換模型、換拆法或問使用者。</p>
-        <ul class="ladder">
+      <div class="compare">
+        <div class="side none">
+          <p class="side-label">無 harness</p>
+          <p>同一招重試第五次，越修越大，卻說不清楚為什麼這一步還服務目標。</p>
+        </div>
+        <div class="side have">
+          <p class="side-label">有 harness</p>
+          <p>升級與換路都有條件：同一子任務錯兩次升級；第三輪必須換模型、換拆法或問使用者。</p>
+        </div>
+      </div>
+      <ul class="ladder">
           <li><b>sonnet</b><span>日常明確任務。</span></li>
           <li><b>opus</b><span>同一子任務失敗兩次，附完整失敗軌跡。</span></li>
           <li><b>hard-solver</b><span>常規嘗試卡死後的 max effort 最後手段。</span></li>
           <li><b>user</b><span>品味題、破壞性操作、真正有歧義的選擇。</span></li>
         </ul>
-      </div></div>
     </article>
 
     <article class="moment">
       <p class="moment-title">05 · 紀律</p>
-      <div class="entry none"><span class="glyph">無</span><p>規則寫在文件裡，但模型略讀後照舊。制度靠自律，最容易退化。</p></div>
-      <hr class="dot-rule">
-      <div class="entry have"><span class="glyph">有</span><div>
-        <p>once-per-session hooks 在第一次派工前注入提醒；做過事（派過工或改過檔）的 session 第一次收工前注入 done-check——把最高價值觸發變成機制，純問答 session 零成本。</p>
-        <figure class="code"><figcaption>Stop hook excerpt</figcaption>
+      <div class="compare">
+        <div class="side none">
+          <p class="side-label">無 harness</p>
+          <p>規則寫在文件裡，但模型略讀後照舊。制度靠自律，最容易退化。</p>
+        </div>
+        <div class="side have">
+          <p class="side-label">有 harness</p>
+          <p>once-per-session hooks 在第一次派工前注入提醒；做過事（派過工或改過檔）的 session 第一次收工前注入 done-check——把最高價值觸發變成機制，純問答 session 零成本。</p>
+        </div>
+      </div>
+      <figure class="code"><figcaption>Stop hook excerpt</figcaption>
 <pre><code data-lang="sh">in=$(cat)
 [ "$(printf '%s' "$in" | jq -r .stop_hook_active)" = "true" ] &amp;&amp; exit 0
 sid=$(printf '%s' "$in" | jq -r .session_id)
@@ -628,20 +653,24 @@ m="$d/claude-doctrine-stop-$sid"
 [ -e "$m" ] &amp;&amp; exit 0
 touch "$m"
 printf '%s' '{"decision":"block","reason":"Doctrine check (once per session, work sessions only): if this turn claimed work is done, confirm it meets ~/.claude/docs/20-judgment-rubrics.md section 2 — executed evidence, fresh-context check for substantive work, likeliest regression checked, reported plainly. If the turn made no completion claim, or the evidence is already stated, end the turn now."}'</code></pre></figure>
-      </div></div>
     </article>
 
     <article class="moment">
       <p class="moment-title">06 · 記憶</p>
-      <div class="entry none"><span class="glyph">無</span><p>你糾正過的事，只活在這個 session。下個 session 又踩一次。</p></div>
-      <hr class="dot-rule">
-      <div class="entry have"><span class="glyph">有</span><div>
-        <p>教訓有去處：專案事實進 memory，跨專案 doctrine 進 docs，handoff 進 logbook；改規則先問人。</p>
-        <figure class="code"><figcaption>lesson format</figcaption>
+      <div class="compare">
+        <div class="side none">
+          <p class="side-label">無 harness</p>
+          <p>你糾正過的事，只活在這個 session。下個 session 又踩一次。</p>
+        </div>
+        <div class="side have">
+          <p class="side-label">有 harness</p>
+          <p>教訓有去處：專案事實進 memory，跨專案 doctrine 進 docs，handoff 進 logbook；改規則先問人。</p>
+        </div>
+      </div>
+      <figure class="code"><figcaption>lesson format</figcaption>
 <pre><code data-lang="md">- 2026-07-07 · trigger: {發生了什麼}
   · rule: {下次該怎麼做}
   · evidence: {怎麼知道的}</code></pre></figure>
-      </div></div>
     </article>
   </section>
 

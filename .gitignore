@@ -1,2 +1,5 @@
 # Local Claude Code session artifacts — must not ship with the shared package
 .claude/
+
+# Local review screenshots from Playwright verification
+.review-shots/
