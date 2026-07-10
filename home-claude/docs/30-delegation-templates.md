@@ -26,8 +26,13 @@ WHY: {what the commander will do with it — e.g. "we will change the token form
 BREADTH: {medium | very thorough}. Check plural/singular, synonyms, and indirect uses
   ({e.g. "the token may appear as 'jwt', 'auth', or be read through a helper without a name"}).
 ACCEPTANCE: every match found, or an explicit statement of naming patterns you checked and
-  found nothing under.
-REPORT: a list of file:line + one-line role of each site. No code blocks longer than 3 lines.
+  found nothing under. Per-item evidence is mandatory: each reported item carries file:line
+  AND a verbatim quote of that line, from a search you executed THIS run — an item you did
+  not actually look up is reported under NOT CHECKED, never filled in from naming or pattern
+  similarity.
+REPORT: two lists. FOUND — file:line + the quoted line + one-line role per site.
+  NOT FOUND / NOT CHECKED — what you searched and didn't find (patterns tried), or didn't
+  get to. No code blocks longer than 3 lines.
 ```
 
 ## 2. Implementation  (agent type: `implementer` — opus, pinned high effort; or `general-purpose` at model `opus` if you need a different toolset)

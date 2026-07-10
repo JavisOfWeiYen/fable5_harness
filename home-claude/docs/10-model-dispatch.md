@@ -71,6 +71,14 @@ The "explicit, never defaulted" rule applies to `general-purpose` spawns. Specia
 types (`Explore`, `Plan`, `claude-code-guide`) and custom agents with a `model` in their
 frontmatter use their own defaults — don't override those without a reason.
 
+**Small-looking lookups aren't small.** Multi-item factual lookup — "check these N
+variables/flags/call-sites and report each" — is the task shape lower tiers confabulate on
+most: they execute the first lookup and pattern-complete the rest while asserting they
+checked everything. "Small" describes the effort, not the risk. Demand per-item evidence
+(file:line + a verbatim quote from a lookup executed this turn; unchecked items declared as
+such — template 1 in `30-delegation-templates.md`), and when the answers will be relied on,
+run the lookup at `opus` or spot-check a sample.
+
 ### Built-in agent types (verified in this harness)
 
 - `Explore` — read-only search/locate across many files. Use before any implementation in
