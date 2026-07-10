@@ -480,7 +480,7 @@
       padding: 3px 10px;
       border-radius: 999px;
       background: #e7ebf1;
-      color: var(--muted);
+      color: #56637a;
       font-size: 12px;
       font-weight: 750;
       letter-spacing: .03em;
@@ -488,7 +488,7 @@
 
     .side.have .side-label {
       background: #d3efe0;
-      color: var(--success);
+      color: #0f6a4f;
     }
 
     .code-fig { margin: 16px 0; }
@@ -584,7 +584,7 @@
             它比較像是一套安裝到 Claude Code 使用者環境中的「工程工作制度包」。
           </p>
           <p>
-            實際安裝的東西其實很少：一份精簡的 router、六份制度文件、三個自訂 agent，以及兩個選配 hooks。
+            實際安裝的東西其實很少：一份精簡的 router、六份制度文件、三個自訂 agent，以及三個選配 hooks。
             它不新增任何產品介面；真正改變的，是 Claude Code 在每次派工、驗收、卡關與收尾時的工作姿勢。
           </p>
           <p>安裝後，主要內容會放入：</p>
@@ -906,7 +906,7 @@ printf '%s' '{"decision":"block","reason":"Doctrine check (once per session, wor
             <li>修改前先備份現有檔案。</li>
             <li>發現同名檔案衝突時停止，不直接覆蓋。</li>
             <li>既有 <code>CLAUDE.md</code> 採合併策略，而不是整份取代。</li>
-            <li>安裝時詢問成本偏好、主要用途、回覆語言與 hooks 設定。</li>
+            <li>安裝時詢問成本偏好、主要用途、回覆語言、是否有 Fable 5 權限，以及 hooks 設定。</li>
             <li>偵測 WSL、Linux 工具與測試環境，避免殘留 placeholder。</li>
           </ul>
 
@@ -938,6 +938,10 @@ printf '%s' '{"decision":"block","reason":"Doctrine check (once per session, wor
             <li>第一次派出 subagent 前，提醒 Claude 讀取派工制度。</li>
             <li>進行過實質工作後，在 session 首次準備結束時，要求重新檢查完成標準。</li>
           </ul>
+          <p>
+            使用者可見的行為是以上兩種；第三個 hook 沒有輸出，只在 Claude 改動檔案時默默標記
+            「這個 session 做過實質工作」，供第二項判斷是否需要收尾檢查——純問答 session 因此零成本。
+          </p>
 
           <p>Session marker 會放在：</p>
           <pre><code>~/.cache/claude-doctrine/</code></pre>
@@ -1153,7 +1157,7 @@ ls -la ~/.claude 2>/dev/null</code></pre>
               這類 Harness 能顯著提升可信度。
             </p>
             <p>
-              真正的代價是 token 成本、執行時間，以及部分簡單任務可能因強制委派與驗證而顯得過重。
+              真正的代價是 token 成本、執行時間，以及部分簡單任務可能因強制派工與驗證而顯得過重。
               最理想的使用方式，是依任務風險分級：高風險任務完整套用，低風險任務採精簡流程。
             </p>
             <p>
@@ -1167,7 +1171,7 @@ ls -la ~/.claude 2>/dev/null</code></pre>
           <h2>十三、建議的導入策略</h2>
           <ol>
             <li><strong>先在獨立 WSL2 環境測試：</strong>避免直接改動主要工作環境。</li>
-            <li><strong>先選 Balanced 模式：</strong>觀察成本與驗證品質，不要一開始全部使用最高 effort。</li>
+            <li><strong>成本偏好先選中間檔：</strong>先觀察成本與驗證品質，不要一開始就把所有工作推到最高 effort。</li>
             <li><strong>挑三種任務驗證：</strong>小修改、中型功能、跨模組除錯各測一次。</li>
             <li><strong>記錄額外成本：</strong>比較安裝前後的 token、時間、返工次數與錯誤率。</li>
             <li><strong>建立風險分級：</strong>決定哪些任務需要 verifier，哪些可由主 session 直接完成。</li>
