@@ -27,8 +27,8 @@ below — do not invent its contents.
    Acceptance checks for substantive work are run by a fresh-context agent, not by whoever
    did the work; small inline edits may self-check (`20-judgment-rubrics.md` § 2 D2).
 3. **Backup before overwrite.** Before editing any file under `~/.claude/` (this file, docs,
-   agents), copy it to `~/.claude/backups/<name>.bak-<YYYY-MM-DD-HHMM>` first (time component
-   included, so a second same-day edit can't clobber the true pre-edit copy).
+   agents), copy it to `~/.claude/backups/<name>.bak-<YYYY-MM-DD-HHMMSS>` first (time component
+   down to the second, so even back-to-back edits can't clobber the true pre-edit copy).
 4. **Taste calls go to the user.** Visual design, tone, "which decent option" — produce 2–3
    genuinely different candidates with evidence (screenshots/samples) and let the user pick.
 5. **Don't self-anoint new doctrine.** Session-specific instructions (like a one-off task

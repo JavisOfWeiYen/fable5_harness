@@ -46,7 +46,8 @@ verifier, and every judgment call a small model tends to fumble is written down 
    If any `docs/` or `agents/` filename collides with an existing file, stop and ask the user
    how to resolve it — Step 1's copy must never silently overwrite a user's own agent or doc.
 3. Create `~/.claude/backups/` if missing, and back up every file you are about to touch as
-   `~/.claude/backups/<name>.bak-<YYYY-MM-DD-HHMM>`.
+   `~/.claude/backups/<name>.bak-<YYYY-MM-DD-HHMMSS>` (seconds included — several install
+   steps back up the same file minutes or seconds apart, and each snapshot must survive).
 4. Ask the user this one batch of questions (then proceed autonomously):
    - Cost preference: quality-first (default model `opus` for substantive delegation — the
      package default), balanced (`sonnet` default, `opus` for hard/critical), or budget
@@ -144,7 +145,9 @@ is how Step 4 verifies completion.
 5. **Permission allowlist (recommended):** heavy delegation multiplies permission prompts,
    and a background agent stuck on a prompt stalls silently. With the user, add their common
    safe read-only and test/verification commands to the permissions allowlist in
-   `~/.claude/settings.json` (back up first, Step 0, item 3 naming), so delegated verification can
+   `~/.claude/settings.json` (if the file doesn't exist yet, create it first with
+   `echo '{}' > ~/.claude/settings.json`; back it up first if it does exist — Step 0, item 3
+   naming), so delegated verification can
    run unattended. Only allowlist commands the user confirms; never allowlist anything
    destructive. **Before adding anything, state the blast radius to the user in plain terms**,
    roughly: "keep this list conservative — only commands that are certainly read-only or
@@ -167,9 +170,11 @@ is how Step 4 verifies completion.
    timeouts) up to 10 times with exponential backoff — during a provider outage a single spawn
    can look stuck for ~30 minutes. Explain the trade-off to the user (fail fast during outages
    vs. more resilience on a genuinely flaky network) and, if they accept, cap it at 3: back up
-   `~/.claude/settings.json` (Step 0, item 3 naming), then
+   `~/.claude/settings.json` if it exists (Step 0, item 3 naming — it may not exist yet, e.g.
+   when the user declined the hooks), then
 
    ```bash
+   [ -f ~/.claude/settings.json ] || echo '{}' > ~/.claude/settings.json
    tmp="$(mktemp)"
    jq '.env.CLAUDE_CODE_MAX_RETRIES = "3"' ~/.claude/settings.json > "$tmp" &&
    mv "$tmp" ~/.claude/settings.json && jq . ~/.claude/settings.json

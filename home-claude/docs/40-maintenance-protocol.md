@@ -6,8 +6,9 @@ they only stay useful if lessons flow back in and rot gets removed.
 
 ## 0. Always, before any edit under `~/.claude/`
 
-1. Copy the file to `~/.claude/backups/<name>.bak-<YYYY-MM-DD-HHMM>` (CLAUDE.md invariant 3;
-   the time component prevents a second same-day edit from clobbering the true pre-edit copy).
+1. Copy the file to `~/.claude/backups/<name>.bak-<YYYY-MM-DD-HHMMSS>` (CLAUDE.md invariant 3;
+   the seconds-level time component prevents even a back-to-back edit from clobbering the
+   true pre-edit copy).
 2. After the edit, `Read` the changed section back and confirm it says what you meant.
 3. If you changed a filename or added/removed a doc, update the routing table in
    `~/.claude/CLAUDE.md` in the same session — a routing table that points at missing files
