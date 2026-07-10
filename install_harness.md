@@ -147,7 +147,9 @@ is how Step 4 verifies completion.
    record any such edit in the Handoff entry.
 3. **`docs/50-letter-to-future-sessions.md`** — write § "Three things" for this user following
    the embedded INSTALLER comment (verified observations from this install, not guesses), and
-   replace the § Handoff template entry with your real install entry.
+   replace the § Handoff template entry with your real install entry. Include in that Handoff entry the upgrade baseline: `package commit: <hash>` from
+   `git rev-parse HEAD` run in this package directory — future upgrades diff from it (see
+   `upgrade_harness.md`).
 4. Optional, cheap wins if the information is at hand: replace the illustrative evidence
    bullets in `docs/00-harness-diagnosis.md` with locally measured ones (e.g. this user's
    largest frequently-edited file and its token cost); the worked example in
@@ -223,3 +225,6 @@ Nothing to invoke manually. `~/.claude/CLAUDE.md` auto-loads into every session;
 table sends sessions to the right doc when a trigger fires. To evolve the rules later, sessions
 must follow `docs/40-maintenance-protocol.md` (backup first; facts may be self-corrected when
 verified; rules and thresholds change only with user approval).
+
+When this package later gains improvements, upgrade the install with `git pull` +
+`upgrade_harness.md` — never by re-copying package files over the personalized install.

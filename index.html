@@ -907,6 +907,7 @@ printf '%s' '{"decision":"block","reason":"Doctrine check (once per session, wor
             <li>發現同名檔案衝突時停止，不直接覆蓋。</li>
             <li>既有 <code>CLAUDE.md</code> 採合併策略，而不是整份取代。</li>
             <li>安裝時詢問成本偏好、主要用途、回覆語言、互動風格（全自主／節點回報）、是否有 Fable 5 權限，以及 hooks 設定。</li>
+            <li>已安裝的機器由 <code>upgrade_harness.md</code> 升級：逐 hunk 移植、不覆蓋個人化；安裝時記錄 package commit，升級可精準 diff。</li>
             <li>偵測 WSL、Linux 工具與測試環境，避免殘留 placeholder。</li>
           </ul>
 

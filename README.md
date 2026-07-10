@@ -43,6 +43,10 @@ cd fable5_harness
 語言偏好、互動風格〔全自主或節點回報〕、有沒有 Fable 5 權限、要不要裝選配 hooks）→ 用你這台機器的實況填好佔位 → 驗證結果。檔案已預先通用化：
 規則與範例不綁定任何作業系統或專案類型，不會裝出錯誤的環境指令；未填的佔位會被驗證步驟（Step 4）擋下，安裝時不要猜測填值。
 
+之後要更新：在 package 目錄 `git pull` 拿新版，對 Claude 說「讀取 upgrade_harness.md，照著升級」。
+升級走逐 hunk 移植，不會覆蓋你機器上已個人化的檔案。裝完的 clone 建議留著，升級最省事
+（刪掉也行——安裝時 Handoff 已記錄 package commit，重新 clone 後仍能精準 diff）。
+
 > **permission allowlist 一步請保守**：只放確定唯讀／冪等的指令。這套會自主執行可逆步驟、
 > 平行派出背景 agent——allowlist 放什麼，整個 agent 艦隊就能無人值守做什麼。寧可多幾個
 > permission prompt，也不要放任何會寫檔、刪檔、對外送出或改設定的指令；清單就在
@@ -73,6 +77,7 @@ session 自動載入，不需再做任何事。
 | `home-claude/agents/hard-solver.md` | 為 Opus 調校的難題求解器：常規嘗試卡關後才派、會權衡多種解法、誠實回報信心與殘餘風險（opus，max effort）。刻意昂貴，少用 |
 | `CLAUDE.md`（根目錄） | bootstrap 引導檔：在此 repo 資料夾打開 Claude Code 會自動載入，把 Claude 導向 `install_harness.md`。不會被安裝進 `~/.claude/` |
 | `install_harness.md` | 安裝與在地化步驟（寫給安裝方的 Claude Code session 讀） |
+| `upgrade_harness.md` | 已安裝機器的升級步驟（寫給升級方的 Claude Code session 讀）：逐 hunk 移植、不覆蓋個人化檔、升級後重跑驗證 |
 | `optional-hooks.md` | 選配 hooks（安裝時詢問、合併進 `~/.claude/settings.json`；**POSIX sh + jq，僅適用 WSL/macOS/Linux**）：每個 session 第一次派 subagent 前注入「先讀派工守則」提醒；**真的做過事**（派過工或改過檔）的 session 第一次收尾前注入「完成要有執行證據」檢查——把兩個最關鍵的觸發從自律變成機制，純唯讀問答 session 零成本 |
 | `hooks.json` | 上述 hooks 的 JSON 範本；由 `optional-hooks.md` 的 append-safe 指令 **merge** 進 `~/.claude/settings.json`。**只能 merge、不可直接覆蓋**（覆蓋會清掉使用者既有的 settings） |
 | `index.html` | 本 repo 的單一評估報告：整體評估、安裝前後差異（六個關鍵時刻被改寫）、以及一次實測對照，合為一份卡片式文件。自包含 HTML，瀏覽器直接開。純佐證材料，不會被安裝進 `~/.claude/` |
