@@ -83,7 +83,9 @@ most: they execute the first lookup and pattern-complete the rest while assertin
 checked everything. "Small" describes the effort, not the risk. Demand per-item evidence
 (file:line + a verbatim quote from a lookup executed this turn; unchecked items declared as
 such — template 1 in `30-delegation-templates.md`), and when the answers will be relied on,
-run the lookup at `opus` or spot-check a sample.
+run the lookup at `opus` — via a `general-purpose` spawn carrying template 1's evidence
+contract, since `Explore` takes no `model` override — or spot-check a sample of the
+`Explore` results.
 
 ### Built-in agent types (verified in this harness)
 

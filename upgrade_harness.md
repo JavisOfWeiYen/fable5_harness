@@ -17,6 +17,8 @@ verification treats as failures. Upgrades port hunks; they never blind-copy pers
    - **Marker found:** the upstream changes are exactly
      `git diff <hash>..HEAD -- home-claude/ hooks.json optional-hooks.md` (run in the package
      directory). Work from this diff; do not re-derive it by eyeballing whole files.
+     **If the diff is empty, the install is already current** — tell the user, and stop here:
+     skip the remaining steps and do not append a Handoff entry for a zero-change upgrade.
    - **No marker (older install):** fall back to content comparison — for each package file,
      `diff` it against its installed counterpart. Every difference is either upstream change or
      local personalization; classify with the Step 1 table, and when a hunk could be either,

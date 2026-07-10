@@ -133,6 +133,9 @@ is how Step 4 verifies completion.
      `agents/implementer.md` and `agents/verifier.md`. Keep `hard-solver` on `opus` — the
      escalation ceiling is the last thing to trade away. Record these edits in the Handoff
      entry.
+   For *balanced* or *budget*, also rewrite the phrase "for this quality-first setup" in the
+   "Getting the most out of Opus" bullet to name the chosen preference (the high-effort
+   advice itself stays valid and stays).
    Update the "verified YYYY-MM-DD" date.
    **Fable 5 toggle (from Step 0):** if the user has NO Fable 5 access, delete the `fable` row
    from the model table — the § 5 escalation prose already reads correctly with `opus` as the
@@ -140,7 +143,7 @@ is how Step 4 verifies completion.
    **Opus performance:** to get the most out of Opus on hard work, prefer high `effort` for
    substantive delegated agents (pinned via an agent definition file — `verifier` already ships
    at high). The main session's effort is the user's own Claude Code setting, not something
-   these files control — recommend running it high for this quality-first setup. Verify the
+   these files control — recommend running it high (strongest fit under quality-first). Verify the
    available effort levels for this Opus build AND that agent-frontmatter `effort:` is
    honored at all (ask `claude-code-guide`; don't assume from memory). If a shipped level
    (e.g. `max`) is unsupported, edit that agent's `effort:` to the highest supported level;
