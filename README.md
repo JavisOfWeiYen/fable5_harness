@@ -75,7 +75,7 @@ session 自動載入，不需再做任何事。
 | `install_harness.md` | 安裝與在地化步驟（寫給安裝方的 Claude Code session 讀） |
 | `optional-hooks.md` | 選配 hooks（安裝時詢問、合併進 `~/.claude/settings.json`；**POSIX sh + jq，僅適用 WSL/macOS/Linux**）：每個 session 第一次派 subagent 前注入「先讀派工守則」提醒；**真的做過事**（派過工或改過檔）的 session 第一次收尾前注入「完成要有執行證據」檢查——把兩個最關鍵的觸發從自律變成機制，純唯讀問答 session 零成本 |
 | `hooks.json` | 上述 hooks 的 JSON 範本；由 `optional-hooks.md` 的 append-safe 指令 **merge** 進 `~/.claude/settings.json`。**只能 merge、不可直接覆蓋**（覆蓋會清掉使用者既有的 settings） |
-| `harness_impact_analysis.html` | 安裝前後差異分析報告：裝了什麼、哪些行為時刻被改寫、含一次實測對照。自包含 HTML，瀏覽器直接開。純佐證材料，不會被安裝進 `~/.claude/` |
+| `index.html` | 本 repo 的單一評估報告：整體評估、安裝前後差異（六個關鍵時刻被改寫）、以及一次實測對照，合為一份卡片式文件。自包含 HTML，瀏覽器直接開。純佐證材料，不會被安裝進 `~/.claude/` |
 
 ## 裝完之後長什麼樣
 
@@ -111,7 +111,7 @@ session 自動載入，不需再做任何事。
 
 > 誠實但書：以上是**從機制推理**的定位，不是實測 benchmark。想用數據說話，可拿同一批任務做
 > 「有制度 vs 沒制度」對照，看完成率／回頭修正次數／驗收通過率。根目錄的
-> [`harness_impact_analysis.html`](harness_impact_analysis.html) 含一次這類實測對照的差異分析，
+> [`index.html`](index.html) 這份單一評估報告，含安裝前後差異與一次這類實測對照，
 > 可直接用瀏覽器開。
 
 ## 由來

@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="fable5_harness repository review and deployment notes for Claude Code on WSL2." />
+  <title>fable5_harness Repo 評估報告</title>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --surface: #ffffff;
+      --surface-soft: #f8fafc;
+      --text: #172033;
+      --muted: #637083;
+      --border: #dce3ec;
+      --primary: #3157d5;
+      --primary-soft: #edf2ff;
+      --success: #13795b;
+      --success-soft: #eaf8f2;
+      --warning: #9a5a00;
+      --warning-soft: #fff5df;
+      --danger: #a23a3a;
+      --danger-soft: #fff0f0;
+      --code-bg: #111827;
+      --code-text: #e5edf8;
+      --shadow: 0 12px 34px rgba(23, 32, 51, 0.08);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      font-family:
+        Inter, "Noto Sans TC", "Microsoft JhengHei",
+        system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top right, rgba(49, 87, 213, 0.10), transparent 30rem),
+        linear-gradient(180deg, #f7f9fd 0%, var(--bg) 100%);
+      line-height: 1.75;
+    }
+
+    a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    a:hover { text-decoration: underline; }
+
+    .page {
+      width: min(1120px, calc(100% - 32px));
+      margin: 32px auto 72px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 56px;
+      border-radius: 28px;
+      color: #fff;
+      background:
+        linear-gradient(135deg, rgba(16, 24, 40, 0.98), rgba(41, 74, 180, 0.96));
+      box-shadow: var(--shadow);
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 340px;
+      height: 340px;
+      right: -120px;
+      top: -130px;
+      border: 1px solid rgba(255,255,255,.24);
+      border-radius: 50%;
+      box-shadow:
+        0 0 0 48px rgba(255,255,255,.05),
+        0 0 0 96px rgba(255,255,255,.035);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 20px;
+      padding: 7px 12px;
+      border: 1px solid rgba(255,255,255,.22);
+      border-radius: 999px;
+      background: rgba(255,255,255,.08);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 820px;
+      margin: 0;
+      font-size: clamp(36px, 6vw, 66px);
+      line-height: 1.08;
+      letter-spacing: -.035em;
+    }
+
+    .hero p {
+      max-width: 820px;
+      margin: 24px 0 0;
+      color: rgba(255,255,255,.84);
+      font-size: 18px;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px 24px;
+      margin-top: 30px;
+      color: rgba(255,255,255,.76);
+      font-size: 14px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 290px;
+      gap: 28px;
+      margin-top: 28px;
+      align-items: start;
+    }
+
+    main { min-width: 0; }
+
+    aside {
+      position: sticky;
+      top: 20px;
+    }
+
+    .panel,
+    .toc,
+    .summary-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.93);
+      box-shadow: var(--shadow);
+    }
+
+    .panel {
+      padding: 34px;
+      margin-bottom: 24px;
+    }
+
+    .toc,
+    .summary-card {
+      padding: 22px;
+      margin-bottom: 18px;
+    }
+
+    .toc h2,
+    .summary-card h2 {
+      margin: 0 0 14px;
+      font-size: 17px;
+    }
+
+    .toc nav {
+      display: grid;
+      gap: 6px;
+    }
+
+    .toc a {
+      display: block;
+      padding: 8px 10px;
+      border-radius: 10px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .toc a:hover {
+      background: var(--primary-soft);
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    h2 {
+      margin: 0 0 16px;
+      font-size: 28px;
+      line-height: 1.3;
+      letter-spacing: -.02em;
+    }
+
+    h3 {
+      margin: 26px 0 10px;
+      font-size: 20px;
+      line-height: 1.4;
+    }
+
+    p { margin: 12px 0; }
+
+    ul, ol {
+      padding-left: 1.35em;
+    }
+
+    li { margin: 7px 0; }
+
+    .lead {
+      color: #344055;
+      font-size: 18px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin: 22px 0 4px;
+    }
+
+    .mini-card {
+      padding: 18px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--surface-soft);
+    }
+
+    .mini-card strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 16px;
+    }
+
+    .mini-card span {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .callout {
+      margin: 22px 0;
+      padding: 18px 20px;
+      border-left: 5px solid var(--primary);
+      border-radius: 0 14px 14px 0;
+      background: var(--primary-soft);
+    }
+
+    .callout.success {
+      border-left-color: var(--success);
+      background: var(--success-soft);
+    }
+
+    .callout.warning {
+      border-left-color: var(--warning);
+      background: var(--warning-soft);
+    }
+
+    .callout.danger {
+      border-left-color: var(--danger);
+      background: var(--danger-soft);
+    }
+
+    .callout strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    pre {
+      overflow-x: auto;
+      margin: 18px 0;
+      padding: 18px 20px;
+      border-radius: 14px;
+      background: var(--code-bg);
+      color: var(--code-text);
+      font: 14px/1.65 "Cascadia Code", "SFMono-Regular", Consolas, monospace;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.05);
+    }
+
+    code {
+      padding: .12em .38em;
+      border-radius: 6px;
+      background: #eef1f6;
+      font-family: "Cascadia Code", "SFMono-Regular", Consolas, monospace;
+      font-size: .92em;
+    }
+
+    pre code {
+      padding: 0;
+      background: transparent;
+    }
+
+    .decision-table {
+      width: 100%;
+      margin: 20px 0;
+      border-collapse: collapse;
+      border-spacing: 0;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--surface);
+      font-size: 14px;
+    }
+
+    .decision-table th,
+    .decision-table td {
+      padding: 13px 14px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .decision-table th {
+      background: var(--surface-soft);
+      color: #344055;
+      font-weight: 750;
+    }
+
+    .decision-table tr:last-child td { border-bottom: 0; }
+
+    .mode-label {
+      display: inline-block;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: var(--primary-soft);
+      color: var(--primary);
+      font-size: 12px;
+      font-weight: 750;
+      white-space: nowrap;
+    }
+
+    .mode-label.full {
+      background: var(--warning-soft);
+      color: var(--warning);
+    }
+
+    .mode-label.direct {
+      background: var(--success-soft);
+      color: var(--success);
+    }
+
+    .flow {
+      display: grid;
+      gap: 0;
+      max-width: 660px;
+      margin: 24px auto 8px;
+      text-align: center;
+    }
+
+    .flow-step {
+      padding: 15px 18px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--surface-soft);
+      font-weight: 700;
+    }
+
+    .arrow {
+      padding: 5px 0;
+      color: var(--primary);
+      font-size: 22px;
+      line-height: 1;
+    }
+
+    .score {
+      display: grid;
+      gap: 11px;
+    }
+
+    .score-row {
+      display: grid;
+      grid-template-columns: 88px 1fr;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .score-row strong {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .meter {
+      height: 9px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #e7ebf1;
+    }
+
+    .meter span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #3157d5, #6e8cff);
+    }
+
+    .verdict {
+      padding: 24px;
+      border: 1px solid #bed1ff;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #f4f7ff, #edf2ff);
+    }
+
+    .verdict h3 {
+      margin-top: 0;
+      color: #233f9b;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    footer {
+      margin-top: 24px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 13px;
+    }
+
+    /* ---- merged report: causes, six-moments, comparison, ladder, code figures ---- */
+    .causes {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin: 22px 0 4px;
+    }
+
+    .cause {
+      padding: 18px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--surface-soft);
+    }
+
+    .cause .num {
+      display: inline-block;
+      margin-bottom: 8px;
+      padding: 2px 9px;
+      border-radius: 999px;
+      background: var(--primary-soft);
+      color: var(--primary);
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .cause h3 { margin: 4px 0 6px; font-size: 16px; }
+
+    .cause p { margin: 0; color: var(--muted); font-size: 14px; }
+
+    .moment { margin: 26px 0; }
+
+    .moment + .moment {
+      padding-top: 22px;
+      border-top: 1px solid var(--border);
+    }
+
+    .moment-title {
+      margin: 0 0 12px;
+      color: var(--primary);
+      font-size: 16px;
+      font-weight: 750;
+      letter-spacing: .02em;
+    }
+
+    .compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin: 12px 0;
+    }
+
+    .side {
+      padding: 16px 18px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--surface-soft);
+    }
+
+    .side.have {
+      border-color: #bfe0d0;
+      background: var(--success-soft);
+    }
+
+    .side p { margin: 0; }
+
+    .side-label {
+      display: inline-block;
+      margin-bottom: 8px !important;
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: #e7ebf1;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 750;
+      letter-spacing: .03em;
+    }
+
+    .side.have .side-label {
+      background: #d3efe0;
+      color: var(--success);
+    }
+
+    .code-fig { margin: 16px 0; }
+
+    .code-fig figcaption {
+      margin-bottom: 6px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    .code-fig pre { margin: 0; }
+
+    .ladder {
+      list-style: none;
+      display: grid;
+      gap: 8px;
+      margin: 16px 0;
+      padding: 0;
+    }
+
+    .ladder li {
+      display: flex;
+      gap: 14px;
+      align-items: baseline;
+      margin: 0;
+      padding: 11px 15px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--surface-soft);
+    }
+
+    .ladder li b {
+      min-width: 104px;
+      color: var(--primary);
+      font-family: "Cascadia Code", "SFMono-Regular", Consolas, monospace;
+      font-size: 14px;
+    }
+
+    .ladder li span { color: var(--muted); font-size: 14px; }
+
+    .decision-table td.good { color: var(--success); font-weight: 600; }
+    .decision-table td.bad { color: var(--danger); }
+
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: 1fr; }
+      aside { position: static; }
+      .cards { grid-template-columns: 1fr; }
+      .causes { grid-template-columns: 1fr; }
+      .compare { grid-template-columns: 1fr; }
+      .hero { padding: 38px 28px; }
+      .panel { padding: 26px; }
+    }
+
+    @media print {
+      body { background: #fff; }
+      .page { width: 100%; margin: 0; }
+      .hero, .panel, .toc, .summary-card {
+        box-shadow: none;
+        break-inside: avoid;
+      }
+      aside { position: static; }
+      .grid { grid-template-columns: 1fr; }
+      .toc { display: none; }
+      a { color: inherit; text-decoration: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="hero">
+      <div class="eyebrow">Repository Review</div>
+      <h1>fable5_harness<br />Repo 評估報告</h1>
+      <p>
+        一套針對 Claude Code 設計的 Harness Engineering 工作制度，
+        透過角色分工、執行證據與獨立驗收，降低複雜開發任務中的誤判與「假完成」。
+      </p>
+      <div class="hero-meta">
+        <span>Repository：JavisOfWeiYen/fable5_harness</span>
+        <span>適用環境：Claude Code、WSL2、Linux、macOS</span>
+        <span>評估情境：獨立 WSL2 測試環境</span>
+      </div>
+    </header>
+
+    <div class="grid">
+      <main>
+        <section class="panel" id="overview">
+          <h2>一、這個 Repo 是什麼</h2>
+          <p class="lead">
+            <strong>fable5_harness 不是一般程式套件，也不是模型或 Agent Framework。</strong>
+            它比較像是一套安裝到 Claude Code 使用者環境中的「工程工作制度包」。
+          </p>
+          <p>
+            實際安裝的東西其實很少：一份精簡的 router、六份制度文件、三個自訂 agent，以及兩個選配 hooks。
+            它不新增任何產品介面；真正改變的，是 Claude Code 在每次派工、驗收、卡關與收尾時的工作姿勢。
+          </p>
+          <p>安裝後，主要內容會放入：</p>
+          <pre><code>~/.claude/</code></pre>
+
+          <div class="cards">
+            <div class="mini-card">
+              <strong>主 Session 指揮化</strong>
+              <span>主 Claude session 以拆解、派工與決策為主，避免自己承擔所有探索與實作。</span>
+            </div>
+            <div class="mini-card">
+              <strong>完成必須有證據</strong>
+              <span>不能只看程式碼或修改紀錄，就宣稱任務已經完成。</span>
+            </div>
+            <div class="mini-card">
+              <strong>實作與驗收分離</strong>
+              <span>由 fresh-context verifier 重新執行驗證，降低實作者自我確認偏誤。</span>
+            </div>
+          </div>
+
+          <div class="callout success">
+            <strong>核心價值</strong>
+            它將 Claude Code 從「會寫程式的助手」，轉變為更接近有明確分工、驗收與治理流程的 AI 工程團隊。
+          </div>
+        </section>
+
+        <section class="panel" id="structure">
+          <h2>二、安裝後的主要結構</h2>
+          <pre><code>~/.claude/
+├── CLAUDE.md
+├── docs/
+│   ├── 00-harness-diagnosis.md
+│   ├── 10-model-dispatch.md
+│   ├── 20-judgment-rubrics.md
+│   ├── 30-delegation-templates.md
+│   ├── 40-maintenance-protocol.md
+│   └── 50-letter-to-future-sessions.md
+├── agents/
+│   ├── implementer.md
+│   ├── verifier.md
+│   └── hard-solver.md
+└── backups/</code></pre>
+
+          <h3>全域 CLAUDE.md</h3>
+          <p>
+            全域 <code>CLAUDE.md</code> 的定位不是塞入所有規則，而是作為一個精簡的
+            <strong>制度路由器</strong>：告訴 Claude 在不同情境下，應該讀取哪一份規範文件，
+            並維持少數不可被忽略的核心原則。
+          </p>
+
+          <h3>六份制度文件的分工</h3>
+          <ul>
+            <li><code>docs/10-model-dispatch.md</code>：模型選擇、派工、升降級與驗證契約。</li>
+            <li><code>docs/20-judgment-rubrics.md</code>：完成、升級、停下問人與方向判斷的判準。</li>
+            <li><code>docs/30-delegation-templates.md</code>：五種常見任務的 prompt 骨架。</li>
+            <li><code>docs/40-maintenance-protocol.md</code>：制度本身如何被安全更新。</li>
+            <li><code>docs/00-harness-diagnosis.md</code> 與 <code>docs/50-letter-to-future-sessions.md</code>：退化模式診斷與跨 session 交接。</li>
+          </ul>
+
+          <h3>三個自訂 Agent</h3>
+          <ul>
+            <li><strong>implementer：</strong>負責實作與自我測試，但不負責最終驗收。</li>
+            <li><strong>verifier：</strong>只接收驗收條件與成果位置，以 fresh context 再次執行測試。</li>
+            <li><strong>hard-solver：</strong>只有在一般策略已失敗、問題確實困難時才啟用。</li>
+          </ul>
+
+          <div class="callout">
+            <strong>真正生效的是 <code>~/.claude/</code> 內的 payload</strong>
+            Repo 根目錄本身只是 installer package；安裝完成後可以刪除，實際發揮作用的是被複製進使用者環境的這些檔案。
+          </div>
+        </section>
+
+        <section class="panel" id="workflow">
+          <h2>三、它如何改變 Claude Code 的工作方式</h2>
+          <p>
+            安裝後，Claude Code 面對較複雜的任務，會傾向遵循以下流程：
+          </p>
+
+          <div class="flow" aria-label="Harness workflow">
+            <div class="flow-step">使用者提出需求</div>
+            <div class="arrow">↓</div>
+            <div class="flow-step">主 Session 拆解需求與定義驗收標準</div>
+            <div class="arrow">↓</div>
+            <div class="flow-step">Implementer 或其他 Subagent 執行</div>
+            <div class="arrow">↓</div>
+            <div class="flow-step">回報修改檔案、測試結果與執行證據</div>
+            <div class="arrow">↓</div>
+            <div class="flow-step">Verifier 以 Fresh Context 再驗證</div>
+            <div class="arrow">↓</div>
+            <div class="flow-step">通過後才能向使用者宣稱完成</div>
+          </div>
+
+          <div class="callout">
+            <strong>「完成」的定義更嚴格</strong>
+            每一項驗收條件都需要對應的執行證據；重要工作還應接受獨立驗證，並檢查至少一項最可能發生的回歸問題。
+          </div>
+        </section>
+
+        <section class="panel" id="causes">
+          <h2>四、安裝之前的三個根因</h2>
+          <p class="lead">
+            要理解上面的流程解決了什麼，得先看沒有制度時會出什麼問題。
+            問題不在於模型完全不能做事，而在於它會在幾個固定位置用錯工作方式。
+          </p>
+          <div class="causes">
+            <article class="cause">
+              <span class="num">01</span>
+              <h3>主對話自己下場做粗活</h3>
+              <p>整檔讀大檔、反覆看截圖、批次改檔都塞進主對話。context 撐爆後觸發壓縮，模型開始忘記前面講好的限制。</p>
+            </article>
+            <article class="cause">
+              <span class="num">02</span>
+              <h3>沒有常駐制度</h3>
+              <p>每個新 session 都重新摸索怎麼跑、怎麼驗、你偏好什麼；學到的教訓沒有固定去處。</p>
+            </article>
+            <article class="cause">
+              <span class="num">03</span>
+              <h3>完成由模型自己說了算</h3>
+              <p>「程式看起來沒問題」不是證據。沒跑測試、沒打開頁面、沒讀回檔案，就只是宣稱。</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="panel" id="changes">
+          <h2>五、六個關鍵時刻被改寫</h2>
+          <p class="lead">
+            Harness 的價值不在新功能，而在把上述容易失手的時刻，變成有規則、有證據、有交接的流程。
+            以下六個時刻，各以「無 harness」與「有 harness」對照，並附上實際生效的制度片段。
+          </p>
+
+          <article class="moment">
+            <p class="moment-title">01 · 開場</p>
+            <div class="compare">
+              <div class="side none">
+                <p class="side-label">無 harness</p>
+                <p>session 是白紙。模型靠直覺猜這台機器、這個使用者、這個 repo 的工作方式。</p>
+              </div>
+              <div class="side have">
+                <p class="side-label">有 harness</p>
+                <p>根 router 自動載入：觸發派工、驗收、維護、複雜任務時，先讀對應制度文件。</p>
+              </div>
+            </div>
+            <figure class="code-fig">
+              <figcaption>CLAUDE.md excerpt</figcaption>
+<pre><code>| Trigger                       | Read                         |
+|-------------------------------|------------------------------|
+| About to spawn a subagent     | docs/10-model-dispatch.md    |
+| About to say a task is done   | docs/20-judgment-rubrics.md  |
+| Writing a delegation prompt   | docs/30-delegation-templates.md |</code></pre>
+            </figure>
+          </article>
+
+          <article class="moment">
+            <p class="moment-title">02 · 主對話</p>
+            <div class="compare">
+              <div class="side none">
+                <p class="side-label">無 harness</p>
+                <p>主對話是工人：親自掃 repo、親自讀長檔、親自跑迭代。context 被拿去當工作台。</p>
+              </div>
+              <div class="side have">
+                <p class="side-label">有 harness</p>
+                <p>主對話是指揮官：粗活派給 subagent，回來只收結論、證據與 file:line。</p>
+              </div>
+            </div>
+            <figure class="code-fig">
+              <figcaption>delegation skeleton</figcaption>
+<pre><code>GOAL: {要完成什麼}
+WHY: {這件事服務哪個使用者目標}
+ACCEPTANCE:
+  - {可執行、可判定的條件}
+REPORT:
+  - PASS/FAIL per criterion, evidence attached</code></pre>
+            </figure>
+          </article>
+
+          <article class="moment">
+            <p class="moment-title">03 · 完成</p>
+            <div class="compare">
+              <div class="side none">
+                <p class="side-label">無 harness</p>
+                <p>「我實作了，所以應該會動。」沒有瀏覽器、沒有測試、沒有 read-back。</p>
+              </div>
+              <div class="side have">
+                <p class="side-label">有 harness</p>
+                <p>完成必須有執行證據；實質工作由 fresh-context verifier 驗收，做的人不自驗。</p>
+              </div>
+            </div>
+            <figure class="code-fig">
+              <figcaption>verifier report</figcaption>
+<pre><code>VERDICT: PASS
+1. PASS — diff exited 0; cmp confirms byte-identical
+2. PASS — zero INSTALLER placeholders remain
+3. PASS — all routing targets exist on disk</code></pre>
+            </figure>
+          </article>
+
+          <article class="moment">
+            <p class="moment-title">04 · 卡關</p>
+            <div class="compare">
+              <div class="side none">
+                <p class="side-label">無 harness</p>
+                <p>同一招重試第五次，越修越大，卻說不清楚為什麼這一步還服務目標。</p>
+              </div>
+              <div class="side have">
+                <p class="side-label">有 harness</p>
+                <p>升級與換路都有條件：同一子任務錯兩次升級；第三輪必須換模型、換拆法或問使用者。</p>
+              </div>
+            </div>
+            <ul class="ladder">
+              <li><b>sonnet</b><span>日常明確任務。</span></li>
+              <li><b>opus</b><span>同一子任務失敗兩次，附完整失敗軌跡。</span></li>
+              <li><b>hard-solver</b><span>常規嘗試卡死後的 max effort 最後手段。</span></li>
+              <li><b>user</b><span>品味題、破壞性操作、真正有歧義的選擇。</span></li>
+            </ul>
+          </article>
+
+          <article class="moment">
+            <p class="moment-title">05 · 紀律</p>
+            <div class="compare">
+              <div class="side none">
+                <p class="side-label">無 harness</p>
+                <p>規則寫在文件裡，但模型略讀後照舊。制度靠自律，最容易退化。</p>
+              </div>
+              <div class="side have">
+                <p class="side-label">有 harness</p>
+                <p>once-per-session hooks 在第一次派工前注入提醒；做過事（派過工或改過檔）的 session 第一次收工前注入 done-check——把最高價值觸發變成機制，純問答 session 零成本。</p>
+              </div>
+            </div>
+            <figure class="code-fig">
+              <figcaption>Stop hook excerpt</figcaption>
+<pre><code>in=$(cat)
+[ "$(printf '%s' "$in" | jq -r .stop_hook_active)" = "true" ] &amp;&amp; exit 0
+sid=$(printf '%s' "$in" | jq -r .session_id)
+{ [ -n "$sid" ] &amp;&amp; [ "$sid" != null ]; } || sid=$$
+d="${XDG_CACHE_HOME:-$HOME/.cache}/claude-doctrine"
+[ -e "$d/claude-doctrine-dispatch-$sid" ] || [ -e "$d/claude-doctrine-work-$sid" ] || exit 0
+m="$d/claude-doctrine-stop-$sid"
+[ -e "$m" ] &amp;&amp; exit 0
+touch "$m"
+printf '%s' '{"decision":"block","reason":"Doctrine check (once per session, work sessions only): if this turn claimed work is done, confirm it meets ~/.claude/docs/20-judgment-rubrics.md section 2 — executed evidence, fresh-context check for substantive work, likeliest regression checked, reported plainly. If the turn made no completion claim, or the evidence is already stated, end the turn now."}'</code></pre>
+            </figure>
+          </article>
+
+          <article class="moment">
+            <p class="moment-title">06 · 記憶</p>
+            <div class="compare">
+              <div class="side none">
+                <p class="side-label">無 harness</p>
+                <p>你糾正過的事，只活在這個 session。下個 session 又踩一次。</p>
+              </div>
+              <div class="side have">
+                <p class="side-label">有 harness</p>
+                <p>教訓有去處：專案事實進 memory，跨專案 doctrine 進 docs，handoff 進 logbook；改規則先問人。</p>
+              </div>
+            </div>
+            <figure class="code-fig">
+              <figcaption>lesson format</figcaption>
+<pre><code>- 2026-07-07 · trigger: {發生了什麼}
+  · rule: {下次該怎麼做}
+  · evidence: {怎麼知道的}</code></pre>
+            </figure>
+          </article>
+        </section>
+
+        <section class="panel" id="evidence">
+          <h2>六、一次實測對照</h2>
+          <p class="lead">
+            同一份需求，沒裝與裝了 harness 各做一次。這不是統計結論，而是機制差異的一個切片。
+          </p>
+          <table class="decision-table">
+            <thead>
+              <tr>
+                <th>觀察點</th>
+                <th>無制度</th>
+                <th>有制度</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>驗證環境</td>
+                <td class="bad">V8 引擎 + 假 DOM，沒有真瀏覽器</td>
+                <td class="good">Playwright + 無頭 Chromium，真頁面</td>
+              </tr>
+              <tr>
+                <td>視覺驗證</td>
+                <td class="bad">0 張截圖，canvas 被 stub 成 no-op</td>
+                <td class="good">2 張真實截圖，確認 bumper 發光、計分、生命數</td>
+              </tr>
+              <tr>
+                <td>首輪通過</td>
+                <td class="bad">未載明，報告稱全過</td>
+                <td class="good">9/11 → 修一行 → 11/11；失敗證明測試真的在測</td>
+              </tr>
+              <tr>
+                <td>Console</td>
+                <td class="bad">無從得知</td>
+                <td class="good">實測為零錯誤</td>
+              </tr>
+              <tr>
+                <td>可重用資產</td>
+                <td class="bad">無</td>
+                <td class="good">瀏覽器驗證管線寫回記憶，後續 session 可沿用</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="callout success">
+            <strong>最鋒利的差異只有一句話</strong>
+            兩邊都「跑了測試」，但只有一邊真的看見了自己做出來的東西。
+          </div>
+        </section>
+
+        <section class="panel" id="installation">
+          <h2>七、安裝機制的優點</h2>
+          <p>
+            這個 Repo 並不是單純提供一組檔案讓使用者直接複製。它刻意把安裝本身也設計成一個受控流程。
+          </p>
+          <ul>
+            <li>先檢查既有的 <code>~/.claude/CLAUDE.md</code>、<code>docs</code> 與 <code>agents</code>。</li>
+            <li>修改前先備份現有檔案。</li>
+            <li>發現同名檔案衝突時停止，不直接覆蓋。</li>
+            <li>既有 <code>CLAUDE.md</code> 採合併策略，而不是整份取代。</li>
+            <li>安裝時詢問成本偏好、主要用途、回覆語言與 hooks 設定。</li>
+            <li>偵測 WSL、Linux 工具與測試環境，避免殘留 placeholder。</li>
+          </ul>
+
+          <div class="callout warning">
+            <strong>不要使用整批 cp 直接覆蓋</strong>
+            正確方式應遵循 Repo 提供的安裝流程，尤其 <code>hooks.json</code> 應合併進既有設定，
+            不應直接覆蓋 <code>~/.claude/settings.json</code>。
+          </div>
+
+          <h3>安裝範圍：同一個使用者環境只需一次</h3>
+          <p>
+            Harness 安裝在 Linux 使用者層級的 <code>~/.claude/</code>，因此同一個 WSL2 instance、
+            同一個 Linux 使用者只需要安裝一次。之後從該環境進入不同專案並啟動 Claude Code，
+            都會共用這套全域制度；各專案只需另外提供自己的專案層級 <code>CLAUDE.md</code>。
+          </p>
+          <div class="callout success">
+            <strong>何時才需要重新安裝</strong>
+            換成另一個 WSL2 instance、另一個 Linux 使用者，或刪除並重建原本環境時，才需要再次安裝。
+          </div>
+        </section>
+
+        <section class="panel" id="hooks">
+          <h2>八、選配 Hooks 的作用</h2>
+          <p>
+            Hooks 需要 <code>jq</code>，主要支援 WSL、Linux 與 macOS。它們的目的不是增加功能，
+            而是強制工作流程在重要節點進行自我檢查。
+          </p>
+          <ul>
+            <li>第一次派出 subagent 前，提醒 Claude 讀取派工制度。</li>
+            <li>進行過實質工作後，在 session 首次準備結束時，要求重新檢查完成標準。</li>
+          </ul>
+
+          <p>Session marker 會放在：</p>
+          <pre><code>~/.cache/claude-doctrine/</code></pre>
+
+          <p>
+            從設計目的來看，hooks 不只是「提醒」，而是把流程治理嵌入 Claude Code 的執行生命週期。
+          </p>
+        </section>
+
+        <section class="panel" id="risks">
+          <h2>九、需要注意的成本與風險</h2>
+
+          <h3>1. Token 成本與執行時間會提高</h3>
+          <p>
+            一項工作可能經歷「實作」與「獨立驗證」兩次模型執行；若使用高階模型與高 effort，
+            成本與等待時間都會明顯增加。
+          </p>
+
+          <h3>2. 小任務可能變得過重</h3>
+          <p>
+            強制派工與驗收很適合大型、風險高或容易誤判的任務，但對改一行文字、
+            查一個設定等簡單工作，流程成本可能大於實際收益。
+          </p>
+
+          <h3>3. 模型與 Agent 格式可能隨版本變化</h3>
+          <p>
+            Claude Code 支援的模型 alias、effort 值與 agent frontmatter 可能改變，
+            安裝時應重新驗證，不能長期假設既有設定永遠有效。
+          </p>
+
+          <h3>4. 目前不是一鍵式 Plugin</h3>
+          <p>
+            這套制度依賴全域 <code>~/.claude/CLAUDE.md</code>、環境偵測與設定合併，
+            因此本質上比一般 plugin 更接近一套「使用者層級的工程治理配置」。
+          </p>
+
+          <h3>5. 誠實的邊界：制度做不到的事</h3>
+          <ul>
+            <li><strong>不提高能力天花板。</strong>遇到超出模型推理上限的題，再多流程也不會把它變成更大的模型。</li>
+            <li><strong>不補品味。</strong>視覺方向、文風、兩個都不錯選哪個，制度要求模型提出 2–3 個候選並交給你決定。</li>
+          </ul>
+          <p class="muted">
+            換句話說，制度的價值有一半在於承認邊界：它提升的是工作的下限與可驗證性，而不是能力的上限。
+          </p>
+
+          <div class="callout danger">
+            <strong>實務風險</strong>
+            若規則過度僵化，Claude 可能為了符合流程而製造不必要的 agent、驗證與報告，
+            因此需要依任務風險調整制度強度，而不是所有任務一體適用。
+          </div>
+        </section>
+
+        <section class="panel" id="lightweight">
+          <h2>十、簡單任務如何避免「殺雞用牛刀」</h2>
+          <p class="lead">
+            對簡單任務，最好的做法通常不是完全停用 Harness，而是改用
+            <strong>lightweight inline mode</strong>：由主 session 直接處理，不派出 implementer，
+            也不啟動 fresh-context verifier，但仍保留最小必要驗證。
+          </p>
+
+          <h3>適合輕量模式的任務</h3>
+          <ul>
+            <li>讀取已知檔案的一小段內容。</li>
+            <li>執行一次明確且範圍有限的搜尋或命令。</li>
+            <li>修改一個已經理解的檔案，例如錯字、CSS 間距或單一設定值。</li>
+            <li>純問答、程式碼解釋或錯誤訊息分析，且不涉及實際修改。</li>
+          </ul>
+
+          <h3>Small inline task 的判斷原則</h3>
+          <p>依此 Repo 的工作判準，通常需同時符合以下條件：</p>
+          <ol>
+            <li>只修改一個檔案。</li>
+            <li>修改規模不超過約 50 行。</li>
+            <li>不是將被正式執行、發布或高度依賴的重要成果。</li>
+          </ol>
+          <p class="muted">
+            即使修改行數很少，只要涉及部署、正式 API、權限、安全性、資料遷移或高風險腳本，仍應採完整驗證流程。
+          </p>
+
+          <h3>建議直接使用的指令</h3>
+          <pre><code>這是小型任務，使用 lightweight inline mode：
+- 由主 session 直接完成
+- 不派 subagent
+- 不啟用 implementer
+- 不啟用 fresh-context verifier
+- 只做最小必要修改
+- 完成後執行最小相關檢查並回報結果</code></pre>
+
+          <table class="decision-table">
+            <thead>
+              <tr>
+                <th>任務類型</th>
+                <th>建議模式</th>
+                <th>最低驗證方式</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>修正文案錯字、格式或單一 CSS 間距</td>
+                <td><span class="mode-label direct">Inline</span></td>
+                <td>Read-back 或重新載入頁面</td>
+              </tr>
+              <tr>
+                <td>修改一個變數名稱或單一設定值</td>
+                <td><span class="mode-label direct">Inline</span></td>
+                <td>執行最相關的單元測試或設定檢查</td>
+              </tr>
+              <tr>
+                <td>純問答、程式碼說明、錯誤訊息分析</td>
+                <td><span class="mode-label">Direct Q&amp;A</span></td>
+                <td>通常不需要實作型驗證</td>
+              </tr>
+              <tr>
+                <td>修改部署腳本、正式 API 或安全性設定</td>
+                <td><span class="mode-label full">Full Harness</span></td>
+                <td>實際執行測試加獨立 verifier</td>
+              </tr>
+              <tr>
+                <td>跨模組除錯、新功能或多檔案修改</td>
+                <td><span class="mode-label full">Full Harness</span></td>
+                <td>驗收條件、執行證據與回歸測試</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="callout success">
+            <strong>關鍵原則</strong>
+            輕量模式不是完全跳過品質檢查，而是把「多 Agent 獨立驗證」縮減為「主 session 的最小必要驗證」。
+          </div>
+
+          <h3>什麼時候才需要完全停用</h3>
+          <p>
+            只有在要做安裝前後的基準比較、排查 Harness 本身是否干擾行為，或進行完全無制度的對照實驗時，
+            才建議暫時停用全域規則：
+          </p>
+          <pre><code>mv ~/.claude/CLAUDE.md ~/.claude/CLAUDE.md.disabled
+# 重新啟動 Claude Code 後進行測試
+
+mv ~/.claude/CLAUDE.md.disabled ~/.claude/CLAUDE.md</code></pre>
+          <div class="callout warning">
+            <strong>Hooks 需另外處理</strong>
+            若安裝時已啟用 hooks，單純改名 <code>CLAUDE.md</code> 不會停用 hooks；
+            還需暫時移除或停用 <code>~/.claude/settings.json</code> 中對應設定。日常小任務不建議採用這種方式。
+          </div>
+        </section>
+
+        <section class="panel" id="wsl">
+          <h2>十一、在獨立 WSL2 環境中測試的意義</h2>
+          <p>
+            在任一 WSL2 instance 的 Linux 使用者環境中安裝後，檔案會位於：
+          </p>
+          <pre><code>$HOME/.claude/</code></pre>
+
+          <p>
+            這些設定只會影響該 Linux 使用者環境內執行的 Claude Code，不會自動套用到其他 WSL2 instance。
+            因此，乾淨且獨立的 WSL2 instance 很適合作為可刪除、可重建的隔離測試環境。
+          </p>
+
+          <h3>建議安裝流程</h3>
+          <pre><code>cd ~
+
+git clone https://github.com/JavisOfWeiYen/fable5_harness.git
+
+cd fable5_harness
+
+claude</code></pre>
+
+          <p>進入 Claude Code 後輸入：</p>
+          <pre><code>讀取 install_harness.md，照著裡面的步驟安裝。</code></pre>
+
+          <h3>安裝前環境檢查</h3>
+          <pre><code>echo "$WSL_DISTRO_NAME"
+which claude
+claude --version
+command -v jq || echo "jq 尚未安裝"
+ls -la ~/.claude 2>/dev/null</code></pre>
+        </section>
+
+        <section class="panel" id="assessment">
+          <h2>十二、整體評估</h2>
+
+          <div class="score">
+            <div class="score-row">
+              <strong>制度完整度</strong>
+              <div class="meter"><span style="width: 92%"></span></div>
+            </div>
+            <div class="score-row">
+              <strong>安全性</strong>
+              <div class="meter"><span style="width: 88%"></span></div>
+            </div>
+            <div class="score-row">
+              <strong>可維護性</strong>
+              <div class="meter"><span style="width: 82%"></span></div>
+            </div>
+            <div class="score-row">
+              <strong>成本效率</strong>
+              <div class="meter"><span style="width: 62%"></span></div>
+            </div>
+            <div class="score-row">
+              <strong>適合複雜任務</strong>
+              <div class="meter"><span style="width: 94%"></span></div>
+            </div>
+          </div>
+
+          <div class="verdict">
+            <h3>結論</h3>
+            <p>
+              <strong>概念完整，對既有設定的保護也相當仔細，適合先在獨立的 WSL2 測試環境中驗證。</strong>
+            </p>
+            <p>
+              它最有價值的地方，不是增加更多 prompt，而是建立一套可被遵循、檢查與驗證的
+              AI 工程工作制度。對長時間、跨檔案、多步驟、容易誤判的開發任務而言，
+              這類 Harness 能顯著提升可信度。
+            </p>
+            <p>
+              真正的代價是 token 成本、執行時間，以及部分簡單任務可能因強制委派與驗證而顯得過重。
+              最理想的使用方式，是依任務風險分級：高風險任務完整套用，低風險任務採精簡流程。
+            </p>
+            <p>
+              歸根究柢，裝與不裝之間，模型本身沒有變聰明；改變的是：context 不再被粗活耗盡、
+              「完成」重新具備份量、判斷題有了成文的答案，而你糾正過的教訓會被保留下來。
+            </p>
+          </div>
+        </section>
+
+        <section class="panel" id="recommendation">
+          <h2>十三、建議的導入策略</h2>
+          <ol>
+            <li><strong>先在獨立 WSL2 環境測試：</strong>避免直接改動主要工作環境。</li>
+            <li><strong>先選 Balanced 模式：</strong>觀察成本與驗證品質，不要一開始全部使用最高 effort。</li>
+            <li><strong>挑三種任務驗證：</strong>小修改、中型功能、跨模組除錯各測一次。</li>
+            <li><strong>記錄額外成本：</strong>比較安裝前後的 token、時間、返工次數與錯誤率。</li>
+            <li><strong>建立風險分級：</strong>決定哪些任務需要 verifier，哪些可由主 session 直接完成。</li>
+            <li><strong>制定輕量模式慣例：</strong>為單檔小修改準備固定的 lightweight inline 指令。</li>
+          </ol>
+
+          <div class="callout success">
+            <strong>最適合的定位</strong>
+            將它視為 Claude Code 的「工程治理層」，而不是每一個任務都必須完整啟動的固定流水線。
+          </div>
+        </section>
+      </main>
+
+      <aside>
+        <div class="toc">
+          <h2>內容導覽</h2>
+          <nav>
+            <a href="#overview">Repo 定位</a>
+            <a href="#structure">目錄與 Agent</a>
+            <a href="#workflow">工作流程</a>
+            <a href="#causes">安裝前的成因</a>
+            <a href="#changes">六個關鍵時刻</a>
+            <a href="#evidence">一次實測對照</a>
+            <a href="#installation">安裝機制</a>
+            <a href="#hooks">Hooks</a>
+            <a href="#risks">成本與風險</a>
+            <a href="#lightweight">輕量模式</a>
+            <a href="#wsl">WSL2 測試環境</a>
+            <a href="#assessment">整體評估</a>
+            <a href="#recommendation">導入策略</a>
+          </nav>
+        </div>
+
+        <div class="summary-card">
+          <h2>快速摘要</h2>
+          <p class="muted">
+            適合複雜、跨檔案、高風險任務；簡單工作應採 lightweight inline mode，
+            保留最小驗證但不啟動完整多 Agent 流程。
+          </p>
+          <p>
+            <strong>推薦：</strong><br />
+            先在隔離 WSL instance 中進行實測，再決定是否導入主要開發環境。
+          </p>
+          <p>
+            <a href="https://github.com/JavisOfWeiYen/fable5_harness" target="_blank" rel="noopener noreferrer">
+              開啟 GitHub Repository
+            </a>
+          </p>
+        </div>
+      </aside>
+    </div>
+
+    <footer>
+      fable5_harness Repository Review · Generated for local evaluation and WSL2 deployment planning
+    </footer>
+  </div>
+</body>
+</html>
