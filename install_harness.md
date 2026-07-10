@@ -23,7 +23,7 @@ fable5_harness/
                               ~/.claude/settings.json (merge only, or you wipe the user's settings)
   home-claude/              ← mirrors what goes under ~/.claude/
     CLAUDE.md               ← the global router that DOES get installed to ~/.claude/CLAUDE.md
-                              (5 routing triggers + 5 invariants)
+                              (5 routing triggers + 6 invariants)
     docs/00-harness-diagnosis.md      ← why these rules exist (3 root-cause findings)
     docs/10-model-dispatch.md         ← how to delegate: models, escalation ladder, verification
     docs/20-judgment-rubrics.md       ← escalate / done / ask-user / wrong-direction rubrics
@@ -55,6 +55,13 @@ verifier, and every judgment call a small model tends to fumble is written down 
      ladder)? Each answer maps to concrete edits in Step 3, item 2.
    - Main use cases (so examples and rubrics get read in the right spirit)?
    - Response language preference?
+   - Interaction style: **full-autonomy** (the shipped default — Claude proceeds through
+     reversible steps without checking in) or **checkpoint** (before any work expected to run
+     more than a few minutes, Claude posts a short plan and waits for OK; reports one line
+     between phases; leads replies with a short conclusion, long evidence goes to files)?
+     Failures are reported in full under both styles. The answer fills the interaction-style
+     bullet in Step 3, item 1; the behavioral definitions live in
+     `docs/20-judgment-rubrics.md` § 3.
    - Fable 5 access: does this machine have it? If yes, `fable` stays as the top dispatch tier
      above `opus`; if no (the common case), the `fable` row is removed and `opus` is the top
      tier. Either way the escalation prose already covers it — see Step 3. Do not assume; ask.
@@ -94,7 +101,7 @@ cp home-claude/agents/*.md ~/.claude/agents/   # verifier + implementer + hard-s
 ## Step 2 — Merge (only if the user already had a `~/.claude/CLAUDE.md`)
 
 Keep the user's existing content. Append from the package version: the **routing table**, the
-**five invariants**, and the **§ Environment facts section** (including its
+**six invariants**, and the **§ Environment facts section** (including its
 `<!-- INSTALLER: … -->` comment — Step 3, item 1 fills that section and Step 4's grep checks the
 comment was removed; several installed files reference "CLAUDE.md Environment facts", which
 must not dangle). Adjust paths if needed. If any existing rule contradicts a package
@@ -110,7 +117,10 @@ is how Step 4 verifies completion.
 
 1. **`CLAUDE.md` § Environment facts** — fill the `{…}` bullets: OS/filesystem quirks (check
    for WSL2 mounts, network drives, containers), which verification tooling is actually
-   installed (try to run it before claiming it), the user's response language (from Step 0).
+   installed (try to run it before claiming it), the user's response language (from Step 0),
+   and the interaction style the user chose (from Step 0 — record `full-autonomy` or
+   `checkpoint`, nothing else in that bullet; the definitions stay in
+   `docs/20-judgment-rubrics.md` § 3).
 2. **`docs/10-model-dispatch.md` § Model table** — verify the model aliases/IDs are still
    current *in this harness* (ask a `claude-code-guide` agent; your own system prompt
    typically lists only your own model's ID, so don't rely on it for the full table).

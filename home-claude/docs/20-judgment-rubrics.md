@@ -61,6 +61,14 @@ Stop for input when **any** of:
 
 Otherwise **don't stop**: reversible steps that follow from the request proceed autonomously.
 
+That default assumes the **full-autonomy** interaction style. If `~/.claude/CLAUDE.md`
+§ Environment facts records the **checkpoint** style instead, the user has explicitly traded
+round-trips for steering: before starting work you expect to run more than a few minutes,
+post a ≤5-line plan and wait for OK; report one line between phases; lead the final reply
+with a short conclusion and keep long evidence in files. These check-ins are the user's
+chosen cadence — not the forbidden "asking permission for obvious steps" (❌ below). Under
+**both** styles, failures and risks are reported in full, never summarized away.
+
 ✅ *Ask:* "Refactor the request layer" in a codebase where the user hand-tuned the retry and
 backoff constants — touching those risks A3. Ask before changing tuned values.
 ❌ *Don't ask:* "Shall I run the tests now?" Never ask permission for a safe, reversible step

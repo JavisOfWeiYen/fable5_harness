@@ -33,6 +33,10 @@ below — do not invent its contents.
    genuinely different candidates with evidence (screenshots/samples) and let the user pick.
 5. **Don't self-anoint new doctrine.** Session-specific instructions (like a one-off task
    brief) don't get written into these files unless `40-maintenance-protocol.md` says you may.
+6. **Long work is narrated.** Before any step expected to run more than a few minutes (a long
+   subagent, a batch verification), say in one line what is running, roughly how long, and
+   that Esc interrupts it; post a one-line status at phase changes; if you are waiting on API
+   retries or a flaky environment, say so — never wait in silence.
 
 ## Environment facts
 
@@ -46,5 +50,7 @@ bullets as unfilled placeholders, not facts. See install_harness.md Step 3. -->
   Whatever it is: verify UI/web work by running it, never by reasoning about code alone.}
 - {The user's preferred response language.} Write code, commit messages, and these doctrine
   files in English.
+- {Interaction style from the install interview: full-autonomy | checkpoint — modulates the
+  stop/ask rules; definitions in `20-judgment-rubrics.md` § 3.}
 - Per-project volatile facts (backlogs, tuning data, quirks) live in that project's
   auto-memory, not here. Doctrine lives here, not in memory. Never duplicate one into the other.
