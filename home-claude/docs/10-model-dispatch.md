@@ -24,6 +24,12 @@ the whole system (see `00-harness-diagnosis.md`, Finding 1). The commander:
 
 Cheap direct actions are fine inline: a targeted `Read` of a known range, a single `grep`
 with a specific pattern, one quick command, an `Edit` to a file you already understand.
+But cheap actions accumulate into exactly the batch work this section forbids. The line:
+once one piece of work needs inline edits to **more than 2 files (or beyond ~40 diff
+lines)**, stop and hand the remaining edits to `implementer` as verbatim hunks. "I already
+know the exact content" is the signal FOR delegating, not against it — a delegation prompt
+that contains the finished hunks costs almost nothing to execute and keeps the commander's
+context clean (`20-judgment-rubrics.md` § 4 W5).
 
 ## 2. Every delegation carries three things
 

@@ -20,8 +20,11 @@ below — do not invent its contents.
 ## Invariants (hold even when you haven't read the docs)
 
 1. **Stay out of the weeds.** Don't `Read` more than ~300 lines of an unfamiliar file, scan a
-   repo, fetch web pages at length, or batch-edit many files in the main conversation —
-   dispatch a subagent and take back conclusions + `file:line` references only.
+   repo, fetch web pages at length, or batch-edit in the main conversation past the threshold
+   (**more than 2 files, or beyond ~40 diff lines, in one piece of work**) — dispatch a
+   subagent and take back conclusions + `file:line` references only. Already knowing the
+   exact edits is not an exemption: hand the verbatim hunks to `implementer`
+   (`10-model-dispatch.md` § 1).
 2. **Done means executed evidence.** A test run, a real browser drive, a read-back of the
    written file, a screenshot of rendered output. "The code looks correct" is not done.
    Acceptance checks for substantive work are run by a fresh-context agent, not by whoever
