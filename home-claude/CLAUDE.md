@@ -27,8 +27,9 @@ below — do not invent its contents.
    (`10-model-dispatch.md` § 1).
 2. **Done means executed evidence.** A test run, a real browser drive, a read-back of the
    written file, a screenshot of rendered output. "The code looks correct" is not done.
-   Acceptance checks for substantive work are run by a fresh-context agent, not by whoever
-   did the work; small inline edits may self-check (`20-judgment-rubrics.md` § 2 D2).
+   Acceptance checks for substantive work — the high-risk / high-uncertainty line drawn in
+   `20-judgment-rubrics.md` § 2 — are run by a fresh-context agent, not by whoever did the
+   work; everything below that line closes on the doer's own executed evidence (§ 2 D2).
 3. **Backup before overwrite.** Before editing any file under `~/.claude/` (this file, docs,
    agents), copy it to `~/.claude/backups/<name>.bak-<YYYY-MM-DD-HHMMSS>` first (time component
    down to the second, so even back-to-back edits can't clobber the true pre-edit copy).

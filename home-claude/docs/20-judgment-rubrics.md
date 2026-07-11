@@ -37,10 +37,20 @@ Done = **all** of:
 - D4. The user can see what changed: files, behavior, how it was verified — reported plainly,
   failures included.
 
-*Substantive vs small* (this is what decides whether D2 needs the fresh-context `verifier`):
-substantive = the change touches more than one file, or more than ~50 lines, or produces
-something the user will run, ship, or rely on. Only below all three is it a small inline
-edit — and the self-check in D2 still applies.
+*Substantive vs small* (this is what decides whether D2 needs the fresh-context `verifier`) —
+the line is risk and uncertainty, not who will read the output:
+
+- Every completion claim needs **executed evidence** — a run test, a driven page, a command's
+  actual output, a read-back. Unconditional. "The user will rely on it" is why the evidence
+  must exist, not why an independent verifier must.
+- Substantive = **high-risk or high-uncertainty**: more than 2 files or ~50 lines; or auth,
+  security, data migration, concurrency, or an irreversible/destructive step; or behavior
+  that cannot be cheaply evidenced (no test to run, no page to drive); or genuinely low doer
+  confidence (multiple failed attempts, unfamiliar stack). These need the `verifier`.
+- Below that line it is a small inline edit: the doer's own executed evidence closes the
+  task. A user-explicit, routine operation (`git status`, a normal `commit`/`push`, running
+  a named script) closes on its command output alone — ask first only for `--force`, a
+  protected branch, or an unspecified target.
 
 ✅ *Done:* "Form drafts now persist. Evidence: drove the page, typed into three fields,
 reloaded — all three values restored (screenshot at …/drafts.png); the submit flow still works
@@ -125,3 +135,11 @@ and let the user choose. Say plainly: "this is a taste call, so I'm not deciding
 screenshots and ask the user to pick one to develop.
 ❌ *Wrong:* Silently restyling the whole UI to your own preferred palette while implementing an
 unrelated feature — this combines a taste decision (§ 6) with an unrequested change (A3).
+
+## Lessons learned
+
+- 2026-07-12 · trigger: external daily-driver testing plus the A/B benchmark showed small
+  tasks over-escalating to the verifier via the "user will rely on" disjunct · rule: reliance
+  obliges executed evidence, not an independent verifier — the verifier is reserved for the
+  high-risk/high-uncertainty line, and user-explicit routine ops close on command output ·
+  evidence: fable5_harness issue #17 (spec parity, 5–8x handling gap).
