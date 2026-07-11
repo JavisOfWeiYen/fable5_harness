@@ -33,8 +33,8 @@ a session that never opens the docs keeps the load-bearing behavior. If you noti
 delegating without having read `10-model-dispatch.md` this session, that is the decay; open it.
 
 **Decay 2: Erosion by convenience.** Some session, mid-task, will find a rule inconvenient —
-usually verification ("no time to spawn a verifier for this small thing") — and weaken it or
-carve an exception. Each carve-out is locally reasonable; the sum is the old, undisciplined
+usually verification ("no time to spawn a verifier for this clearly-substantive thing") —
+and weaken it or carve an exception. Each carve-out is locally reasonable; the sum is the old, undisciplined
 environment. *Countermeasure:* `40-maintenance-protocol.md` § 2 forbids weakening rules without
 user approval, and names this exact motivation as disqualifying. User: if a session proposes
 relaxing a verification rule *while in the middle of a task that rule is blocking*, be
