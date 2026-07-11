@@ -868,6 +868,15 @@ printf '%s' '{"decision":"block","reason":"Doctrine check (once per session, wor
             不是統計結論。
           </p>
 
+          <p>
+            <strong>遊戲說明與素材：</strong>Apex Sprint Challenge 是俯視角 F1 風格賽車——三圈、
+            三名 AI 對手、五燈起跑、輪胎溫度／磨耗、ERS、DRS、進站策略、遙測 CSV 匯出。素材全部在
+            <a href="https://github.com/JavisOfWeiYen/fable5_harness/tree/main/benchmark">github.com/JavisOfWeiYen/fable5_harness → benchmark/</a>：
+            clone 後直接用瀏覽器開
+            <a href="benchmark/default/index.html"><code>benchmark/default/index.html</code></a>（無 harness 版）與
+            <a href="benchmark/harness/index.html"><code>benchmark/harness/index.html</code></a>（有 harness 版）就能遊玩對照。
+          </p>
+
           <div class="callout warning">
             <strong>關於上一次的一次性實驗</strong>
             本節第一版引用的是更早的一次性實測（彈珠台）。那批產物後來在深度 review 中被指出
@@ -891,6 +900,35 @@ printf '%s' '{"decision":"block","reason":"Doctrine check (once per session, wor
             </tbody>
           </table>
 
+          <h3>規格外的維度：操控手感（玩家盲測 → 儀器化驗證）</h3>
+          <p>
+            分數打平之後，作者實際遊玩兩個版本，回報了一個分數表看不到的差異：有 harness 版
+            手感較真實順暢，無 harness 版轉彎過度不穩。我們把「手感」轉成可量測指標驗證——
+            直接驅動兩邊的真實物理引擎，用結構相同的輸入腳本做全舵階躍、slalom 與鬆舵回穩三種
+            操演（速度以各自極速正規化，引擎皆為決定性、三次重複逐位一致）。玩家是對的，而且差距懸殊：
+          </p>
+          <table class="decision-table">
+            <thead>
+              <tr><th>指標（85% 極速）</th><th>無 harness</th><th>有 harness</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>峰值側滑速度</td><td class="bad">56.1 m/s</td><td class="good">7.4 m/s</td></tr>
+              <tr><td>峰值滑移角</td><td class="bad">41°</td><td class="good">7°</td></tr>
+              <tr><td>全舵 2 秒淨旋轉</td><td class="bad">50% 極速即打轉（191°）</td><td class="good">最大 105°，全程未打轉</td></tr>
+              <tr><td>鬆舵後回穩時間</td><td class="bad">2.5–2.9 秒</td><td class="good">0.45–0.47 秒</td></tr>
+              <tr><td>Slalom 平順度（yaw-jerk RMS，越低越順）</td><td class="bad">28–29</td><td class="good">13–15</td></tr>
+            </tbody>
+          </table>
+          <p>
+            程式碼層根因：無 harness 版在高速下的轉向權限約為對方的 2.5 倍（1.56 vs 0.62 rad/s），
+            側滑又以慢速衰減注入，全舵一打就是幾十 m/s 的滑移；有 harness 版採速度反比轉向、
+            每個 tick 連續把側滑往車頭方向收。兩邊的鍵盤輸入管線完全相同（皆為瞬時全舵 ±1），
+            差異百分之百在物理模型。量測腳本與完整 per-tick 數據收錄在
+            <a href="https://github.com/JavisOfWeiYen/fable5_harness/tree/main/benchmark/handling-metrics"><code>benchmark/handling-metrics/</code></a>，可自行重跑。
+            值得一提：有 harness 版的 <code>dev-tools/</code> 裡本來就有 <code>drivecheck.js</code>
+            ——它在開發過程中，真的開過自己做出來的車。
+          </p>
+
           <h3>這個結果怎麼讀</h3>
           <p>
             成品分數幾乎打平——這不是意外，而是校準。這份 prompt 自帶 485 行規格與 14 條驗收測試，
@@ -899,14 +937,18 @@ printf '%s' '{"decision":"block","reason":"Doctrine check (once per session, wor
             這些不是「這次跑分」的加分，而是「下次要改」時的保險。
           </p>
           <p>
-            所以這個切片誠實支持的是本報告一貫的定位：harness 墊高的是<strong>下限與可稽核性</strong>，
-            不是能力天花板。它的價值要在規格不完整、驗收沒人幫你寫、一做就是幾天的日常任務上才拉開
-            ——也就是第五節那六個時刻描述的情境。
+            但完整的讀法是：打平只發生在「規格寫得到的維度」。真正的差距藏在規格寫不到的地方
+            ——手感。485 行規格與 14 條測試，沒有一條測「轉彎穩不穩」，而那正是「做完真的
+            開開看」這個流程習慣才照得到的暗處。所以這個切片同時支持兩件事：harness 墊高的是
+            <strong>下限與可稽核性</strong>，不是能力天花板；而在規格照不到的維度上，「以執行
+            證據交付」的紀律會自己長出品質。它的價值在規格不完整、驗收沒人幫你寫的日常任務上
+            更大——也就是第五節那六個時刻描述的情境。
           </p>
 
           <div class="callout success">
             <strong>最鋒利的差異只有一句話</strong>
-            當 prompt 自帶制度時，兩邊都好——但日常任務的 prompt，沒有 485 行。
+            規格測得到的維度，兩邊打平；規格寫不到的手感，差距 5–8 倍。「做完真的開開看」——
+            差異就住在制度的這個習慣裡。
           </div>
         </section>
 

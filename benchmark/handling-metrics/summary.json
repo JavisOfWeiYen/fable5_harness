@@ -1,0 +1,598 @@
+{
+  "engines": {
+    "default": {
+      "topSpeed": 83.78798425078847,
+      "targets": {
+        "p50": 41.893992125394234,
+        "p85": 71.2197866131702
+      },
+      "maneuvers": {
+        "stepsteer_p50": {
+          "runs": [
+            {
+              "startSpeed": 41.90184393072846,
+              "peakYaw": 1.8841003037679709,
+              "yawStd": 0.08518907720267926,
+              "peakSlide": 35.805354062985664,
+              "peakSlipDeg": 37.473547578129775,
+              "netRotDeg": 191.4333891012708,
+              "spun": true,
+              "overshootDeg": 0,
+              "endSpeed": 50.491336985221274,
+              "minSpeed": 41.968323930991374,
+              "speedRetainedPct": 100.1586565029759
+            },
+            {
+              "startSpeed": 41.90184393072846,
+              "peakYaw": 1.8841003037679709,
+              "yawStd": 0.08518907720267926,
+              "peakSlide": 35.805354062985664,
+              "peakSlipDeg": 37.473547578129775,
+              "netRotDeg": 191.4333891012708,
+              "spun": true,
+              "overshootDeg": 0,
+              "endSpeed": 50.491336985221274,
+              "minSpeed": 41.968323930991374,
+              "speedRetainedPct": 100.1586565029759
+            },
+            {
+              "startSpeed": 41.90184393072846,
+              "peakYaw": 1.8841003037679709,
+              "yawStd": 0.08518907720267926,
+              "peakSlide": 35.805354062985664,
+              "peakSlipDeg": 37.473547578129775,
+              "netRotDeg": 191.4333891012708,
+              "spun": true,
+              "overshootDeg": 0,
+              "endSpeed": 50.491336985221274,
+              "minSpeed": 41.968323930991374,
+              "speedRetainedPct": 100.1586565029759
+            }
+          ],
+          "mean": {
+            "startSpeed": 41.90184393072846,
+            "peakYaw": 1.8841003037679709,
+            "yawStd": 0.08518907720267926,
+            "peakSlide": 35.805354062985664,
+            "peakSlipDeg": 37.473547578129775,
+            "netRotDeg": 191.4333891012708,
+            "spun": true,
+            "overshootDeg": 0,
+            "endSpeed": 50.491336985221274,
+            "minSpeed": 41.968323930991374,
+            "speedRetainedPct": 100.15865650297592
+          }
+        },
+        "slalom_p50": {
+          "runs": [
+            {
+              "startSpeed": 41.90184393072846,
+              "jerkRMS": 29.01224698207794,
+              "peakSlide": 26.73940834784387,
+              "meanSlide": 11.995110482736907,
+              "peakSlipDeg": 24.970578595837566,
+              "pathAmp1": 73.39125099098182,
+              "pathAmp2": 87.30258973553366,
+              "ampGrowth": 1.1895503695155876,
+              "endSpeed": 58.954795757328085,
+              "speedRetainedPct": 140.69737803136138,
+              "netRotDeg": 39.78551503345329
+            },
+            {
+              "startSpeed": 41.90184393072846,
+              "jerkRMS": 29.01224698207794,
+              "peakSlide": 26.73940834784387,
+              "meanSlide": 11.995110482736907,
+              "peakSlipDeg": 24.970578595837566,
+              "pathAmp1": 73.39125099098182,
+              "pathAmp2": 87.30258973553366,
+              "ampGrowth": 1.1895503695155876,
+              "endSpeed": 58.954795757328085,
+              "speedRetainedPct": 140.69737803136138,
+              "netRotDeg": 39.78551503345329
+            },
+            {
+              "startSpeed": 41.90184393072846,
+              "jerkRMS": 29.01224698207794,
+              "peakSlide": 26.73940834784387,
+              "meanSlide": 11.995110482736907,
+              "peakSlipDeg": 24.970578595837566,
+              "pathAmp1": 73.39125099098182,
+              "pathAmp2": 87.30258973553366,
+              "ampGrowth": 1.1895503695155876,
+              "endSpeed": 58.954795757328085,
+              "speedRetainedPct": 140.69737803136138,
+              "netRotDeg": 39.78551503345329
+            }
+          ],
+          "mean": {
+            "startSpeed": 41.90184393072846,
+            "jerkRMS": 29.01224698207794,
+            "peakSlide": 26.739408347843874,
+            "meanSlide": 11.995110482736907,
+            "peakSlipDeg": 24.970578595837566,
+            "pathAmp1": 73.39125099098182,
+            "pathAmp2": 87.30258973553366,
+            "ampGrowth": 1.1895503695155876,
+            "endSpeed": 58.95479575732808,
+            "speedRetainedPct": 140.69737803136138,
+            "netRotDeg": 39.78551503345329
+          }
+        },
+        "recovery_p50": {
+          "runs": [
+            {
+              "startSpeed": 41.90184393072846,
+              "peakSlideAtRelease": 27.475435945685902,
+              "slide_0_5s": 12.237121252684414,
+              "slide_1s": 5.8627540197047665,
+              "settleSec": 2.533333333333333
+            },
+            {
+              "startSpeed": 41.90184393072846,
+              "peakSlideAtRelease": 27.475435945685902,
+              "slide_0_5s": 12.237121252684414,
+              "slide_1s": 5.8627540197047665,
+              "settleSec": 2.533333333333333
+            },
+            {
+              "startSpeed": 41.90184393072846,
+              "peakSlideAtRelease": 27.475435945685902,
+              "slide_0_5s": 12.237121252684414,
+              "slide_1s": 5.8627540197047665,
+              "settleSec": 2.533333333333333
+            }
+          ],
+          "mean": {
+            "startSpeed": 41.90184393072846,
+            "peakSlideAtRelease": 27.475435945685902,
+            "slide_0_5s": 12.237121252684412,
+            "slide_1s": 5.8627540197047665,
+            "settleSec": 2.533333333333333
+          }
+        },
+        "stepsteer_p85": {
+          "runs": [
+            {
+              "startSpeed": 71.26304404093885,
+              "peakYaw": 1.5600000000000014,
+              "yawStd": 6.716207506009527e-15,
+              "peakSlide": 56.10971219994877,
+              "peakSlipDeg": 41.26181624191859,
+              "netRotDeg": 177.27314181347634,
+              "spun": false,
+              "overshootDeg": 0,
+              "endSpeed": 61.240723521645876,
+              "minSpeed": 61.240723521645876,
+              "speedRetainedPct": 85.93615996317054
+            },
+            {
+              "startSpeed": 71.26304404093885,
+              "peakYaw": 1.5600000000000014,
+              "yawStd": 6.716207506009527e-15,
+              "peakSlide": 56.10971219994877,
+              "peakSlipDeg": 41.26181624191859,
+              "netRotDeg": 177.27314181347634,
+              "spun": false,
+              "overshootDeg": 0,
+              "endSpeed": 61.240723521645876,
+              "minSpeed": 61.240723521645876,
+              "speedRetainedPct": 85.93615996317054
+            },
+            {
+              "startSpeed": 71.26304404093885,
+              "peakYaw": 1.5600000000000014,
+              "yawStd": 6.716207506009527e-15,
+              "peakSlide": 56.10971219994877,
+              "peakSlipDeg": 41.26181624191859,
+              "netRotDeg": 177.27314181347634,
+              "spun": false,
+              "overshootDeg": 0,
+              "endSpeed": 61.240723521645876,
+              "minSpeed": 61.240723521645876,
+              "speedRetainedPct": 85.93615996317054
+            }
+          ],
+          "mean": {
+            "startSpeed": 71.26304404093885,
+            "peakYaw": 1.5600000000000014,
+            "yawStd": 6.716207506009527e-15,
+            "peakSlide": 56.10971219994877,
+            "peakSlipDeg": 41.26181624191859,
+            "netRotDeg": 177.27314181347637,
+            "spun": false,
+            "overshootDeg": 0,
+            "endSpeed": 61.24072352164588,
+            "minSpeed": 61.24072352164588,
+            "speedRetainedPct": 85.93615996317054
+          }
+        },
+        "slalom_p85": {
+          "runs": [
+            {
+              "startSpeed": 71.26304404093885,
+              "jerkRMS": 28.378248958094247,
+              "peakSlide": 32.332249196017756,
+              "meanSlide": 15.844694603306273,
+              "peakSlipDeg": 25.31353049789478,
+              "pathAmp1": 94.72242586069375,
+              "pathAmp2": 89.56261783897723,
+              "ampGrowth": 0.945527070544995,
+              "endSpeed": 65.7801888729585,
+              "speedRetainedPct": 92.30617321815417,
+              "netRotDeg": 34.262876148823246
+            },
+            {
+              "startSpeed": 71.26304404093885,
+              "jerkRMS": 28.378248958094247,
+              "peakSlide": 32.332249196017756,
+              "meanSlide": 15.844694603306273,
+              "peakSlipDeg": 25.31353049789478,
+              "pathAmp1": 94.72242586069375,
+              "pathAmp2": 89.56261783897723,
+              "ampGrowth": 0.945527070544995,
+              "endSpeed": 65.7801888729585,
+              "speedRetainedPct": 92.30617321815417,
+              "netRotDeg": 34.262876148823246
+            },
+            {
+              "startSpeed": 71.26304404093885,
+              "jerkRMS": 28.378248958094247,
+              "peakSlide": 32.332249196017756,
+              "meanSlide": 15.844694603306273,
+              "peakSlipDeg": 25.31353049789478,
+              "pathAmp1": 94.72242586069375,
+              "pathAmp2": 89.56261783897723,
+              "ampGrowth": 0.945527070544995,
+              "endSpeed": 65.7801888729585,
+              "speedRetainedPct": 92.30617321815417,
+              "netRotDeg": 34.262876148823246
+            }
+          ],
+          "mean": {
+            "startSpeed": 71.26304404093885,
+            "jerkRMS": 28.378248958094247,
+            "peakSlide": 32.332249196017756,
+            "meanSlide": 15.844694603306273,
+            "peakSlipDeg": 25.313530497894778,
+            "pathAmp1": 94.72242586069375,
+            "pathAmp2": 89.56261783897723,
+            "ampGrowth": 0.945527070544995,
+            "endSpeed": 65.7801888729585,
+            "speedRetainedPct": 92.30617321815417,
+            "netRotDeg": 34.262876148823246
+          }
+        },
+        "recovery_p85": {
+          "runs": [
+            {
+              "startSpeed": 71.26304404093885,
+              "peakSlideAtRelease": 50.00473550461051,
+              "slide_0_5s": 22.732784613190336,
+              "slide_1s": 10.712828230947029,
+              "settleSec": 2.9166666666666665
+            },
+            {
+              "startSpeed": 71.26304404093885,
+              "peakSlideAtRelease": 50.00473550461051,
+              "slide_0_5s": 22.732784613190336,
+              "slide_1s": 10.712828230947029,
+              "settleSec": 2.9166666666666665
+            },
+            {
+              "startSpeed": 71.26304404093885,
+              "peakSlideAtRelease": 50.00473550461051,
+              "slide_0_5s": 22.732784613190336,
+              "slide_1s": 10.712828230947029,
+              "settleSec": 2.9166666666666665
+            }
+          ],
+          "mean": {
+            "startSpeed": 71.26304404093885,
+            "peakSlideAtRelease": 50.004735504610515,
+            "slide_0_5s": 22.732784613190336,
+            "slide_1s": 10.71282823094703,
+            "settleSec": 2.9166666666666665
+          }
+        }
+      }
+    },
+    "harness": {
+      "topSpeed": 88.38465325910349,
+      "targets": {
+        "p50": 44.192326629551744,
+        "p85": 75.12695527023796
+      },
+      "maneuvers": {
+        "stepsteer_p50": {
+          "runs": [
+            {
+              "startSpeed": 44.315398453871424,
+              "peakYaw": 0.9435503037224802,
+              "yawStd": 0.00749570556134218,
+              "peakSlide": 6.6597637149144076,
+              "peakSlipDeg": 9.697769925810261,
+              "netRotDeg": 105.49043160553433,
+              "spun": false,
+              "overshootDeg": 0,
+              "endSpeed": 51.27325831192364,
+              "minSpeed": 43.44589807316139,
+              "speedRetainedPct": 98.03792719676184
+            },
+            {
+              "startSpeed": 44.315398453871424,
+              "peakYaw": 0.9435503037224802,
+              "yawStd": 0.00749570556134218,
+              "peakSlide": 6.6597637149144076,
+              "peakSlipDeg": 9.697769925810261,
+              "netRotDeg": 105.49043160553433,
+              "spun": false,
+              "overshootDeg": 0,
+              "endSpeed": 51.27325831192364,
+              "minSpeed": 43.44589807316139,
+              "speedRetainedPct": 98.03792719676184
+            },
+            {
+              "startSpeed": 44.315398453871424,
+              "peakYaw": 0.9435503037224802,
+              "yawStd": 0.00749570556134218,
+              "peakSlide": 6.6597637149144076,
+              "peakSlipDeg": 9.697769925810261,
+              "netRotDeg": 105.49043160553433,
+              "spun": false,
+              "overshootDeg": 0,
+              "endSpeed": 51.27325831192364,
+              "minSpeed": 43.44589807316139,
+              "speedRetainedPct": 98.03792719676184
+            }
+          ],
+          "mean": {
+            "startSpeed": 44.31539845387143,
+            "peakYaw": 0.9435503037224802,
+            "yawStd": 0.00749570556134218,
+            "peakSlide": 6.6597637149144076,
+            "peakSlipDeg": 9.697769925810261,
+            "netRotDeg": 105.49043160553431,
+            "spun": false,
+            "overshootDeg": 0,
+            "endSpeed": 51.273258311923634,
+            "minSpeed": 43.44589807316138,
+            "speedRetainedPct": 98.03792719676183
+          }
+        },
+        "slalom_p50": {
+          "runs": [
+            {
+              "startSpeed": 44.315398453871424,
+              "jerkRMS": 15.161747954501152,
+              "peakSlide": 6.847468680346162,
+              "meanSlide": 4.6450022532095705,
+              "peakSlipDeg": 9.037550785948628,
+              "pathAmp1": 43.489902374358486,
+              "pathAmp2": 50.38234148491239,
+              "ampGrowth": 1.158483664810838,
+              "endSpeed": 56.618409114425525,
+              "speedRetainedPct": 127.76238303117253,
+              "netRotDeg": 19.853335173183105
+            },
+            {
+              "startSpeed": 44.315398453871424,
+              "jerkRMS": 15.161747954501152,
+              "peakSlide": 6.847468680346162,
+              "meanSlide": 4.6450022532095705,
+              "peakSlipDeg": 9.037550785948628,
+              "pathAmp1": 43.489902374358486,
+              "pathAmp2": 50.38234148491239,
+              "ampGrowth": 1.158483664810838,
+              "endSpeed": 56.618409114425525,
+              "speedRetainedPct": 127.76238303117253,
+              "netRotDeg": 19.853335173183105
+            },
+            {
+              "startSpeed": 44.315398453871424,
+              "jerkRMS": 15.161747954501152,
+              "peakSlide": 6.847468680346162,
+              "meanSlide": 4.6450022532095705,
+              "peakSlipDeg": 9.037550785948628,
+              "pathAmp1": 43.489902374358486,
+              "pathAmp2": 50.38234148491239,
+              "ampGrowth": 1.158483664810838,
+              "endSpeed": 56.618409114425525,
+              "speedRetainedPct": 127.76238303117253,
+              "netRotDeg": 19.853335173183105
+            }
+          ],
+          "mean": {
+            "startSpeed": 44.31539845387143,
+            "jerkRMS": 15.161747954501152,
+            "peakSlide": 6.847468680346162,
+            "meanSlide": 4.6450022532095705,
+            "peakSlipDeg": 9.037550785948628,
+            "pathAmp1": 43.489902374358486,
+            "pathAmp2": 50.38234148491239,
+            "ampGrowth": 1.158483664810838,
+            "endSpeed": 56.618409114425525,
+            "speedRetainedPct": 127.76238303117253,
+            "netRotDeg": 19.853335173183105
+          }
+        },
+        "recovery_p50": {
+          "runs": [
+            {
+              "startSpeed": 44.315398453871424,
+              "peakSlideAtRelease": 6.656959978274416,
+              "slide_0_5s": 0.3639758809984548,
+              "slide_1s": 0.01992664696076737,
+              "settleSec": 0.45
+            },
+            {
+              "startSpeed": 44.315398453871424,
+              "peakSlideAtRelease": 6.656959978274416,
+              "slide_0_5s": 0.3639758809984548,
+              "slide_1s": 0.01992664696076737,
+              "settleSec": 0.45
+            },
+            {
+              "startSpeed": 44.315398453871424,
+              "peakSlideAtRelease": 6.656959978274416,
+              "slide_0_5s": 0.3639758809984548,
+              "slide_1s": 0.01992664696076737,
+              "settleSec": 0.45
+            }
+          ],
+          "mean": {
+            "startSpeed": 44.31539845387143,
+            "peakSlideAtRelease": 6.656959978274416,
+            "slide_0_5s": 0.3639758809984548,
+            "slide_1s": 0.01992664696076737,
+            "settleSec": 0.45
+          }
+        },
+        "stepsteer_p85": {
+          "runs": [
+            {
+              "startSpeed": 75.17349769691107,
+              "peakYaw": 0.7384554100895446,
+              "yawStd": 0.02553091587984839,
+              "peakSlide": 7.432341509345625,
+              "peakSlipDeg": 7.343021139666612,
+              "netRotDeg": 77.44579005587109,
+              "spun": false,
+              "overshootDeg": 0,
+              "endSpeed": 60.146594393908195,
+              "minSpeed": 60.106615547017924,
+              "speedRetainedPct": 79.95718888771056
+            },
+            {
+              "startSpeed": 75.17349769691107,
+              "peakYaw": 0.7384554100895446,
+              "yawStd": 0.02553091587984839,
+              "peakSlide": 7.432341509345625,
+              "peakSlipDeg": 7.343021139666612,
+              "netRotDeg": 77.44579005587109,
+              "spun": false,
+              "overshootDeg": 0,
+              "endSpeed": 60.146594393908195,
+              "minSpeed": 60.106615547017924,
+              "speedRetainedPct": 79.95718888771056
+            },
+            {
+              "startSpeed": 75.17349769691107,
+              "peakYaw": 0.7384554100895446,
+              "yawStd": 0.02553091587984839,
+              "peakSlide": 7.432341509345625,
+              "peakSlipDeg": 7.343021139666612,
+              "netRotDeg": 77.44579005587109,
+              "spun": false,
+              "overshootDeg": 0,
+              "endSpeed": 60.146594393908195,
+              "minSpeed": 60.106615547017924,
+              "speedRetainedPct": 79.95718888771056
+            }
+          ],
+          "mean": {
+            "startSpeed": 75.17349769691107,
+            "peakYaw": 0.7384554100895446,
+            "yawStd": 0.02553091587984839,
+            "peakSlide": 7.432341509345625,
+            "peakSlipDeg": 7.343021139666612,
+            "netRotDeg": 77.44579005587109,
+            "spun": false,
+            "overshootDeg": 0,
+            "endSpeed": 60.146594393908195,
+            "minSpeed": 60.106615547017924,
+            "speedRetainedPct": 79.95718888771056
+          }
+        },
+        "slalom_p85": {
+          "runs": [
+            {
+              "startSpeed": 75.17349769691107,
+              "jerkRMS": 12.771991656581035,
+              "peakSlide": 7.406042846262088,
+              "meanSlide": 4.798313034661003,
+              "peakSlipDeg": 6.9044603828300515,
+              "pathAmp1": 40.74948861618301,
+              "pathAmp2": 38.43949498013212,
+              "ampGrowth": 0.9433123282157334,
+              "endSpeed": 60.92422824654774,
+              "speedRetainedPct": 81.0448231266099,
+              "netRotDeg": 13.99432040466756
+            },
+            {
+              "startSpeed": 75.17349769691107,
+              "jerkRMS": 12.771991656581035,
+              "peakSlide": 7.406042846262088,
+              "meanSlide": 4.798313034661003,
+              "peakSlipDeg": 6.9044603828300515,
+              "pathAmp1": 40.74948861618301,
+              "pathAmp2": 38.43949498013212,
+              "ampGrowth": 0.9433123282157334,
+              "endSpeed": 60.92422824654774,
+              "speedRetainedPct": 81.0448231266099,
+              "netRotDeg": 13.99432040466756
+            },
+            {
+              "startSpeed": 75.17349769691107,
+              "jerkRMS": 12.771991656581035,
+              "peakSlide": 7.406042846262088,
+              "meanSlide": 4.798313034661003,
+              "peakSlipDeg": 6.9044603828300515,
+              "pathAmp1": 40.74948861618301,
+              "pathAmp2": 38.43949498013212,
+              "ampGrowth": 0.9433123282157334,
+              "endSpeed": 60.92422824654774,
+              "speedRetainedPct": 81.0448231266099,
+              "netRotDeg": 13.99432040466756
+            }
+          ],
+          "mean": {
+            "startSpeed": 75.17349769691107,
+            "jerkRMS": 12.771991656581035,
+            "peakSlide": 7.406042846262088,
+            "meanSlide": 4.798313034661003,
+            "peakSlipDeg": 6.9044603828300515,
+            "pathAmp1": 40.74948861618301,
+            "pathAmp2": 38.43949498013212,
+            "ampGrowth": 0.9433123282157334,
+            "endSpeed": 60.92422824654775,
+            "speedRetainedPct": 81.0448231266099,
+            "netRotDeg": 13.99432040466756
+          }
+        },
+        "recovery_p85": {
+          "runs": [
+            {
+              "startSpeed": 75.17349769691107,
+              "peakSlideAtRelease": 7.3689775189343765,
+              "slide_0_5s": 0.3843291258909106,
+              "slide_1s": 0.021159073736365268,
+              "settleSec": 0.4666666666666667
+            },
+            {
+              "startSpeed": 75.17349769691107,
+              "peakSlideAtRelease": 7.3689775189343765,
+              "slide_0_5s": 0.3843291258909106,
+              "slide_1s": 0.021159073736365268,
+              "settleSec": 0.4666666666666667
+            },
+            {
+              "startSpeed": 75.17349769691107,
+              "peakSlideAtRelease": 7.3689775189343765,
+              "slide_0_5s": 0.3843291258909106,
+              "slide_1s": 0.021159073736365268,
+              "settleSec": 0.4666666666666667
+            }
+          ],
+          "mean": {
+            "startSpeed": 75.17349769691107,
+            "peakSlideAtRelease": 7.3689775189343765,
+            "slide_0_5s": 0.38432912589091056,
+            "slide_1s": 0.021159073736365264,
+            "settleSec": 0.4666666666666666
+          }
+        }
+      }
+    }
+  }
+}
