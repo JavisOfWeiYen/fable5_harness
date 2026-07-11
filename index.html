@@ -300,6 +300,7 @@
       border-bottom: 1px solid var(--border);
       text-align: left;
       vertical-align: top;
+      overflow-wrap: anywhere;
     }
 
     .decision-table th {
@@ -860,47 +861,52 @@ printf '%s' '{"decision":"block","reason":"Doctrine check (once per session, wor
         <section class="panel" id="evidence">
           <h2>六、一次實測對照</h2>
           <p class="lead">
-            同一份需求，沒裝與裝了 harness 各做一次。這不是統計結論，而是機制差異的一個切片。
+            同一份 485 行的完整需求（Apex Sprint Challenge，F1 風格賽車遊戲，內含 14 條指定測試），
+            沒裝與裝了 harness 的環境各從零做一次。兩個成品連同原始 prompt 收錄在本 repo 的
+            <code>benchmark/</code>，並由兩個互不知情的 agent 用逐字相同的協議實測（載入、實駕、
+            完整 demo 賽跑完、tests.html、逐項需求對照）。單一任務、單次執行——這是可重驗的切片，
+            不是統計結論。
           </p>
+
+          <div class="callout warning">
+            <strong>關於上一次的一次性實驗</strong>
+            本節第一版引用的是更早的一次性實測（彈珠台）。那批產物後來在深度 review 中被指出
+            未收錄進 repo、結論無法重驗——恰好踩中本制度自己的紅線「有結論、沒證據」，於是整包
+            刪除、在乾淨環境重測。現在的數據全部來自可重驗的 <code>benchmark/</code>。這個教訓
+            本身比舊數據更有價值：連自己的行銷報告，也要過得了自己的驗收規則。
+          </div>
+
           <table class="decision-table">
             <thead>
-              <tr>
-                <th>觀察點</th>
-                <th>無制度</th>
-                <th>有制度</th>
-              </tr>
+              <tr><th>觀察點</th><th>無 harness（default/）</th><th>有 harness（harness/）</th></tr>
             </thead>
             <tbody>
-              <tr>
-                <td>驗證環境</td>
-                <td class="bad">V8 引擎 + 假 DOM，沒有真瀏覽器</td>
-                <td class="good">Playwright + 無頭 Chromium，真頁面</td>
-              </tr>
-              <tr>
-                <td>視覺驗證</td>
-                <td class="bad">0 張截圖，canvas 被 stub 成 no-op</td>
-                <td class="good">2 張真實截圖，確認 bumper 發光、計分、生命數</td>
-              </tr>
-              <tr>
-                <td>首輪通過</td>
-                <td class="bad">未載明，報告稱全過</td>
-                <td class="good">9/11 → 修一行 → 11/11；失敗證明測試真的在測</td>
-              </tr>
-              <tr>
-                <td>Console</td>
-                <td class="bad">無從得知</td>
-                <td class="good">實測為零錯誤</td>
-              </tr>
-              <tr>
-                <td>可重用資產</td>
-                <td class="bad">無</td>
-                <td class="good">瀏覽器驗證管線寫回記憶，後續 session 可沿用</td>
-              </tr>
+              <tr><td>指定的 14 條內建測試</td><td>14/14 通過</td><td>14/14 通過（另附 Node 重驗腳本，結果一致）</td></tr>
+              <tr><td>Console 錯誤（載入＋實駕＋完整 demo 賽）</td><td>0</td><td>0</td></tr>
+              <tr><td>需求逐項覆蓋（賽道／物理／輪胎 ERS DRS／進站／AI／儲存／README）</td><td>全數到位</td><td>全數到位</td></tr>
+              <tr><td>完整 demo 賽（真實引擎跑滿 3 圈）</td><td>跑完；4 車全進站；無瞬移</td><td>跑完；含 AI 進站；零物理違規</td></tr>
+              <tr><td>遊戲本體規模</td><td>11 檔、3,191 行</td><td class="good">12 檔、2,947 行（constants.js 集中全部設定）</td></tr>
+              <tr><td>過程痕跡</td><td class="bad">無</td><td class="good">dev-tools/ 六支獨立重驗腳本（177 行）</td></tr>
+              <tr><td>README 自我申報</td><td>完整</td><td class="good">完整，另含 Known limitations 與「未驗證項」誠實清單</td></tr>
             </tbody>
           </table>
+
+          <h3>這個結果怎麼讀</h3>
+          <p>
+            成品分數幾乎打平——這不是意外，而是校準。這份 prompt 自帶 485 行規格與 14 條驗收測試，
+            等於把 harness 的核心（明確的驗收條件）預先搬進了任務本身；在這種任務上，沒制度的模型
+            本來就該做得好。差異出現在制度性的痕跡：獨立重驗腳本、自我申報的未驗證項、集中設定——
+            這些不是「這次跑分」的加分，而是「下次要改」時的保險。
+          </p>
+          <p>
+            所以這個切片誠實支持的是本報告一貫的定位：harness 墊高的是<strong>下限與可稽核性</strong>，
+            不是能力天花板。它的價值要在規格不完整、驗收沒人幫你寫、一做就是幾天的日常任務上才拉開
+            ——也就是第五節那六個時刻描述的情境。
+          </p>
+
           <div class="callout success">
             <strong>最鋒利的差異只有一句話</strong>
-            兩邊都「跑了測試」，但只有一邊真的看見了自己做出來的東西。
+            當 prompt 自帶制度時，兩邊都好——但日常任務的 prompt，沒有 485 行。
           </div>
         </section>
 

@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<title>Apex Sprint Challenge - Tests</title>
+<style>
+  body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #0b0e14; color: #eef2f7; padding: 24px; }
+  h1 { margin-top: 0; }
+  #summary { font-size: 18px; margin-bottom: 16px; padding: 12px 16px; border-radius: 8px; }
+  #summary.all-pass { background: rgba(47, 220, 106, 0.15); border: 1px solid #2fdc6a; }
+  #summary.has-fail { background: rgba(229, 69, 90, 0.15); border: 1px solid #e5455a; }
+  table { border-collapse: collapse; width: 100%; }
+  th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid rgba(255,255,255,0.1); vertical-align: top; }
+  th { color: #9aa5b5; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .pass { color: #2fdc6a; font-weight: 700; }
+  .fail { color: #e5455a; font-weight: 700; }
+  .error-msg { color: #ffb4bd; font-family: monospace; font-size: 13px; }
+  tr.fail-row { background: rgba(229, 69, 90, 0.06); }
+</style>
+</head>
+<body>
+  <h1>Apex Sprint Challenge &mdash; Automated Tests</h1>
+  <div id="summary">Running tests&hellip;</div>
+  <table>
+    <thead><tr><th style="width:40px">#</th><th>Test</th><th style="width:80px">Result</th><th>Error</th></tr></thead>
+    <tbody id="resultsBody"></tbody>
+  </table>
+
+  <script src="storage.js"></script>
+  <script src="physics.js"></script>
+  <script src="track.js"></script>
+  <script src="race.js"></script>
+  <script src="ai.js"></script>
+  <script src="tests.js"></script>
+  <script>
+    (function () {
+      var results = GameTests.runAll();
+      var body = document.getElementById('resultsBody');
+      var passCount = 0, failCount = 0;
+      results.forEach(function (r, i) {
+        if (r.pass) passCount++; else failCount++;
+        var tr = document.createElement('tr');
+        if (!r.pass) tr.className = 'fail-row';
+        tr.innerHTML = '<td>' + (i + 1) + '</td>' +
+          '<td>' + r.name + '</td>' +
+          '<td class="' + (r.pass ? 'pass">PASS' : 'fail">FAIL') + '</td>' +
+          '<td class="error-msg">' + (r.error ? r.error.replace(/</g, '&lt;') : '') + '</td>';
+        body.appendChild(tr);
+      });
+      var summary = document.getElementById('summary');
+      summary.textContent = passCount + ' passed, ' + failCount + ' failed (of ' + results.length + ' total)';
+      summary.className = failCount === 0 ? 'all-pass' : 'has-fail';
+    })();
+  </script>
+</body>
+</html>

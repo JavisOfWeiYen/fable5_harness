@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Apex Sprint Challenge — Tests</title>
+  <style>
+    body { font-family: "Segoe UI", Roboto, system-ui, sans-serif; background: #0b0f14; color: #e8edf2; margin: 0; padding: 24px; }
+    h1 { font-size: 22px; margin-bottom: 4px; }
+    p.sub { color: #9aa7b4; margin-bottom: 18px; font-size: 13px; }
+    .summary { font-size: 18px; font-weight: 700; padding: 10px 14px; border-radius: 8px; margin-bottom: 16px; display: inline-block; }
+    .summary.ok { background: rgba(42,157,92,0.2); color: #7fe0a5; border: 1px solid #2a9d5c; }
+    .summary.bad { background: rgba(230,57,70,0.2); color: #ff9aa2; border: 1px solid #e63946; }
+    table.testtbl { border-collapse: collapse; width: 100%; max-width: 960px; }
+    table.testtbl th, table.testtbl td { padding: 8px 10px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.08); font-size: 13px; vertical-align: top; }
+    table.testtbl th { color: #9aa7b4; font-size: 11px; letter-spacing: 1px; }
+    tr.pass td:nth-child(3) { color: #7fe0a5; font-weight: 700; }
+    tr.fail td:nth-child(3) { color: #ff9aa2; font-weight: 700; }
+    tr.fail td:nth-child(4) { color: #ffb3b8; font-family: monospace; }
+    a { color: #4fa3ff; }
+    #testResults { margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <h1>Apex Sprint Challenge — Test Suite</h1>
+  <p class="sub">These tests call the real Physics / Track / AI / Race / Storage / Game code. Results auto-run on load. &nbsp; <a href="index.html">&larr; Back to game</a></p>
+  <div id="testResults">Running…</div>
+
+  <!-- Same subsystems, same order. game.js is loaded for its helpers but does
+       NOT auto-start (no #gameCanvas here, and no init() call). -->
+  <script src="constants.js"></script>
+  <script src="physics.js"></script>
+  <script src="track.js"></script>
+  <script src="ai.js"></script>
+  <script src="race.js"></script>
+  <script src="storage.js"></script>
+  <script src="game.js"></script>
+  <script src="tests.js"></script>
+</body>
+</html>

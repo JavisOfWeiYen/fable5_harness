@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Apex Sprint Challenge</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="app">
+  <canvas id="raceCanvas"></canvas>
+
+  <div id="hud" class="hud hidden">
+    <div class="panel top-left">
+      <div class="row"><span class="label">LAP</span><span id="hudLap">1</span>/<span id="hudTotalLaps">3</span></div>
+      <div class="row"><span class="label">POS</span><span id="hudPosition">1</span>/4</div>
+      <div class="row"><span class="label">LAP TIME</span><span id="hudLapTime">00:00.000</span></div>
+      <div class="row"><span class="label">BEST</span><span id="hudBestLap">--:--.---</span></div>
+      <div class="row"><span class="label">GAP</span><span id="hudGap">--</span></div>
+    </div>
+
+    <div class="panel top-right">
+      <div id="hudRaceStatus">Countdown</div>
+      <div id="hudDemoBadge" class="demo-badge hidden">DEMO RACE</div>
+      <canvas id="minimapCanvas" width="180" height="120"></canvas>
+    </div>
+
+    <div class="panel bottom-left speedo">
+      <div class="speed-value"><span id="hudSpeed">0</span><span class="unit">km/h</span></div>
+      <div class="gear">GEAR <span id="hudGear">1</span></div>
+    </div>
+
+    <div class="panel bottom-right status-grid">
+      <div class="row"><span class="label">TIRE TEMP</span><span id="hudTireTemp">45</span>&deg;C</div>
+      <div class="row"><span class="label">TIRE WEAR</span><span id="hudTireWear">0</span>%</div>
+      <div class="row"><span class="label">ERS</span><span id="hudErs">100</span>%</div>
+      <div class="row"><span class="label">DRS</span><span id="hudDrs">OFF</span></div>
+      <div class="row"><span class="label">FUEL</span><span id="hudFuel">45.0</span>kg</div>
+      <div class="row"><span class="label">PIT</span><span id="hudPit">-</span></div>
+    </div>
+
+    <div id="drsDenyToast" class="toast hidden"></div>
+    <div id="pitSpeedToast" class="toast warn hidden">PIT LANE SPEEDING!</div>
+  </div>
+
+  <div id="lightsOverlay" class="overlay hidden">
+    <div class="lights-rig">
+      <div class="light" data-i="0"></div>
+      <div class="light" data-i="1"></div>
+      <div class="light" data-i="2"></div>
+      <div class="light" data-i="3"></div>
+      <div class="light" data-i="4"></div>
+    </div>
+    <div class="lights-caption" id="lightsCaption">GET READY</div>
+  </div>
+
+  <div id="mainMenu" class="overlay menu">
+    <h1>Apex Sprint Challenge</h1>
+    <p class="subtitle">Solvik Grand Loop &mdash; Fictional Open-Wheel Sprint</p>
+
+    <div class="menu-row">
+      <span class="label">Best Lap</span>
+      <span id="menuBestLap">--:--.---</span>
+    </div>
+
+    <div class="menu-row">
+      <label for="difficultySelect" class="label">AI Difficulty</label>
+      <select id="difficultySelect">
+        <option value="normal">Normal</option>
+        <option value="hard">Hard</option>
+      </select>
+    </div>
+
+    <div class="menu-buttons">
+      <button id="startRaceBtn" class="btn primary">Start Race</button>
+      <button id="demoRaceBtn" class="btn">Demo Race (Auto)</button>
+    </div>
+
+    <div id="storageWarning" class="storage-warning hidden">
+      本機儲存資料已損毀，已重設為預設值。
+    </div>
+
+    <div class="controls-help">
+      <h3>Controls</h3>
+      <ul>
+        <li><b>W / &uarr;</b> Throttle &nbsp; <b>S / &darr;</b> Brake &nbsp; <b>A D / &larr; &rarr;</b> Steer</li>
+        <li><b>Shift</b> ERS &nbsp; <b>F</b> DRS &nbsp; <b>P</b> Pause &nbsp; <b>R</b> Restart &nbsp; <b>C</b> Camera</li>
+      </ul>
+    </div>
+  </div>
+
+  <div id="pauseOverlay" class="overlay menu hidden">
+    <h2>Paused</h2>
+    <div class="menu-buttons">
+      <button id="resumeBtn" class="btn primary">Resume</button>
+      <button id="restartFromPauseBtn" class="btn">Restart</button>
+      <button id="quitToMenuBtn" class="btn">Main Menu</button>
+    </div>
+  </div>
+
+  <div id="resultsOverlay" class="overlay menu hidden">
+    <h2 id="resultsTitle">Race Results</h2>
+    <table id="resultsTable" class="results-table">
+      <thead>
+        <tr><th>Pos</th><th>Driver</th><th>Team</th><th>Laps</th><th>Best Lap</th><th>Pit</th><th>Penalty</th></tr>
+      </thead>
+      <tbody id="resultsBody"></tbody>
+    </table>
+    <div class="menu-buttons">
+      <button id="exportTelemetryBtn" class="btn">Export Telemetry CSV</button>
+      <button id="restartFromResultsBtn" class="btn primary">Race Again</button>
+      <button id="resultsToMenuBtn" class="btn">Main Menu</button>
+    </div>
+  </div>
+</div>
+
+<script src="storage.js"></script>
+<script src="physics.js"></script>
+<script src="track.js"></script>
+<script src="race.js"></script>
+<script src="ai.js"></script>
+<script src="game.js"></script>
+</body>
+</html>

@@ -1,0 +1,150 @@
+/* styles.css — Apex Sprint Challenge. All visuals are CSS/Canvas; no assets. */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0b0f14;
+  --panel: rgba(16, 22, 30, 0.92);
+  --accent: #e63946;
+  --accent2: #2a6fdb;
+  --ok: #2a9d5c;
+  --text: #e8edf2;
+  --muted: #9aa7b4;
+  --hud-bg: rgba(10, 16, 22, 0.55);
+}
+
+html, body { height: 100%; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Segoe UI", Roboto, system-ui, sans-serif;
+  overflow: hidden;
+}
+
+#app { position: relative; width: 100vw; height: 100vh; }
+#stage { position: absolute; inset: 0; }
+
+#gameCanvas {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  display: block;
+  background: #0d1b12;
+}
+
+/* ---------------- HUD ---------------- */
+#hud { position: absolute; inset: 0; pointer-events: none; font-size: 13px; }
+.hud-block {
+  position: absolute;
+  background: var(--hud-bg);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  padding: 8px 12px;
+  backdrop-filter: blur(3px);
+}
+.hud-left { top: 12px; left: 12px; min-width: 150px; }
+.hud-right { top: 12px; right: 12px; min-width: 170px; }
+.hud-center { top: 12px; left: 50%; transform: translateX(-50%); text-align: center; min-width: 180px; }
+.hud-bars { bottom: 12px; left: 12px; min-width: 200px; }
+
+.big { font-size: 26px; font-weight: 700; letter-spacing: 0.5px; }
+.big span { color: #fff; }
+.row { display: flex; justify-content: space-between; gap: 12px; line-height: 1.7; }
+.row label, .bar-row label { color: var(--muted); font-size: 11px; letter-spacing: 1px; }
+.gear { font-weight: 700; color: var(--accent); }
+
+.countdown {
+  font-size: 20px; font-weight: 800; color: var(--accent);
+  letter-spacing: 2px; margin-bottom: 4px;
+}
+.drsmsg { color: #ffd24a; font-size: 11px; min-height: 14px; margin-top: 4px; }
+
+.bar-row { display: flex; align-items: center; gap: 8px; line-height: 1.9; }
+.bar-row span { margin-left: auto; }
+.bar {
+  flex: 1; height: 8px; border-radius: 4px;
+  background: rgba(255,255,255,0.12); overflow: hidden; min-width: 80px;
+}
+.bar i { display: block; height: 100%; width: 0%; background: var(--accent); transition: width .1s linear; }
+.bar.ers i { background: linear-gradient(90deg, #2a6fdb, #4fd1ff); }
+.bar.fuel i { background: linear-gradient(90deg, #2a9d5c, #b6e34a); }
+
+#miniMap {
+  position: absolute; bottom: 12px; right: 12px;
+  width: 200px; height: 140px;
+  border: 1px solid rgba(255,255,255,0.15); border-radius: 8px;
+  background: rgba(10,20,14,0.6);
+}
+
+.notice {
+  position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%);
+  background: rgba(0,0,0,0.7); color: #ffd24a;
+  padding: 6px 14px; border-radius: 6px; font-size: 12px; display: none;
+  pointer-events: none; max-width: 60%; text-align: center;
+}
+
+/* ---------------- Overlays ---------------- */
+.overlay {
+  position: absolute; inset: 0; display: none;
+  align-items: center; justify-content: center;
+  background: rgba(4, 7, 11, 0.72); z-index: 10;
+}
+#menu { display: flex; }
+.overlay.small { background: rgba(4,7,11,0.45); }
+
+.panel {
+  background: var(--panel);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 14px;
+  padding: 28px 34px;
+  text-align: center;
+  max-width: 520px; width: 92%;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+.panel.wide { max-width: 640px; }
+
+h1 {
+  font-size: 34px; font-weight: 800; letter-spacing: 2px; line-height: 1.05;
+  background: linear-gradient(90deg, var(--accent), #ff9d6c);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+h1 span { display: block; font-size: 18px; letter-spacing: 6px; color: var(--muted);
+  -webkit-text-fill-color: var(--muted); }
+h2 { font-size: 22px; margin-bottom: 14px; }
+.tag { color: var(--muted); margin: 10px 0 18px; }
+
+.menu-controls { margin: 12px 0; }
+.menu-controls label { color: var(--muted); margin-right: 8px; font-size: 13px; }
+select {
+  background: #10161e; color: var(--text); border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 6px; padding: 6px 10px; font-size: 14px;
+}
+
+.btnrow { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin: 10px 0; }
+button {
+  background: #1b2531; color: var(--text);
+  border: 1px solid rgba(255,255,255,0.18); border-radius: 8px;
+  padding: 10px 18px; font-size: 14px; cursor: pointer;
+  pointer-events: auto; transition: transform .05s, background .15s;
+}
+button:hover { background: #26323f; }
+button:active { transform: translateY(1px); }
+button.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 700; }
+button.primary:hover { background: #f04654; }
+
+.best { margin-top: 14px; color: #ffd24a; font-weight: 600; }
+.hint { color: var(--muted); font-size: 12px; margin-top: 10px; line-height: 1.6; }
+.hint a { color: var(--accent2); }
+
+/* Results table */
+#resultsBody table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+#resultsBody th, #resultsBody td {
+  padding: 7px 10px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.08); font-size: 14px;
+}
+#resultsBody th { color: var(--muted); font-size: 11px; letter-spacing: 1px; }
+#resultsBody tr:first-child td { color: #ffd24a; font-weight: 700; }
+.fastest { color: var(--ok); font-size: 13px; }
+
+@media (max-width: 640px) {
+  .hud-center { display: none; }
+  #miniMap { width: 130px; height: 90px; }
+  .big { font-size: 20px; }
+}

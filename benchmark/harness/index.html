@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Apex Sprint Challenge</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Canvas stage -->
+    <div id="stage">
+      <canvas id="gameCanvas"></canvas>
+
+      <!-- HUD overlay -->
+      <div id="hud">
+        <div class="hud-block hud-left">
+          <div class="big"><span id="hudSpeed">0 km/h</span></div>
+          <div class="row"><label>GEAR</label><span id="hudGear" class="gear">N</span></div>
+          <div class="row"><label>LAP</label><span id="hudLap">1 / 3</span></div>
+          <div class="row"><label>POS</label><span id="hudPos">P1 / 4</span></div>
+        </div>
+
+        <div class="hud-block hud-center">
+          <div id="countdown" class="countdown">LIGHTS: 0</div>
+          <div class="row"><label>STATUS</label><span id="hudStatus">—</span></div>
+          <div id="hudDrsMsg" class="drsmsg"></div>
+        </div>
+
+        <div class="hud-block hud-right">
+          <div class="row"><label>LAP TIME</label><span id="hudLapTime">0.00s</span></div>
+          <div class="row"><label>FASTEST</label><span id="hudBest">—</span></div>
+          <div class="row"><label>GAP</label><span id="hudGap">—</span></div>
+          <div class="row"><label>DRS</label><span id="hudDrs">off</span></div>
+          <div class="row"><label>PIT</label><span id="hudPit">—</span></div>
+        </div>
+
+        <div class="hud-block hud-bars">
+          <div class="bar-row"><label>TIRE</label>
+            <div class="bar"><i id="hudTireWearBar"></i></div><span id="hudTireWear">0 %</span></div>
+          <div class="bar-row"><label>TEMP</label><span id="hudTireTemp">25 °C</span></div>
+          <div class="bar-row"><label>ERS</label>
+            <div class="bar ers"><i id="hudErsBar"></i></div><span id="hudErs">60 %</span></div>
+          <div class="bar-row"><label>FUEL</label>
+            <div class="bar fuel"><i id="hudFuelBar"></i></div><span id="hudFuel">100 %</span></div>
+        </div>
+
+        <canvas id="miniMap"></canvas>
+      </div>
+
+      <!-- Notice line (storage fallbacks, export status) -->
+      <div id="notice" class="notice"></div>
+
+      <!-- Pause overlay -->
+      <div id="pauseOverlay" class="overlay small">
+        <div class="panel">
+          <h2>Paused</h2>
+          <p>Press <b>P</b> to resume &bull; <b>R</b> to restart</p>
+        </div>
+      </div>
+
+      <!-- Results overlay -->
+      <div id="results" class="overlay">
+        <div class="panel wide">
+          <h2>Final Classification</h2>
+          <div id="resultsBody"></div>
+          <div class="btnrow">
+            <button id="btnResultsRestart" type="button">Race Again</button>
+            <button id="btnResultsMenu" type="button">Main Menu</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main menu -->
+    <div id="menu" class="overlay">
+      <div class="panel">
+        <h1>APEX SPRINT<span>CHALLENGE</span></h1>
+        <p class="tag">A top-down open-wheel sprint. 3 laps, 4 cars, one fictional circuit.</p>
+        <div class="menu-controls">
+          <label for="diffSelect">Difficulty</label>
+          <select id="diffSelect">
+            <option value="Normal">Normal</option>
+            <option value="Hard">Hard</option>
+          </select>
+        </div>
+        <div class="btnrow">
+          <button id="btnStartNormal" type="button" class="primary">Start Race</button>
+          <button id="btnStartDemo" type="button">Demo Race (AI drives)</button>
+        </div>
+        <div class="btnrow">
+          <button id="btnExport" type="button">Export Telemetry (CSV)</button>
+        </div>
+        <p id="bestLapLabel" class="best">Best lap: —</p>
+        <p class="hint">Controls: <b>W/&uarr;</b> throttle &bull; <b>S/&darr;</b> brake &bull;
+          <b>A/D</b> or <b>&larr;/&rarr;</b> steer &bull; <b>Shift</b> ERS &bull; <b>F</b> DRS &bull;
+          <b>P</b> pause &bull; <b>R</b> restart &bull; <b>C</b> camera</p>
+        <p class="hint">Tests: open <a href="tests.html">tests.html</a></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Subsystems load in fixed order; plain scripts so file:// works. -->
+  <script src="constants.js"></script>
+  <script src="physics.js"></script>
+  <script src="track.js"></script>
+  <script src="ai.js"></script>
+  <script src="race.js"></script>
+  <script src="storage.js"></script>
+  <script src="game.js"></script>
+  <!-- Guarded bootstrap: only start the live game when the race canvas exists. -->
+  <script>
+    (function () {
+      if (document.getElementById('gameCanvas') && window.Game && typeof window.Game.init === 'function') {
+        window.Game.init();
+      }
+    })();
+  </script>
+</body>
+</html>

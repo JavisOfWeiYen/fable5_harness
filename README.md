@@ -81,6 +81,7 @@ session 自動載入，不需再做任何事。
 | `optional-hooks.md` | 選配 hooks（安裝時詢問、合併進 `~/.claude/settings.json`；**POSIX sh + jq，僅適用 WSL/macOS/Linux**）：每個 session 第一次派 subagent 前注入「先讀派工守則」提醒；**真的做過事**（派過工或改過檔）的 session 第一次收尾前注入「完成要有執行證據」檢查——把兩個最關鍵的觸發從自律變成機制，純唯讀問答 session 零成本 |
 | `hooks.json` | 上述 hooks 的 JSON 範本；由 `optional-hooks.md` 的 append-safe 指令 **merge** 進 `~/.claude/settings.json`。**只能 merge、不可直接覆蓋**（覆蓋會清掉使用者既有的 settings） |
 | `index.html` | 本 repo 的單一評估報告：整體評估、安裝前後差異（六個關鍵時刻被改寫）、以及一次實測對照，合為一份卡片式文件。自包含 HTML，瀏覽器直接開。純佐證材料，不會被安裝進 `~/.claude/` |
+| `benchmark/` | 有/無 harness 的 A/B 實測素材：共用的 485 行任務 prompt ＋ 兩個完整成品（`default/` 與 `harness/`）。`index.html` 第六節的數據來源，可自行重驗 |
 
 ## 裝完之後長什麼樣
 
@@ -118,10 +119,10 @@ session 自動載入，不需再做任何事。
 流程把它會犯、而強模型本來也不會犯的錯都攔掉了。這是「在這類任務上，結果逼近」，不是「能力
 逼近」，差別很重要。
 
-> 誠實但書：以上是**從機制推理**的定位，不是實測 benchmark。想用數據說話，可拿同一批任務做
-> 「有制度 vs 沒制度」對照，看完成率／回頭修正次數／驗收通過率。根目錄的
-> [`index.html`](index.html) 這份單一評估報告，含安裝前後差異與一次這類實測對照，
-> 可直接用瀏覽器開。
+> 誠實但書：以上是**從機制推理**的定位，不是統計 benchmark。repo 的 `benchmark/` 收錄了一次
+> 可重驗的實測對照（共用的 485 行任務 prompt ＋ 有/無 harness 兩個完整成品）：成品分數打平
+> （兩邊都 14/14 測試通過、零 console error），差異在過程痕跡（獨立重驗腳本、未驗證項自我
+> 申報）——為什麼會這樣、該怎麼讀，見 [`index.html`](index.html) 第六節。
 
 ## 由來
 
