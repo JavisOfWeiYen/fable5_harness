@@ -31,7 +31,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "command -v jq >/dev/null 2>&1 || exit 0; in=$(cat); c=$(printf '%s' \"$in\" | jq -r '.tool_input.command // empty'); [ -n \"$c\" ] || exit 0; printf '%s' \"$c\" | grep -Eq '(^|[[:space:];&|(])git[[:space:]]+([^;&|]*[[:space:]])?push([[:space:]]|$)' || exit 0; printf '%s' \"$c\" | grep -Eq '(^|[[:space:]])(--force[^[:space:]]*|--delete|--mirror|--prune|-f|-d)([[:space:]]|$)|[[:space:]]\\+[^[:space:]]+' || exit 0; printf '%s' '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"ask\",\"permissionDecisionReason\":\"git push with a force/destructive flag (--force*/-f/--delete/-d/--mirror/--prune/+refspec) detected anywhere in the command - Fast-path exception, needs explicit user confirmation\"}}'"
+            "command": "command -v jq >/dev/null 2>&1 || exit 0; in=$(cat); c=$(printf '%s' \"$in\" | jq -r '.tool_input.command // empty' 2>/dev/null); [ -n \"$c\" ] || exit 0; cn=$(printf '%s' \"$c\" | tr -d '\\042\\047\\134'); printf '%s' \"$cn\" | grep -Eq '(^|[[:space:];&|(])git[[:space:]]+([^;&|]*[[:space:]])?push([[:space:]]|$)' || exit 0; printf '%s' \"$cn\" | grep -Eq '(^|[[:space:]])(--force[^[:space:]]*|--delete|--mirror|--prune|-[a-zA-Z0-9]*[fd][a-zA-Z0-9]*)([[:space:]]|$)|(^|[[:space:]])[+:][^[:space:]]+' || exit 0; printf '%s' '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"ask\",\"permissionDecisionReason\":\"git push with a force/destructive signature (--force*, --delete, --mirror, --prune, -f/-d incl. combined short flags, +refspec or :refspec deletion, quoted variants) - Fast-path exception, needs explicit user confirmation\"}}'"
           }
         ]
       }

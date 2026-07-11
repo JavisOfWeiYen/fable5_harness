@@ -38,6 +38,7 @@ verification treats as failures. Upgrades port hunks; they never blind-copy pers
 | `agents/*.md` | frontmatter may be personalized (`model:` under budget preference, `effort:` downgrades) | port body hunks; if upstream changed a frontmatter key the install also changed, show the user both — don't pick silently |
 | `hooks.json` (→ user's `settings.json`) | mechanism, idempotent | if the diff touches it and the user has the hooks installed: back up `settings.json`, then follow `optional-hooks.md`'s removal + re-merge (verified re-runnable without duplicates) |
 | `git-fastpath.json` (→ user's `settings.json`) | mechanism, idempotent; optional (may not be installed) | if the diff touches it and the user has the git fast-path guard installed: back up `settings.json`, then follow `optional-git-fastpath.md`'s signature-scoped removal + append-safe re-merge (re-runnable without duplicates). Leave any personal protected-branch `ask` rules untouched |
+| `optional-hooks.md`, `optional-git-fastpath.md` | package-side procedure docs | nothing is installed verbatim from them; if a diff changes a recipe and that component is installed, redo the removal + re-merge using the new recipe |
 
 Rule of thumb: **one local-only change demotes the whole file from copy to hunk-porting.**
 When porting, apply upstream hunks with `Edit`-level precision; if an upstream hunk overlaps a
@@ -56,7 +57,9 @@ answered).
 2. Every routing-table target in `~/.claude/CLAUDE.md` exists on disk.
 3. If hooks were re-merged: `jq . ~/.claude/settings.json` is valid, and each installed hook
    command is byte-identical to the package's `hooks.json` (extract with jq and `cmp` — do not
-   eyeball).
+   eyeball). If the git fast-path guard was re-merged: its `PreToolUse` command is
+   byte-identical to `git-fastpath.json` (same jq + `cmp` extraction), and the guard's
+   `permissions.allow` / `permissions.ask` rules are present.
 4. Read back each ported hunk in place and confirm it says what the upstream version says.
 
 ## Step 3 — Record

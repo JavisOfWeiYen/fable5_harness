@@ -1,6 +1,6 @@
 ---
 name: verifier
-description: Fresh-context acceptance checker. Use after any substantive delegated or main-context work, giving it ONLY the acceptance criteria and pointers to the changed artifacts (never the doer's transcript). It verifies by execution — running tests, driving the app, reading files back — and returns a pass/fail verdict per criterion.
+description: Fresh-context acceptance checker. Use after substantive work — the high-risk / high-uncertainty line in `20-judgment-rubrics.md` § 2 — whether delegated or done in the main conversation, giving it ONLY the acceptance criteria and pointers to the changed artifacts (never the doer's transcript). It verifies by execution — running tests, driving the app, reading files back — and returns a pass/fail verdict per criterion.
 model: opus
 effort: high
 ---

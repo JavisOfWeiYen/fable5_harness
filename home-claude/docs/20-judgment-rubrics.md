@@ -91,8 +91,9 @@ that the task obviously requires. Asking this wastes a full user round-trip.
 - W2. The diff keeps growing but acceptance criteria met stays flat.
 - W3. You're fighting the framework/tool (increasing workarounds for things that should be easy).
 - W4. You can no longer state in one sentence why the current step serves the goal.
-- W5. You are generating a justification for skipping delegation or verification ("I already
-  know the exact content", "the delegation prompt would contain the whole diff anyway").
+- W5. You are generating a justification for skipping delegation or a verification that § 2
+  requires ("I already know the exact content", "the delegation prompt would contain the whole
+  diff anyway").
   The justification is itself the signal: if the delegation prompt would contain everything
   needed, delegating costs almost nothing — execute it (`10-model-dispatch.md` § 1).
 

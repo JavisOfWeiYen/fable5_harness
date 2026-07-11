@@ -80,7 +80,7 @@ session 自動載入，不需再做任何事。
 | `upgrade_harness.md` | 已安裝機器的升級步驟（寫給升級方的 Claude Code session 讀）：逐 hunk 移植、不覆蓋個人化檔、升級後重跑驗證 |
 | `optional-hooks.md` | 選配 hooks（安裝時詢問、合併進 `~/.claude/settings.json`；**POSIX sh + jq，僅適用 WSL/macOS/Linux**）：每個 session 第一次派 subagent 前注入「先讀派工守則」提醒；**真的做過事**（派過工或改過檔）的 session 第一次收尾前注入「完成要有執行證據」檢查——把兩個最關鍵的觸發從自律變成機制，純唯讀問答 session 零成本 |
 | `hooks.json` | 上述 hooks 的 JSON 範本；由 `optional-hooks.md` 的 append-safe 指令 **merge** 進 `~/.claude/settings.json`。**只能 merge、不可直接覆蓋**（覆蓋會清掉使用者既有的 settings） |
-| `optional-git-fastpath.md` | 選配的 git fast-path guard（安裝時**獨立**詢問，與上面的 hooks 分開；**POSIX sh + jq，僅適用 WSL/macOS/Linux**）：日常 git（status／diff／log／add／commit／push）免確認直接跑，但 Fast-path 的例外——帶 `--force*`／`-f`／`-d`／`--delete`／`--mirror`／`--prune`／`+refspec` 的破壞性 push——一律要你確認。permission 規則只能前綴比對，`git push origin main --force` 會從 `Bash(git push *)` 溜過去；PreToolUse guard 補上這個洞，偵測**任意參數位置**的 force token，只回 `ask`（升級給人決定），從不 deny／allow |
+| `optional-git-fastpath.md` | 選配的 git fast-path guard（安裝時**獨立**詢問，與上面的 hooks 分開；**POSIX sh + jq，僅適用 WSL/macOS/Linux**）：日常 git（status／diff／log／add／commit／push）免確認直接跑，但 Fast-path 的例外——帶 `--force*`／`-f`／`-d`（含合併短旗標如 `-fu`）／`--delete`／`--mirror`／`--prune`／`+refspec`／裸 `:refspec` 刪除、以及上述加引號的變體的破壞性 push——一律要你確認。permission 規則只能前綴比對，`git push origin main --force` 會從 `Bash(git push *)` 溜過去；PreToolUse guard 補上這個洞，偵測**任意參數位置**的 force token，只回 `ask`（升級給人決定），從不 deny／allow |
 | `git-fastpath.json` | 上述 guard 的 permissions ＋ PreToolUse JSON 範本；由 `optional-git-fastpath.md` 的 append-safe 指令 **merge** 進 `~/.claude/settings.json`（union `permissions.allow`／`ask` 與 `hooks.PreToolUse` 三個陣列，不覆蓋既有值）。**只能 merge、不可直接覆蓋**。受保護分支規則屬個人化，不放進通用範本，安裝時另加 |
 | `index.html` | 本 repo 的單一評估報告：整體評估、安裝前後差異（六個關鍵時刻被改寫）、以及一次實測對照，合為一份卡片式文件。自包含 HTML，瀏覽器直接開。純佐證材料，不會被安裝進 `~/.claude/` |
 | `benchmark/` | 有/無 harness 的 A/B 實測素材：共用的 485 行任務 prompt ＋ 兩個完整成品（`default/` 與 `harness/`）＋ 操控手感量測（`handling-metrics/`）。`index.html` 第六節的數據來源，可自行重驗 |
@@ -89,8 +89,8 @@ session 自動載入，不需再做任何事。
 
 - 你照常對話。模型遇到「要派 subagent」「要宣稱完成」「要改制度檔」這類時刻，會被
   CLAUDE.md 的路由表引導去讀對應文件再動手。
-- 實質性工作完成後，模型會派一個沒看過過程的 `verifier` agent 拿驗收條件去實測，而不是自己
-  說做完了。
+- 高風險或高不確定的工作完成後，模型會派一個沒看過過程的 `verifier` agent 拿驗收條件去實測；
+  小修改與例行 git 操作則以自身的執行證據直接收案。
 - 你糾正過的事，模型會按維護協議把教訓寫回文件（改規則本身則一定先問你）。
 - 要模型查多個事實（例如「查這四個變數」）時，委派模板要求逐項附 file:line 與原文引用、
   沒查到的分開列——用可證偽的格式堵住「查一個、猜三個」。你直接口頭問時也建議這樣要求。
@@ -104,7 +104,7 @@ session 自動載入，不需再做任何事。
 
 **會實際改善的（真的）：**
 - context 不被主對話撐爆 → 少觸發壓縮 → 不會做到一半忘記先前的約束。
-- 「完成」要有執行證據，還要 fresh-context `verifier` 驗收 → 擋掉「看起來沒問題」的高報。
+- 「完成」一律要有執行證據；高風險／高不確定的工作再由 fresh-context `verifier` 驗收 → 擋掉「看起來沒問題」的高報。
 - 判斷題寫成 rubric、有升降級階梯與 max-effort 難題求解器 → 少走冤路、卡關換路而非硬撞。
 
   一句話：**有紀律的 Opus，穩定贏過沒紀律的 Opus。**

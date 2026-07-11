@@ -3,7 +3,8 @@
 Copy the template, fill every `{…}` slot, delete inapplicable optional lines.
 If you can't fill the ACCEPTANCE slot, you don't understand the task yet — resolve that first
 (`10-model-dispatch.md` § 2). Model choice per `10-model-dispatch.md` § 3; verification of the
-result per `10-model-dispatch.md` § 6 (spawn `verifier` — these templates are for the *doer*).
+result per `10-model-dispatch.md` § 6 (spawn `verifier` when the result crosses the
+substantive line in `20-judgment-rubrics.md` § 2 — these templates are for the *doer*).
 
 Conventions used below:
 - Long output always goes to a file; the reply carries the path + short summary.

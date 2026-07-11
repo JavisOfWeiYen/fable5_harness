@@ -585,7 +585,7 @@
             它比較像是一套安裝到 Claude Code 使用者環境中的「工程工作制度包」。
           </p>
           <p>
-            實際安裝的東西其實很少：一份精簡的 router、六份制度文件、三個自訂 agent，以及三個選配 hooks。
+            實際安裝的東西其實很少：一份精簡的 router、六份制度文件、三個自訂 agent，以及兩項選配機制：三個提醒 hooks，與一個 git fast-path guard（例行 git 免確認、破壞性 push 一律升級問人）。
             它不新增任何產品介面；真正改變的，是 Claude Code 在每次派工、驗收、卡關與收尾時的工作姿勢。
           </p>
           <p>安裝後，主要內容會放入：</p>
@@ -680,7 +680,7 @@
 
           <div class="callout">
             <strong>「完成」的定義更嚴格</strong>
-            每一項驗收條件都需要對應的執行證據；重要工作還應接受獨立驗證，並檢查至少一項最可能發生的回歸問題。
+            每一項驗收條件都需要對應的執行證據；高風險或高不確定的工作還應接受獨立驗證，並檢查至少一項最可能發生的回歸問題。
           </div>
 
           <h3>幾條值得知道的具體規則</h3>
@@ -778,7 +778,7 @@ REPORT:
               </div>
               <div class="side have">
                 <p class="side-label">有 harness</p>
-                <p>完成必須有執行證據；實質工作由 fresh-context verifier 驗收，做的人不自驗。</p>
+                <p>完成必須有執行證據；高風險／高不確定的實質工作由 fresh-context verifier 驗收，做的人不自驗。</p>
               </div>
             </div>
             <figure class="code-fig">
@@ -962,7 +962,7 @@ printf '%s' '{"decision":"block","reason":"Doctrine check (once per session, wor
             <li>修改前先備份現有檔案。</li>
             <li>發現同名檔案衝突時停止，不直接覆蓋。</li>
             <li>既有 <code>CLAUDE.md</code> 採合併策略，而不是整份取代。</li>
-            <li>安裝時詢問成本偏好、主要用途、回覆語言、互動風格（全自主／節點回報）、是否有 Fable 5 權限，以及 hooks 設定。</li>
+            <li>安裝時詢問成本偏好、主要用途、回覆語言、互動風格（全自主／節點回報）、是否有 Fable 5 權限、hooks 設定，以及是否安裝 git fast-path guard（與 hooks 分開詢問）——共 7 個問題。</li>
             <li>已安裝的機器由 <code>upgrade_harness.md</code> 升級：逐 hunk 移植、不覆蓋個人化；安裝時記錄 package commit，升級可精準 diff。</li>
             <li>偵測 WSL、Linux 工具與測試環境，避免殘留 placeholder。</li>
           </ul>
@@ -1054,6 +1054,7 @@ printf '%s' '{"decision":"block","reason":"Doctrine check (once per session, wor
         <section class="panel" id="lightweight">
           <h2>十、簡單任務如何避免「殺雞用牛刀」</h2>
           <p class="lead">
+            這條「小任務走輕量」的線現已內建於制度本身（20-judgment-rubrics § 2 的風險線與 dispatch § 1 的 Fast-path），預設生效；以下指令僅在模型偏離規則時作為明確提示。
             對簡單任務，最好的做法通常不是完全停用 Harness，而是改用
             <strong>lightweight inline mode</strong>：由主 session 直接處理，不派出 implementer，
             也不啟動 fresh-context verifier，但仍保留最小必要驗證。
@@ -1070,9 +1071,9 @@ printf '%s' '{"decision":"block","reason":"Doctrine check (once per session, wor
           <h3>Small inline task 的判斷原則</h3>
           <p>依此 Repo 的工作判準，通常需同時符合以下條件：</p>
           <ol>
-            <li>只修改一個檔案。</li>
+            <li>修改不超過 2 個檔案。</li>
             <li>修改規模不超過約 50 行。</li>
-            <li>不是將被正式執行、發布或高度依賴的重要成果。</li>
+            <li>不落在高風險／高不確定：不涉及 auth、安全、資料遷移、併發或不可逆步驟，行為可以便宜舉證，且實作者信心正常。</li>
           </ol>
           <p class="muted">
             即使修改行數很少，只要涉及部署、正式 API、權限、安全性、資料遷移或高風險腳本，仍應採完整驗證流程。
@@ -1214,7 +1215,7 @@ ls -la ~/.claude 2>/dev/null</code></pre>
               這類 Harness 能顯著提升可信度。
             </p>
             <p>
-              真正的代價是 token 成本、執行時間，以及部分簡單任務可能因強制派工與驗證而顯得過重。
+              真正的代價是 token 成本、執行時間，以及部分簡單任務若模型未循內建的輕量線，仍可能顯得過重。
               最理想的使用方式，是依任務風險分級：高風險任務完整套用，低風險任務採精簡流程。
             </p>
             <p>
@@ -1231,7 +1232,7 @@ ls -la ~/.claude 2>/dev/null</code></pre>
             <li><strong>成本偏好先選中間檔：</strong>先觀察成本與驗證品質，不要一開始就把所有工作推到最高 effort。</li>
             <li><strong>挑三種任務驗證：</strong>小修改、中型功能、跨模組除錯各測一次。</li>
             <li><strong>記錄額外成本：</strong>比較安裝前後的 token、時間、返工次數與錯誤率。</li>
-            <li><strong>建立風險分級：</strong>決定哪些任務需要 verifier，哪些可由主 session 直接完成。</li>
+            <li><strong>驗證內建的風險分級：</strong>風險分級現已內建（20-judgment-rubrics § 2），你的工作是確認它對你的任務判斷得當；若門檻不合，依維護協議調整。</li>
             <li><strong>制定輕量模式慣例：</strong>為單檔小修改準備固定的 lightweight inline 指令。</li>
           </ol>
 

@@ -103,7 +103,8 @@ contract, since `Explore` takes no `model` override — or spot-check a sample o
 - `verifier` (custom, `~/.claude/agents/verifier.md`) — fresh-context acceptance checking. See § 6.
 - `implementer` (custom, opus/high) — the doer for well-specified build/refactor tasks
   (templates 2–3 in `30-delegation-templates.md`). Prefer it over a bare `general-purpose`
-  spawn for substantive implementation; it still gets certified by a separate `verifier` pass.
+  spawn for substantive implementation; substantive results still get certified by a separate
+  `verifier` pass (§ 6).
 - `hard-solver` (custom, opus/max) — deep reasoning for the subtask that resisted normal
   attempts (§ 5's top of the ladder on the effort axis). Expensive; dispatch sparingly, with
   the full failure trail.
@@ -182,8 +183,8 @@ drawn in `20-judgment-rubrics.md` § 2, may self-check. After substantive work:
 2. Evidence must be executed, not argued: written files get read back; code gets tests run or
    the app actually driven (for web, with this machine's browser driver — see CLAUDE.md
    Environment facts); claims get reproduced.
-3. High-risk judgment (irreversible actions, architecture choices, anything the user will
-   ship) additionally gets a second independent opinion, or N candidate answers judged by a
-   separate agent, or goes to the user.
+3. High-risk judgment (irreversible actions, architecture choices, the risk categories drawn
+   in `20-judgment-rubrics.md` § 2) additionally gets a second independent opinion, or N
+   candidate answers judged by a separate agent, or goes to the user.
 4. If verifier and doer disagree, the disagreement goes to the commander — do not let either
    agent overrule the other silently.

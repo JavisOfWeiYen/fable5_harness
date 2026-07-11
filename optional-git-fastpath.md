@@ -15,8 +15,9 @@ Two layers, both machine-generic, shipped together in the package file **`git-fa
   `git push` bare and trailing-`*`); ask on the prefix forms of a forced/destructive push
   (`--force`, `--force-with-lease`, `-f`, `--delete`, `--mirror`, `--prune`).
 - **PreToolUse guard hook** (matcher `Bash`, 1 entry) — a deterministic jq+grep guard that
-  detects a `git … push` carrying a force/destructive token in **any** argument position and
-  returns `permissionDecision: "ask"`.
+  first normalizes away quotes and backslashes, then detects a `git … push` carrying a
+  force/destructive signature in **any** argument position and returns
+  `permissionDecision: "ask"`.
 
 ## Why the hook layer exists
 
@@ -25,12 +26,31 @@ auto-approves anything that *starts* `git push ` — including `git push origin 
 because the force token sits after the target, not in the prefix. You cannot enumerate the hole
 away with more `ask` rules: the force flag can appear at any position, after any number of
 arguments, so no fixed prefix catches it. The guard closes this by inspecting the whole
-command string: it first confirms the command actually invokes `git … push` (not merely
-mentions the word), then scans every argument for a force/destructive token —
-`--force*` (covers `--force` and `--force-with-lease`), `-f`, `-d`, `--delete`, `--mirror`,
-`--prune`, or a `+refspec` (leading-`+` push spec, e.g. `git push origin +main`). On a match it
-emits `permissionDecision: "ask"` and nothing else. It **never** returns `deny` or `allow` — it
-only raises the Fast-path exception to you for explicit confirmation.
+command string. It first **normalizes** the string by stripping every double quote, single
+quote, and backslash (`tr -d '\042\047\134'`) — so shell-splicing tricks that hide a flag from
+a space-anchored regex while the shell still reassembles the real flag collapse back to their
+executed form: `git push "--force"`, `git push --for"ce"`, `git push \--force`, and
+`git push ""--force` all normalize to `git push --force`. It then confirms the command actually
+invokes `git … push` (not merely mentions the word) and scans every argument for a
+force/destructive signature:
+
+- `--force*` (covers `--force` and `--force-with-lease`), `--delete`, `--mirror`, `--prune`;
+- any short-flag cluster containing `f` or `d` — `-f`, `-d`, and **combined** clusters like
+  `-fu`, `-uf`, `-f4` (a real `git push -fu origin main` is a force push, but `-f` alone with a
+  space/EOL terminator would miss it);
+- a leading-`+` **or** leading-`:` refspec token — `+refspec` (force update, e.g.
+  `git push origin +main`) and bare `:refspec` **branch deletion** (e.g. `git push origin :main`,
+  which deletes the remote branch with no flag at all).
+
+On a match it emits `permissionDecision: "ask"` and nothing else. It **never** returns `deny` or
+`allow` — it only raises the Fast-path exception to you for explicit confirmation.
+
+**Defense in depth — whole-string scan, no reliance on command splitting.** The guard greps the
+entire raw command string, so it does not depend on Claude Code's compound-command splitting to
+find the push. A force signature buried in a chained command — `a && git push --force`,
+`echo hi && git push origin :main`, `cd /r && git push origin main --force` — is caught the same
+as a bare `git push --force`, because the whole string (after normalization) is what the two
+greps see.
 
 **Requirements:** `jq` on PATH — the command opens with a `command -v jq` guard, so on a machine
 without jq it exits 0 silently and simply doesn't fire; nothing errors or blocks. The command is
@@ -46,6 +66,11 @@ you simply confirm and move on — no push is ever blocked or silently allowed:
   matches text it isn't executing. It asks; you say yes.
 - A compound command that both runs a git push and contains an unrelated force token elsewhere
   (e.g. `rm -f foo.txt && git push`) — `-f` is detected anywhere in the string. It asks.
+- **Normalization side effect:** because quote-stripping runs before the scan, a `-f`/`--force`
+  substring living inside a *quoted* argument in the same compound command is exposed and can
+  match. E.g. `git commit -m "add -f flag docs" && git push` — the quotes around the commit
+  message are stripped, leaving a ` -f ` token, so the (non-forced) push over-asks. This is the
+  safe direction: the cost of catching the splicing bypass is the occasional benign prompt.
 
 Genuine non-triggers, verified: `git pushover --force` (not a `push` subcommand),
 `git push --dry-run` (no force token), a commit message containing the word "force"
@@ -110,16 +135,22 @@ payload. Extract it once, then feed it commands and watch the decision:
 
 ```bash
 CMD="$(jq -r '.hooks.PreToolUse[0].hooks[0].command' git-fastpath.json)"
+ask(){ jq -n --arg c "$1" '{tool_input:{command:$c}}' | sh -c "$CMD"; }
 
 # should ASK — prints JSON with permissionDecision "ask":
-jq -n '{tool_input:{command:"git push origin main --force"}}' | sh -c "$CMD"
-jq -n '{tool_input:{command:"git push -f"}}'                  | sh -c "$CMD"
-jq -n '{tool_input:{command:"git push origin +main"}}'        | sh -c "$CMD"
+ask 'git push origin main --force'   # flag after the target
+ask 'git push -f'                    # short force flag
+ask 'git push origin +main'          # +refspec force update
+ask 'git push "--force"'             # quote-splice: normalizes to --force
+ask 'git push -fu origin main'       # combined short-flag cluster (f + u)
+ask 'git push origin :main'          # bare :refspec — remote branch DELETION, no flag
 
 # should be SILENT (prints nothing, exits 0):
-jq -n '{tool_input:{command:"git push"}}'          | sh -c "$CMD"
-jq -n '{tool_input:{command:"git push origin main"}}' | sh -c "$CMD"
-jq -n '{tool_input:{command:"ls -la"}}'            | sh -c "$CMD"
+ask 'git push'
+ask 'git push origin main'
+ask 'git push -u origin main'        # -u alone: not a force cluster
+ask 'git push origin HEAD:main'      # HEAD:main source:dest, not a leading-: deletion
+ask 'ls -la'
 ```
 
 ## Personalization — protected-branch rules (add at install time)

@@ -16,6 +16,8 @@ fable5_harness/
   CLAUDE.md                 ← package-root BOOTSTRAP only (auto-loads when a session opens
                               here, points you at this file). DO NOT install/copy it.
   install_harness.md        ← this file
+  upgrade_harness.md        ← upgrade instructions for a machine that already installed
+                              (git pull → port hunks into the personalized installed files)
   README.md                 ← human-readable overview (Traditional Chinese)
   optional-hooks.md         ← once-per-session doctrine reminder hooks (optional; asked at Step 0,
                               merged into ~/.claude/settings.json at Step 3, item 6)
