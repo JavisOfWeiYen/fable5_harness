@@ -15,8 +15,8 @@ verification treats as failures. Upgrades port hunks; they never blind-copy pers
 2. Find the installed baseline commit: look in `~/.claude/docs/50-letter-to-future-sessions.md`
    § Handoff for the most recent `package commit: <hash>` marker.
    - **Marker found:** the upstream changes are exactly
-     `git diff <hash>..HEAD -- home-claude/ hooks.json optional-hooks.md` (run in the package
-     directory). Work from this diff; do not re-derive it by eyeballing whole files.
+     `git diff <hash>..HEAD -- home-claude/ hooks.json optional-hooks.md git-fastpath.json optional-git-fastpath.md`
+     (run in the package directory). Work from this diff; do not re-derive it by eyeballing whole files.
      **If the diff is empty, the install is already current** — tell the user, and stop here:
      skip the remaining steps and do not append a Handoff entry for a zero-change upgrade.
    - **No marker (older install):** fall back to content comparison — for each package file,
@@ -37,6 +37,7 @@ verification treats as failures. Upgrades port hunks; they never blind-copy pers
 | `docs/50-letter-to-future-sessions.md` | personalized (Three things, append-only Handoff) | **port hunks only; never overwrite the Handoff** |
 | `agents/*.md` | frontmatter may be personalized (`model:` under budget preference, `effort:` downgrades) | port body hunks; if upstream changed a frontmatter key the install also changed, show the user both — don't pick silently |
 | `hooks.json` (→ user's `settings.json`) | mechanism, idempotent | if the diff touches it and the user has the hooks installed: back up `settings.json`, then follow `optional-hooks.md`'s removal + re-merge (verified re-runnable without duplicates) |
+| `git-fastpath.json` (→ user's `settings.json`) | mechanism, idempotent; optional (may not be installed) | if the diff touches it and the user has the git fast-path guard installed: back up `settings.json`, then follow `optional-git-fastpath.md`'s signature-scoped removal + append-safe re-merge (re-runnable without duplicates). Leave any personal protected-branch `ask` rules untouched |
 
 Rule of thumb: **one local-only change demotes the whole file from copy to hunk-porting.**
 When porting, apply upstream hunks with `Edit`-level precision; if an upstream hunk overlaps a

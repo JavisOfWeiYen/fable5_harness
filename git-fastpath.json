@@ -1,0 +1,40 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git status *)",
+      "Bash(git status)",
+      "Bash(git diff *)",
+      "Bash(git diff)",
+      "Bash(git log *)",
+      "Bash(git log)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(git push)"
+    ],
+    "ask": [
+      "Bash(git push --force *)",
+      "Bash(git push --force)",
+      "Bash(git push --force-with-lease *)",
+      "Bash(git push --force-with-lease)",
+      "Bash(git push -f *)",
+      "Bash(git push -f)",
+      "Bash(git push --delete *)",
+      "Bash(git push --mirror *)",
+      "Bash(git push --prune *)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "command -v jq >/dev/null 2>&1 || exit 0; in=$(cat); c=$(printf '%s' \"$in\" | jq -r '.tool_input.command // empty'); [ -n \"$c\" ] || exit 0; printf '%s' \"$c\" | grep -Eq '(^|[[:space:];&|(])git[[:space:]]+([^;&|]*[[:space:]])?push([[:space:]]|$)' || exit 0; printf '%s' \"$c\" | grep -Eq '(^|[[:space:]])(--force[^[:space:]]*|--delete|--mirror|--prune|-f|-d)([[:space:]]|$)|[[:space:]]\\+[^[:space:]]+' || exit 0; printf '%s' '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"ask\",\"permissionDecisionReason\":\"git push with a force/destructive flag (--force*/-f/--delete/-d/--mirror/--prune/+refspec) detected anywhere in the command - Fast-path exception, needs explicit user confirmation\"}}'"
+          }
+        ]
+      }
+    ]
+  }
+}

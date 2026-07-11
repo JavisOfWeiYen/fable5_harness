@@ -21,6 +21,10 @@ fable5_harness/
                               merged into ~/.claude/settings.json at Step 3, item 6)
   hooks.json                ← hook template merged by optional-hooks.md; never copy over
                               ~/.claude/settings.json (merge only, or you wipe the user's settings)
+  optional-git-fastpath.md  ← git fast-path guard (optional; separate opt-in at Step 0,
+                              merged into ~/.claude/settings.json at Step 3, item 6a)
+  git-fastpath.json         ← permissions + PreToolUse guard fragment merged by
+                              optional-git-fastpath.md; merge only, never copy over settings.json
   home-claude/              ← mirrors what goes under ~/.claude/
     CLAUDE.md               ← the global router that DOES get installed to ~/.claude/CLAUDE.md
                               (5 routing triggers + 6 invariants)
@@ -76,6 +80,18 @@ verifier, and every judgment call a small model tends to fumble is written down 
      package-manager install yourself. If accepted and jq is present, install per Step 3, item 6.
      (The hook commands carry their own jq guard, so even installed-without-jq they no-op
      silently rather than error.)
+   - Optional git fast-path guard (a **separate** opt-in — offer it independently of the
+     reminder hooks above): the fragment in `optional-git-fastpath.md` / `git-fastpath.json`
+     lets routine git run without a prompt (status/diff/log/add/commit/push) while forcing the
+     Fast-path's destructive exceptions to still ask — permission `ask` rules plus a
+     deterministic PreToolUse guard that catches a forced/destructive `git push`
+     (`--force*`/`-f`/`-d`/`--delete`/`--mirror`/`--prune`/`+refspec`) in ANY argument position.
+     The guard only ever answers "ask" (escalates to the human), never deny/allow. Same platform
+     and `jq` constraints as the reminder hooks (POSIX sh + jq; WSL/macOS/Linux only; own jq
+     guard so it no-ops without jq). If accepted, install per Step 3, item 6a; at that point you
+     can also offer to add the user's protected-branch `ask` rules (personalization — see
+     `optional-git-fastpath.md`). A user may take this and decline the reminder hooks, or vice
+     versa.
 
 ## Step 1 — Copy files
 
@@ -180,6 +196,21 @@ is how Step 4 verifies completion.
    command, which merges the package template `hooks.json` into the user's settings (plain
    `jq '.[0] * .[1]'` would clobber existing `hooks.PreToolUse`/`hooks.Stop`, so don't use it;
    never copy `hooks.json` over `settings.json` either). Finally confirm the result is valid JSON
+   (`jq . ~/.claude/settings.json`).
+6a. **Optional git fast-path guard (only if the user opted in at Step 0 — a separate choice from
+   item 6):** skip entirely on native (non-WSL) Windows and if `jq` is absent (both screened at
+   Step 0). Otherwise follow `optional-git-fastpath.md` — back up `~/.claude/settings.json`
+   first (Step 0, item 3 naming), then run its **append-safe** merge, which unions the package
+   fragment `git-fastpath.json` into the user's settings. **The same clobber caveat as item 6
+   applies, and it applies to three arrays here:** plain `jq '.[0] * .[1]'` replaces same-named
+   arrays, so it would wipe any existing `permissions.allow`, `permissions.ask`, or
+   `hooks.PreToolUse` the user already has — never use it. The command in
+   `optional-git-fastpath.md` appends/unions each of those three arrays, preserving whatever the
+   user already had (and `unique` on the permission arrays keeps a re-run from duplicating
+   rules). Never copy `git-fastpath.json` over `settings.json`. If the user named protected
+   branches at Step 0, add their personal `ask` rules the same append-safe way (union into
+   `permissions.ask`) — these stay in the user's settings, out of the generic fragment, per the
+   personalization section of `optional-git-fastpath.md`. Finally confirm valid JSON
    (`jq . ~/.claude/settings.json`).
 7. **API-retry cap (recommended):** Claude Code retries transient API errors (overloaded/529,
    timeouts) up to 10 times with exponential backoff — during a provider outage a single spawn

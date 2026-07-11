@@ -24,8 +24,8 @@ Claude Code session 都以「指揮官」模式運作：主對話不下場做粗
 ## 安裝
 
 > **支援範圍：** 本套件針對 WSL、macOS、Linux 上的 Claude Code。Windows 原生／PowerShell
-> 環境目前不支援；Windows 使用者建議在 WSL 內安裝與使用。選配 hooks 為 POSIX sh + jq，同樣
-> 只適用 WSL/macOS/Linux。
+> 環境目前不支援；Windows 使用者建議在 WSL 內安裝與使用。選配 hooks 與選配的 git fast-path
+> guard 皆為 POSIX sh + jq，同樣只適用 WSL/macOS/Linux。
 
 需求：已安裝 Claude Code（建議主力模型用 Opus）。
 
@@ -40,7 +40,7 @@ cd fable5_harness
 > 讀取 install_harness.md，照著裡面的步驟安裝
 
 安裝時 Claude 會：備份既有設定 → 複製檔案到 `~/.claude/` → 問幾個問題（成本傾向、主要用途、
-語言偏好、互動風格〔全自主或節點回報〕、有沒有 Fable 5 權限、要不要裝選配 hooks）→ 用你這台機器的實況填好佔位 → 驗證結果。檔案已預先通用化：
+語言偏好、互動風格〔全自主或節點回報〕、有沒有 Fable 5 權限、要不要裝選配 hooks、要不要裝選配的 git fast-path guard）→ 用你這台機器的實況填好佔位 → 驗證結果。檔案已預先通用化：
 規則與範例不綁定任何作業系統或專案類型，不會裝出錯誤的環境指令；未填的佔位會被驗證步驟（Step 4）擋下，安裝時不要猜測填值。
 
 之後要更新：在 package 目錄 `git pull` 拿新版，對 Claude 說「讀取 upgrade_harness.md，照著升級」。
@@ -80,6 +80,8 @@ session 自動載入，不需再做任何事。
 | `upgrade_harness.md` | 已安裝機器的升級步驟（寫給升級方的 Claude Code session 讀）：逐 hunk 移植、不覆蓋個人化檔、升級後重跑驗證 |
 | `optional-hooks.md` | 選配 hooks（安裝時詢問、合併進 `~/.claude/settings.json`；**POSIX sh + jq，僅適用 WSL/macOS/Linux**）：每個 session 第一次派 subagent 前注入「先讀派工守則」提醒；**真的做過事**（派過工或改過檔）的 session 第一次收尾前注入「完成要有執行證據」檢查——把兩個最關鍵的觸發從自律變成機制，純唯讀問答 session 零成本 |
 | `hooks.json` | 上述 hooks 的 JSON 範本；由 `optional-hooks.md` 的 append-safe 指令 **merge** 進 `~/.claude/settings.json`。**只能 merge、不可直接覆蓋**（覆蓋會清掉使用者既有的 settings） |
+| `optional-git-fastpath.md` | 選配的 git fast-path guard（安裝時**獨立**詢問，與上面的 hooks 分開；**POSIX sh + jq，僅適用 WSL/macOS/Linux**）：日常 git（status／diff／log／add／commit／push）免確認直接跑，但 Fast-path 的例外——帶 `--force*`／`-f`／`-d`／`--delete`／`--mirror`／`--prune`／`+refspec` 的破壞性 push——一律要你確認。permission 規則只能前綴比對，`git push origin main --force` 會從 `Bash(git push *)` 溜過去；PreToolUse guard 補上這個洞，偵測**任意參數位置**的 force token，只回 `ask`（升級給人決定），從不 deny／allow |
+| `git-fastpath.json` | 上述 guard 的 permissions ＋ PreToolUse JSON 範本；由 `optional-git-fastpath.md` 的 append-safe 指令 **merge** 進 `~/.claude/settings.json`（union `permissions.allow`／`ask` 與 `hooks.PreToolUse` 三個陣列，不覆蓋既有值）。**只能 merge、不可直接覆蓋**。受保護分支規則屬個人化，不放進通用範本，安裝時另加 |
 | `index.html` | 本 repo 的單一評估報告：整體評估、安裝前後差異（六個關鍵時刻被改寫）、以及一次實測對照，合為一份卡片式文件。自包含 HTML，瀏覽器直接開。純佐證材料，不會被安裝進 `~/.claude/` |
 | `benchmark/` | 有/無 harness 的 A/B 實測素材：共用的 485 行任務 prompt ＋ 兩個完整成品（`default/` 與 `harness/`）＋ 操控手感量測（`handling-metrics/`）。`index.html` 第六節的數據來源，可自行重驗 |
 
