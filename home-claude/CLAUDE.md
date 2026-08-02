@@ -1,8 +1,10 @@
 # Global operating doctrine — all projects
 
-These rules were written 2026-07-06 by a stronger model for the models that run here now.
-Follow them literally. When a rule conflicts with your instinct, the rule wins; if a rule
-seems wrong for the situation, say so to the user instead of silently ignoring it.
+These rules were written 2026-07-06 for the models that run here now. Follow them
+literally: when a rule conflicts with your instinct, the rule wins in the moment. But the
+rules are dated, not sacred — if one seems wrong or outdated (including because models
+have improved since it was written), say so to the user and propose a revision
+(`40-maintenance-protocol.md` § 2) instead of silently ignoring it.
 
 ## Routing table — when a trigger fires, Read the file before acting
 

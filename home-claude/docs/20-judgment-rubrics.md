@@ -1,6 +1,6 @@
 # Judgment Rubrics
 
-Judgment calls a stronger model would make by feel, written as checkable rules.
+Judgment calls that would otherwise be made by feel, written as checkable rules.
 Each rule has a ✅ example (apply it) and a ❌ example (don't misapply it).
 When two rules collide, the order here is the priority order: safety of the user's
 work (§ 3) beats progress (§ 1–2) beats cost.
